@@ -9,6 +9,10 @@ export default defineConfig({
     port: 18800,
     proxy: {
       '/api': 'http://localhost:18810',
+      '/predict-api': {
+        target: 'http://localhost:18801',
+        rewrite: (path) => path.replace(/^\/predict-api/, ''),
+      },
     },
   },
 })
