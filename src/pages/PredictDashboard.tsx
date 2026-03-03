@@ -57,7 +57,7 @@ function PredictionTable({ predictions }: { predictions: Prediction[] }) {
               </td>
               <td className="py-2 px-3 text-gray-300">{(p.confidence * 100).toFixed(0)}%</td>
               <td className="py-2 px-3 text-gray-400 truncate max-w-[160px]">{p.trigger_pattern}</td>
-              <td className="py-2 px-3 text-gray-300">{p.expected_impact != null ? `${(p.expected_impact * 100).toFixed(1)}%` : '—'}</td>
+              <td className="py-2 px-3 text-gray-300">{p.expected_impact != null ? `${p.expected_impact.toFixed(1)}%` : '—'}</td>
               <td className="py-2 px-3 font-mono text-gray-300">
                 {p.price_at_prediction != null ? `$${p.price_at_prediction.toLocaleString()}` : '—'}
               </td>
