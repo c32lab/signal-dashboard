@@ -1,0 +1,38 @@
+import useSWR from 'swr'
+import { api } from '../api'
+import type { DecisionFilters } from '../types'
+
+const REFRESH_INTERVAL = 30_000
+
+export function useHealth() {
+  return useSWR('health', () => api.health(), { refreshInterval: REFRESH_INTERVAL })
+}
+
+export function useOverview() {
+  return useSWR('overview', () => api.overview(), { refreshInterval: REFRESH_INTERVAL })
+}
+
+export function useDecisions(params?: DecisionFilters) {
+  const key = ['decisions', JSON.stringify(params ?? {})]
+  return useSWR(key, () => api.decisions(params), { refreshInterval: REFRESH_INTERVAL })
+}
+
+export function useSignalsLatest() {
+  return useSWR('signals/latest', () => api.signalsLatest(), { refreshInterval: REFRESH_INTERVAL })
+}
+
+export function usePerformance() {
+  return useSWR('performance', () => api.performance(), { refreshInterval: REFRESH_INTERVAL })
+}
+
+export function useConfidence() {
+  return useSWR('confidence', () => api.confidence(), { refreshInterval: REFRESH_INTERVAL })
+}
+
+export function useSignalQuality(hours = 6) {
+  return useSWR(['signal_quality', hours], () => api.signalQuality(hours), { refreshInterval: REFRESH_INTERVAL })
+}
+
+export function useBacktest() {
+  return useSWR('backtest', () => api.backtest(), { refreshInterval: REFRESH_INTERVAL })
+}

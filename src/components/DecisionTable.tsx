@@ -1,0 +1,192 @@
+import { useState, useMemo } from 'react'
+import type { Decision } from '../types'
+import { useDecisions } from '../hooks/useApi'
+
+const PAGE_SIZE = 20
+const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT', 'AVAXUSDT', 'LINKUSDT']
+const DIRECTIONS = ['LONG', 'SHORT', 'HOLD']
+
+function directionBadge(direction: string) {
+  switch (direction) {
+    case 'LONG':
+      return 'bg-green-900 text-green-300'
+    case 'SHORT':
+      return 'bg-red-900 text-red-300'
+    default:
+      return 'bg-gray-800 text-gray-400'
+  }
+}
+
+function formatTs(ts: string): string {
+  const d = new Date(ts)
+  if (isNaN(d.getTime())) return ts
+  return d.toLocaleString([], {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+function DecisionRow({ d }: { d: Decision }) {
+  return (
+    <tr className="border-t border-gray-800 hover:bg-gray-900 transition-colors">
+      <td className="px-3 py-2 text-xs text-gray-500 font-mono">{String(d.id).slice(-6)}</td>
+      <td className="px-3 py-2 text-xs text-gray-400 whitespace-nowrap">{formatTs(d.timestamp)}</td>
+      <td className="px-3 py-2 text-xs font-semibold text-gray-200">
+        {d.symbol.replace('USDT', '')}
+      </td>
+      <td className="px-3 py-2">
+        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${directionBadge(d.direction)}`}>
+          {d.direction}
+        </span>
+      </td>
+      <td className="px-3 py-2 text-xs text-gray-300">{d.action}</td>
+      <td className="px-3 py-2 text-xs text-gray-300 text-right">
+        {Math.round(d.confidence * 100)}%
+      </td>
+      <td className="px-3 py-2 text-xs text-gray-400 text-right">
+        {typeof d.combined_score === 'number' ? d.combined_score.toFixed(3) : '—'}
+      </td>
+      <td className="px-3 py-2 text-xs text-gray-500 max-w-xs truncate" title={d.reasoning}>
+        {d.reasoning}
+      </td>
+    </tr>
+  )
+}
+
+export default function DecisionTable() {
+  const [symbolFilter, setSymbolFilter] = useState('')
+  const [directionFilter, setDirectionFilter] = useState('')
+  const [page, setPage] = useState(1)
+
+  const { data, error, isLoading } = useDecisions({ limit: 500 })
+
+  const filtered = useMemo(() => {
+    if (!data?.decisions) return []
+    return data.decisions.filter((d) => {
+      if (symbolFilter && d.symbol !== symbolFilter) return false
+      if (directionFilter && d.direction !== directionFilter) return false
+      return true
+    })
+  }, [data, symbolFilter, directionFilter])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const pageRows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+
+  function handleSymbol(v: string) {
+    setSymbolFilter(v)
+    setPage(1)
+  }
+  function handleDirection(v: string) {
+    setDirectionFilter(v)
+    setPage(1)
+  }
+
+  return (
+    <div className="px-6">
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest">
+          Decision History
+        </h2>
+        <div className="ml-auto flex gap-2">
+          <select
+            value={symbolFilter}
+            onChange={(e) => handleSymbol(e.target.value)}
+            className="bg-gray-900 border border-gray-700 text-gray-300 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          >
+            <option value="">All symbols</option>
+            {SYMBOLS.map((s) => (
+              <option key={s} value={s}>
+                {s.replace('USDT', '')}
+              </option>
+            ))}
+          </select>
+          <select
+            value={directionFilter}
+            onChange={(e) => handleDirection(e.target.value)}
+            className="bg-gray-900 border border-gray-700 text-gray-300 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          >
+            <option value="">All directions</option>
+            {DIRECTIONS.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {isLoading && (
+        <p className="text-gray-400 text-sm py-4">Loading decisions…</p>
+      )}
+      {error && (
+        <p className="text-red-400 text-sm py-4">
+          Failed to load decisions: {error?.message}
+        </p>
+      )}
+
+      {!isLoading && !error && (
+        <>
+          <div className="overflow-x-auto rounded-xl border border-gray-800">
+            <table className="w-full text-left">
+              <thead className="bg-gray-900">
+                <tr>
+                  {['ID', 'Time', 'Symbol', 'Direction', 'Action', 'Conf', 'Score', 'Reasoning'].map(
+                    (h) => (
+                      <th
+                        key={h}
+                        className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                      >
+                        {h}
+                      </th>
+                    )
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {pageRows.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-3 py-8 text-center text-gray-600 text-sm">
+                      No decisions found
+                    </td>
+                  </tr>
+                ) : (
+                  pageRows.map((d) => <DecisionRow key={String(d.id)} d={d} />)
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
+            <span>
+              {filtered.length} record{filtered.length !== 1 ? 's' : ''}
+              {(symbolFilter || directionFilter) ? ' (filtered)' : ''}
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={safePage === 1}
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                ‹
+              </button>
+              <span className="px-2">
+                {safePage} / {totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={safePage === totalPages}
+                className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                ›
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
