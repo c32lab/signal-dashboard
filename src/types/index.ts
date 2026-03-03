@@ -9,6 +9,7 @@ export interface Decision {
   combined_score: number
   reasoning: string
   price_at_decision: number
+  raw_json?: string
 }
 
 export interface DecisionsResponse {
@@ -19,19 +20,25 @@ export interface DecisionsResponse {
 }
 
 export interface Signal {
+  id: string
+  timestamp: string
   symbol: string
+  action: string
   direction: string
   confidence: number
-  timestamp: string
-  action?: string
-  price?: number
+  decision_type: string
+  combined_score: number
+  reasoning: string
+  price_at_decision: number
+  raw_json?: string
 }
 
 export interface Overview {
   total_decisions: number
-  recent_1h: number
-  by_direction: Record<string, number>
-  by_symbol: Record<string, number>
+  recent_1h: Record<string, number>
+  action_distribution: Record<string, number>
+  symbol_distribution: Record<string, number>
+  type_distribution: Record<string, number>
 }
 
 export interface HealthResponse {

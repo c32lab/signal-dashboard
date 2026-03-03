@@ -1,7 +1,7 @@
 import type { Signal } from '../types'
 import { useSignalsLatest } from '../hooks/useApi'
 
-const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT', 'AVAXUSDT', 'LINKUSDT']
+const SYMBOLS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT', 'AVAX/USDT', 'LINK/USDT']
 
 function directionStyle(direction: string): { badge: string; bar: string; border: string } {
   switch (direction) {
@@ -21,7 +21,7 @@ function formatTime(ts: string): string {
 }
 
 function SignalCard({ symbol, signal }: { symbol: string; signal: Signal | undefined }) {
-  const label = symbol.replace('USDT', '')
+  const label = symbol.replace('/USDT', '')
   const direction = signal?.direction ?? '—'
   const confidence = signal?.confidence ?? 0
   const pct = Math.round(confidence * 100)

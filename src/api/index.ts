@@ -43,7 +43,7 @@ export const api = {
     fetcher<Decision>(`${BASE_URL}/api/decisions/${id}`),
 
   signalsLatest: () =>
-    fetcher<Signal[]>(`${BASE_URL}/api/signals/latest`),
+    fetcher<{ signals: Signal[] }>(`${BASE_URL}/api/signals/latest`).then(r => r.signals),
 
   performance: () =>
     fetcher<Performance>(`${BASE_URL}/api/performance`),

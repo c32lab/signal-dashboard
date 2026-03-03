@@ -24,7 +24,8 @@ export default function KPIPanel() {
     HOLD: 'text-gray-400',
   }
 
-  const symbolEntries = Object.entries(data.by_symbol).sort(([, a], [, b]) => b - a)
+  const symbolEntries = Object.entries(data.symbol_distribution).sort(([, a], [, b]) => b - a)
+  const recent1hTotal = Object.values(data.recent_1h).reduce((a, b) => a + b, 0)
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
@@ -37,7 +38,7 @@ export default function KPIPanel() {
       {/* Recent 1h */}
       <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
         <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Last 1h</p>
-        <p className="text-3xl font-bold text-blue-400">{data.recent_1h}</p>
+        <p className="text-3xl font-bold text-blue-400">{recent1hTotal}</p>
       </div>
 
       {/* By direction */}
@@ -45,7 +46,7 @@ export default function KPIPanel() {
         <p className="text-xs text-gray-500 uppercase tracking-widest mb-3">By Direction</p>
         <div className="space-y-1">
           {directions.map((dir) => {
-            const count = data.by_direction[dir] ?? 0
+            const count = data.action_distribution[dir] ?? 0
             const total = data.total_decisions || 1
             const pct = Math.round((count / total) * 100)
             return (
@@ -72,7 +73,7 @@ export default function KPIPanel() {
         <div className="space-y-1">
           {symbolEntries.map(([sym, count]) => (
             <div key={sym} className="flex items-center justify-between">
-              <span className="text-xs text-gray-300">{sym.replace('USDT', '')}</span>
+              <span className="text-xs text-gray-300">{sym.replace('/USDT', '')}</span>
               <span className="text-xs font-semibold text-gray-200">{count}</span>
             </div>
           ))}
