@@ -11,7 +11,7 @@ import type {
   BacktestData,
 } from '../types'
 
-const BASE_URL = 'http://localhost:18800'
+const BASE_URL = ''
 
 async function fetcher<T>(url: string): Promise<T> {
   const res = await fetch(url)

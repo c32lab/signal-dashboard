@@ -1,0 +1,5 @@
+services:
+  signal-dashboard:
+    build: .
+    network_mode: host
+    restart: unless-stopped
