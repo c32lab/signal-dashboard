@@ -98,8 +98,8 @@ export default function CombinerWeights() {
             width={90}
           />
           <Tooltip
-            formatter={(value: number) => [
-              `${(value * 100).toFixed(1)}%`, // weight: decimal_0_1 → ×100
+            formatter={(value: number | undefined) => [
+              `${((value ?? 0) * 100).toFixed(1)}%`, // weight: decimal_0_1 → ×100
               'Weight',
             ]}
             {...TOOLTIP_STYLE}
@@ -111,9 +111,10 @@ export default function CombinerWeights() {
             <LabelList
               dataKey="weight"
               position="right"
-              formatter={(value: number) => {
-                if (value === 0) return 'disabled'
-                return `${(value * 100).toFixed(1)}%` // weight: decimal_0_1 → ×100
+              formatter={(value: string | number | boolean | null | undefined) => {
+                const num = typeof value === 'number' ? value : 0
+                if (num === 0) return 'disabled'
+                return `${(num * 100).toFixed(1)}%` // weight: decimal_0_1 → ×100
               }}
               style={{ fill: '#d1d5db', fontSize: 11, fontWeight: 500 }}
             />

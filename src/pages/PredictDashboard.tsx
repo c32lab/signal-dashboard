@@ -558,7 +558,7 @@ export default function PredictDashboard() {
   const events = event_kb?.events ?? []
   const patterns = event_kb?.patterns ?? []
 
-  const trends = Array.isArray(trendsData) ? trendsData : (trendsData as { trends?: Trend[] })?.trends ?? []
+  const trends = Array.isArray(trendsData) ? trendsData : (trendsData as unknown as { trends?: Trend[] })?.trends ?? []
   const chainNodes = chainData?.nodes ?? []
   const chainEdges = chainData?.edges ?? []
 
