@@ -109,9 +109,8 @@ function OverallSummary({ overall }: { overall: PerformanceResponse['overall'] }
 // ── Accuracy Overview Card ────────────────────────────────────────────────────
 
 function AccuracyOverview({ data }: { data: AccuracyResponse }) {
-  // accuracy['1h'] / accuracy['4h']: decimal_0_1 → ×100
-  const acc1h = (data.accuracy['1h'] * 100).toFixed(1)
-  const acc4h = (data.accuracy['4h'] * 100).toFixed(1)
+  const acc1h = data.accuracy['1h_pct'].toFixed(1)
+  const acc4h = data.accuracy['4h_pct'].toFixed(1)
   return (
     <section className="bg-gray-900 rounded-xl border border-gray-800 p-4">
       <h2 className="text-sm font-semibold text-gray-200 mb-4">Accuracy Overview</h2>

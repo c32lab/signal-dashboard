@@ -89,13 +89,13 @@ export interface AccuracyResponse {
   period_hours: number
   total_actionable: number
   accuracy: {
-    '1h': number
-    '4h': number
+    '1h_pct': number
+    '4h_pct': number
   }
   by_symbol: Record<string, {
     total: number
-    accuracy_1h: number
-    accuracy_4h: number
+    accuracy_1h_pct: number
+    accuracy_4h_pct: number
   }>
 }
 
