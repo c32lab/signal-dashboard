@@ -11,6 +11,7 @@ import type {
   BacktestData,
   AccuracyTrendItem,
   AccuracyResponse,
+  CombinerWeightsResponse,
 } from '../types'
 
 const BASE_URL = ''
@@ -65,4 +66,7 @@ export const api = {
 
   backtest: () =>
     fetcher<BacktestData>(`${BASE_URL}/api/backtest`),
+
+  combinerWeights: () =>
+    fetcher<CombinerWeightsResponse>(`${BASE_URL}/api/combiner_weights`),
 }

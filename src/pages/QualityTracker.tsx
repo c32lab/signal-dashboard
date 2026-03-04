@@ -23,6 +23,7 @@ import type {
 import { validatePercent, validatePnL } from '../utils/dataValidation'
 import DataWarning from '../components/DataWarning'
 import LastUpdated from '../components/LastUpdated'
+import CombinerWeights from '../components/CombinerWeights'
 
 const SYMBOL_COLORS: Record<string, string> = {
   'BTC/USDT': '#60a5fa',
@@ -537,6 +538,9 @@ export default function QualityTracker() {
           onHoursChange={setQualityHours}
         />
       )}
+
+      {/* D: Combiner Weights */}
+      <CombinerWeights />
     </div>
   )
 }

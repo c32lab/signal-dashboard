@@ -44,3 +44,7 @@ export function useAccuracy() {
 export function useBacktest() {
   return useSWR('backtest', () => api.backtest(), { refreshInterval: REFRESH_INTERVAL })
 }
+
+export function useCombinerWeights() {
+  return useSWR('combiner_weights', () => api.combinerWeights(), { refreshInterval: REFRESH_INTERVAL })
+}

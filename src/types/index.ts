@@ -99,6 +99,10 @@ export interface AccuracyResponse {
   }>
 }
 
+export interface CombinerWeightsResponse {
+  weights: Record<string, number>
+}
+
 export type ConfidenceData = Record<string, unknown>
 export type BacktestData = Record<string, unknown>
 
