@@ -96,7 +96,7 @@ function DecisionRow({ d }: { d: Decision }) {
             : undefined
           return (
             <>
-              {Math.round(d.confidence * 100)}%
+              {Math.round(d.confidence * 100)}% {/* confidence: decimal_0_1 → ×100 */}
               {warn && <DataWarning message={warn} />}
             </>
           )

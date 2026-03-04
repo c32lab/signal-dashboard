@@ -109,6 +109,7 @@ function OverallSummary({ overall }: { overall: PerformanceResponse['overall'] }
 // ── Accuracy Overview Card ────────────────────────────────────────────────────
 
 function AccuracyOverview({ data }: { data: AccuracyResponse }) {
+  // accuracy['1h'] / accuracy['4h']: decimal_0_1 → ×100
   const acc1h = (data.accuracy['1h'] * 100).toFixed(1)
   const acc4h = (data.accuracy['4h'] * 100).toFixed(1)
   return (

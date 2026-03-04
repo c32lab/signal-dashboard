@@ -84,7 +84,7 @@ export default function CombinerWeights() {
           <XAxis
             type="number"
             domain={[0, 1]}
-            tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`}
+            tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`} // weight: decimal_0_1 → ×100
             tick={{ fill: '#6b7280', fontSize: 11 }}
             tickLine={false}
             axisLine={false}
@@ -99,7 +99,7 @@ export default function CombinerWeights() {
           />
           <Tooltip
             formatter={(value: number) => [
-              `${(value * 100).toFixed(1)}%`,
+              `${(value * 100).toFixed(1)}%`, // weight: decimal_0_1 → ×100
               'Weight',
             ]}
             {...TOOLTIP_STYLE}
@@ -113,7 +113,7 @@ export default function CombinerWeights() {
               position="right"
               formatter={(value: number) => {
                 if (value === 0) return 'disabled'
-                return `${(value * 100).toFixed(1)}%`
+                return `${(value * 100).toFixed(1)}%` // weight: decimal_0_1 → ×100
               }}
               style={{ fill: '#d1d5db', fontSize: 11, fontWeight: 500 }}
             />

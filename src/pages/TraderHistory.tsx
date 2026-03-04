@@ -211,6 +211,7 @@ function DecisionRow({ d }: { d: Decision }) {
         {typeof d.confidence === 'number' ? (
           <>
             <span className={confWarn ? 'text-amber-400' : 'text-gray-300'}>
+              {/* confidence: decimal_0_1 → ×100 */}
               {Math.round(d.confidence * 100)}%
             </span>
             {confWarn && <DataWarning message={confWarn} />}
@@ -278,7 +279,7 @@ async function exportCsv(filters: {
       d.action,
       d.direction,
       d.decision_type,
-      typeof d.confidence === 'number' ? `${(d.confidence * 100).toFixed(1)}%` : '',
+      typeof d.confidence === 'number' ? `${(d.confidence * 100).toFixed(1)}%` : '', // confidence: decimal_0_1 → ×100
       typeof d.combined_score === 'number' ? d.combined_score.toFixed(3) : '',
       typeof d.price_at_decision === 'number' ? d.price_at_decision.toFixed(4) : '',
       stop_loss != null ? String(stop_loss) : '',

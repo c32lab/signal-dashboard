@@ -85,8 +85,10 @@ function PredictionTable({ predictions }: { predictions: Prediction[] }) {
               <td className="py-2 px-3">
                 <DirectionBadge direction={p.direction} />
               </td>
+              {/* confidence: decimal_0_1 → ×100 */}
               <td className="py-2 px-3 text-gray-300">{(p.confidence * 100).toFixed(0)}%</td>
               <td className="py-2 px-3 text-gray-400 truncate max-w-[160px]">{p.trigger_pattern}</td>
+              {/* expected_impact: already_pct — direct display, no ×100 */}
               <td className="py-2 px-3 text-gray-300">{p.expected_impact != null ? `${p.expected_impact.toFixed(1)}%` : '—'}</td>
               <td className="py-2 px-3 font-mono text-gray-300">
                 {p.price_at_prediction != null ? `$${p.price_at_prediction.toLocaleString()}` : '—'}
@@ -126,6 +128,7 @@ function EventTable({ events }: { events: Event[] }) {
                 <span title={e.event}>{e.event?.length > 60 ? e.event.slice(0, 60) + '…' : e.event}</span>
               </td>
               <td className="py-2 px-3 text-gray-400">{e.category}</td>
+              {/* price_change: already_pct — direct display, no ×100 */}
               <td
                 className={`py-2 px-3 font-mono font-bold ${
                   e.price_change > 0 ? 'text-red-400' : e.price_change < 0 ? 'text-green-400' : 'text-gray-400'
@@ -272,6 +275,7 @@ function PredictionHistoryTable({ predictions }: { predictions: Prediction[] }) 
               <td className="py-2 px-3">
                 <DirectionBadge direction={p.direction} />
               </td>
+              {/* confidence: decimal_0_1 → ×100 */}
               <td className="py-2 px-3 text-gray-300">{(p.confidence * 100).toFixed(0)}%</td>
               <td className="py-2 px-3 text-gray-400 truncate max-w-[160px]" title={p.trigger_pattern}>
                 {p.trigger_pattern}

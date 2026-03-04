@@ -24,7 +24,7 @@ function SignalCard({ symbol, signal }: { symbol: string; signal: Signal | undef
   const label = symbol.replace('/USDT', '')
   const direction = signal?.direction ?? '—'
   const confidence = signal?.confidence ?? 0
-  const pct = Math.round(confidence * 100)
+  const pct = Math.round(confidence * 100) // confidence: decimal_0_1 → ×100
   const style = directionStyle(signal?.direction ?? '')
 
   return (
