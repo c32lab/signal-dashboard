@@ -101,7 +101,7 @@ function EventTable({ events }: { events: Event[] }) {
                   e.price_change > 0 ? 'text-red-400' : e.price_change < 0 ? 'text-green-400' : 'text-gray-400'
                 }`}
               >
-                {e.price_change != null ? `${e.price_change > 0 ? '+' : ''}${(e.price_change * 100).toFixed(2)}%` : '—'}
+                {e.price_change != null ? `${e.price_change > 0 ? '+' : ''}${e.price_change.toFixed(2)}%` : '—'}
               </td>
               <td className="py-2 px-3">
                 <div className="flex flex-wrap gap-1">
