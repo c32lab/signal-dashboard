@@ -7,15 +7,7 @@ import DataWarning from '../components/DataWarning'
 
 const PAGE_SIZE = 50
 
-const SYMBOLS_MAP: Record<string, string> = {
-  BTC: 'BTCUSDT',
-  ETH: 'ETHUSDT',
-  SOL: 'SOLUSDT',
-  BNB: 'BNBUSDT',
-  XRP: 'XRPUSDT',
-  AVAX: 'AVAXUSDT',
-  LINK: 'LINKUSDT',
-}
+const SYMBOLS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT', 'AVAX/USDT', 'LINK/USDT']
 
 const ACTIONS = ['LONG', 'SHORT', 'HOLD']
 const DIRECTIONS = ['LONG', 'SHORT', 'NEUTRAL']
@@ -152,7 +144,7 @@ function SymbolSummary({
   symbol: string
   bySymbol: PerformanceSymbol[]
 }) {
-  const row = bySymbol.find(s => s.symbol.replace('/', '') === symbol || s.symbol === symbol)
+  const row = bySymbol.find(s => s.symbol === symbol || s.symbol.replace('/', '') === symbol.replace('/', ''))
   if (!row) return null
   return (
     <div className="bg-gray-900 border border-blue-800/50 rounded-xl p-4 flex flex-wrap gap-6 items-center">
@@ -260,18 +252,25 @@ async function exportCsv(filters: {
   const batchSize = 200
   const maxRecords = 2000
   const allRows: Decision[] = []
+  // direction is client-side only, don't send to backend
+  const { direction, ...serverFilters } = filters
 
   for (let offset = 0; offset < maxRecords; offset += batchSize) {
-    const resp = await api.decisions({ ...filters, limit: batchSize, offset })
+    const resp = await api.decisions({ ...serverFilters, limit: batchSize, offset })
     allRows.push(...resp.decisions)
     if (allRows.length >= resp.total || resp.decisions.length < batchSize) break
   }
+
+  // Apply direction filter client-side
+  const filtered = direction
+    ? allRows.filter(d => d.direction === direction)
+    : allRows
 
   const headers = [
     'timestamp', 'symbol', 'action', 'direction', 'decision_type',
     'confidence', 'combined_score', 'price_at_decision', 'stop_loss', 'take_profit', 'reasoning',
   ]
-  const rows = allRows.map(d => {
+  const rows = filtered.map(d => {
     const { stop_loss, take_profit } = parseRawJson(d.raw_json)
     return [
       d.timestamp,
@@ -308,21 +307,30 @@ export default function TraderHistory() {
   const [offset, setOffset] = useState(0)
   const [exporting, setExporting] = useState(false)
 
-  const filters = {
+  // Server-side filters (symbol, action, type are supported by backend)
+  const serverFilters = {
     limit: PAGE_SIZE,
     offset,
     symbol: symbolFilter || undefined,
     action: actionFilter || undefined,
-    direction: directionFilter || undefined,
     type: typeFilter || undefined,
+    // NOTE: direction is NOT supported server-side, handled client-side below
   }
 
-  const { data: decisionsData, isLoading, error } = useDecisions(filters)
+  const { data: decisionsData, isLoading, error } = useDecisions(serverFilters)
   const { data: perfData } = usePerformance()
   const { data: overviewData } = useOverview()
 
-  const decisions = decisionsData?.decisions ?? []
-  const total = decisionsData?.total ?? 0
+  // Client-side direction filter (backend ignores direction param)
+  const rawDecisions = decisionsData?.decisions ?? []
+  const serverTotal = decisionsData?.total ?? 0
+
+  const decisions = directionFilter
+    ? rawDecisions.filter(d => d.direction === directionFilter)
+    : rawDecisions
+  // When direction filter active, total is approximate (server doesn't filter)
+  const total = directionFilter ? decisions.length : serverTotal
+  const isDirectionFiltered = !!directionFilter
 
   const overall = perfData?.overall
   const actionDist = overviewData?.action_distribution
@@ -334,10 +342,14 @@ export default function TraderHistory() {
     ? Object.keys(overviewData.type_distribution).sort()
     : []
 
-  const endRecord = Math.min(offset + PAGE_SIZE, total)
-  const startRecord = total === 0 ? 0 : offset + 1
-  const currentPage = Math.floor(offset / PAGE_SIZE) + 1
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const endRecord = isDirectionFiltered
+    ? decisions.length
+    : Math.min(offset + PAGE_SIZE, total)
+  const startRecord = isDirectionFiltered
+    ? (decisions.length > 0 ? 1 : 0)
+    : (total === 0 ? 0 : offset + 1)
+  const currentPage = isDirectionFiltered ? 1 : Math.floor(offset / PAGE_SIZE) + 1
+  const totalPages = isDirectionFiltered ? 1 : Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   function resetPage() { setOffset(0) }
 
@@ -392,8 +404,8 @@ export default function TraderHistory() {
 
           <FilterSelect value={symbolFilter} onChange={handleSymbol}>
             <option value="">All Symbols</option>
-            {Object.entries(SYMBOLS_MAP).map(([label, val]) => (
-              <option key={val} value={val}>{label}</option>
+            {SYMBOLS.map(s => (
+              <option key={s} value={s}>{stripUsdt(s)}</option>
             ))}
           </FilterSelect>
 
