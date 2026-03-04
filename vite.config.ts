@@ -13,6 +13,10 @@ export default defineConfig({
         target: 'http://localhost:18801',
         rewrite: (path) => path.replace(/^\/predict-api/, ''),
       },
+      '/data-api': {
+        target: 'http://localhost:8081',
+        rewrite: (path) => path.replace(/^\/data-api/, ''),
+      },
     },
   },
 })

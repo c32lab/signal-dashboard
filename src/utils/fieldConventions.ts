@@ -56,6 +56,18 @@ export const PREDICT_FIELDS = {
   'pattern.avg_impact':        { format: 'already_pct',  display: '直接加 %', example: '-10.0 → "-10.0%"' },
 } as const
 
+// ─── Data-Eng API (:8081) ────────────────────────────────────────────────────
+
+export const DATAENG_FIELDS = {
+  // /api/price-ranges
+  'ranges.p5':                 { format: 'usd_price',   display: '直接显示', example: '19.52' },
+  'ranges.p95':                { format: 'usd_price',   display: '直接显示', example: '224.84' },
+  'ranges.current':            { format: 'usd_price',   display: '直接显示', example: '85.37' },
+
+  // /api/price-ranges/validate
+  'validate.valid':            { format: 'boolean',      display: 'true/false', example: 'false' },
+} as const
+
 // ─── 格式说明 ────────────────────────────────────────────────────────────────
 //
 // already_pct  — 后端已是百分比值 → 前端直接 toFixed(N) + "%"

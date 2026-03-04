@@ -1,11 +1,15 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
+import { useEffect } from 'react'
 import Dashboard from './pages/Dashboard'
 import PredictDashboard from './pages/PredictDashboard'
 import QualityTracker from './pages/QualityTracker'
 import TraderHistory from './pages/TraderHistory'
 import ErrorBoundary from './components/ErrorBoundary'
+import { fetchDynamicPriceRanges } from './utils/dataValidation'
 
 function App() {
+  // Preload dynamic price ranges from data-eng API on app mount
+  useEffect(() => { fetchDynamicPriceRanges() }, [])
   return (
     <BrowserRouter>
       <div className="bg-gray-950 text-gray-100 min-h-screen">
