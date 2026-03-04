@@ -6,7 +6,7 @@ const DB_PATH = '/Users/zhwu/.openclaw/workspace/amani-signal/data/decisions.db'
 const PORT = 18810
 
 const db = new Database(DB_PATH, { readonly: true })
-db.pragma('journal_mode = WAL')
+// readonly mode - skip WAL pragma
 
 const app = express()
 app.use(cors({ origin: /localhost/ }))
