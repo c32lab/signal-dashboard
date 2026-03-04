@@ -6,9 +6,9 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    port: 18800,
+    port: 3080,
     proxy: {
-      '/api': 'http://localhost:18810',
+      '/api': 'http://localhost:18800',
       '/predict-api': {
         target: 'http://localhost:18801',
         rewrite: (path) => path.replace(/^\/predict-api/, ''),
