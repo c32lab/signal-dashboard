@@ -45,6 +45,46 @@ export interface HealthResponse {
   status: string
 }
 
+export interface PerformanceSymbol {
+  symbol: string
+  total: number
+  correct: number
+  accuracy_pct: number
+  avg_pnl_pct: number
+}
+
+export interface PerformanceResponse {
+  by_symbol: PerformanceSymbol[]
+  overall: {
+    total: number
+    correct: number
+    accuracy_pct: number
+    avg_pnl_pct: number
+  }
+}
+
+export interface AccuracyTrendItem {
+  hour: string
+  symbol: string
+  total: number
+  correct: number
+  accuracy_pct: number
+}
+
+export interface SignalQualitySymbol {
+  symbol: string
+  total_signals: number
+  correct: number
+  accuracy_pct: number
+  avg_pnl_pct: number
+  best_pnl: number
+  worst_pnl: number
+}
+
+export interface SignalQualityResponse {
+  by_symbol: SignalQualitySymbol[]
+}
+
 export type Performance = Record<string, unknown>
 export type ConfidenceData = Record<string, unknown>
 export type SignalQuality = Record<string, unknown>

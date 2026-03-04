@@ -17,6 +17,17 @@ function directionBadge(direction: string) {
   }
 }
 
+function typeBadge(type: string) {
+  switch (type?.toUpperCase()) {
+    case 'FAST':
+      return 'bg-blue-900 text-blue-300'
+    case 'SLOW':
+      return 'bg-purple-900 text-purple-300'
+    default:
+      return 'bg-gray-800 text-gray-500'
+  }
+}
+
 function formatTs(ts: string): string {
   const d = new Date(ts)
   if (isNaN(d.getTime())) return ts
@@ -41,7 +52,15 @@ function DecisionRow({ d }: { d: Decision }) {
           {d.direction}
         </span>
       </td>
+      <td className="px-3 py-2">
+        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${typeBadge(d.decision_type)}`}>
+          {d.decision_type || '—'}
+        </span>
+      </td>
       <td className="px-3 py-2 text-xs text-gray-300">{d.action}</td>
+      <td className="px-3 py-2 text-xs text-gray-300 text-right font-mono">
+        {typeof d.price_at_decision === 'number' ? d.price_at_decision.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}
+      </td>
       <td className="px-3 py-2 text-xs text-gray-300 text-right">
         {Math.round(d.confidence * 100)}%
       </td>
@@ -133,7 +152,7 @@ export default function DecisionTable() {
             <table className="w-full text-left">
               <thead className="bg-gray-900">
                 <tr>
-                  {['ID', 'Time', 'Symbol', 'Direction', 'Action', 'Conf', 'Score', 'Reasoning'].map(
+                  {['ID', 'Time', 'Symbol', 'Direction', 'Type', 'Action', 'Price', 'Conf', 'Score', 'Reasoning'].map(
                     (h) => (
                       <th
                         key={h}
@@ -148,7 +167,7 @@ export default function DecisionTable() {
               <tbody>
                 {pageRows.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="px-3 py-8 text-center text-gray-600 text-sm">
+                    <td colSpan={10} className="px-3 py-8 text-center text-gray-600 text-sm">
                       No decisions found
                     </td>
                   </tr>

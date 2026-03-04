@@ -9,6 +9,7 @@ import type {
   ConfidenceData,
   SignalQuality,
   BacktestData,
+  AccuracyTrendItem,
 } from '../types'
 
 const BASE_URL = ''
@@ -53,6 +54,9 @@ export const api = {
 
   signalQuality: (hours = 6) =>
     fetcher<SignalQuality>(`${BASE_URL}/api/signal_quality?hours=${hours}`),
+
+  accuracyTrend: (hours = 24) =>
+    fetcher<AccuracyTrendItem[]>(`${BASE_URL}/api/accuracy/trend?hours=${hours}`),
 
   backtest: () =>
     fetcher<BacktestData>(`${BASE_URL}/api/backtest`),
