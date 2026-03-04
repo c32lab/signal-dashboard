@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
   BarChart,
   Bar,
@@ -22,6 +22,7 @@ import type {
 } from '../types'
 import { validatePercent, validatePnL } from '../utils/dataValidation'
 import DataWarning from '../components/DataWarning'
+import LastUpdated from '../components/LastUpdated'
 
 const SYMBOL_COLORS: Record<string, string> = {
   'BTC/USDT': '#60a5fa',
@@ -172,7 +173,7 @@ function AccuracyLeaderboard({ data }: { data: PerformanceSymbol[] }) {
             width={44}
           />
           <Tooltip
-            formatter={(value: number) => [`${Number(value).toFixed(1)}%`, 'Accuracy']}
+            formatter={(value: number | undefined) => [`${Number(value ?? 0).toFixed(1)}%`, 'Accuracy']}
             {...TOOLTIP_STYLE}
           />
           <Bar dataKey="accuracy_pct" name="Accuracy" radius={[0, 4, 4, 0]}>
@@ -293,7 +294,7 @@ function AccuracyTrend({
               width={36}
             />
             <Tooltip
-              formatter={(value: number, name: string) => [`${Number(value).toFixed(1)}%`, name]}
+              formatter={(value: number | undefined, name?: string) => [`${Number(value ?? 0).toFixed(1)}%`, name ?? '']}
               {...TOOLTIP_STYLE}
             />
             <Legend wrapperStyle={{ fontSize: 12, color: '#9ca3af' }} />
@@ -462,6 +463,12 @@ export default function QualityTracker() {
   const qualityRes = useSignalQuality(qualityHours)
   const accuracyRes = useAccuracy()
 
+  const [lastUpdated, setLastUpdated] = useState<Date>()
+
+  useEffect(() => {
+    if (perfRes.data) setLastUpdated(new Date())
+  }, [perfRes.data])
+
   const perfData = (perfRes.data as PerformanceResponse | undefined)?.by_symbol
   const perfOverall = (perfRes.data as PerformanceResponse | undefined)?.overall
   const trendData = trendRes.data as AccuracyTrendItem[] | undefined
@@ -470,6 +477,7 @@ export default function QualityTracker() {
 
   return (
     <div className="p-6 space-y-6">
+      <LastUpdated timestamp={lastUpdated} />
       {/* Top row: Overall Summary + Accuracy Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {perfRes.isLoading ? (

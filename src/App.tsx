@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
 import PredictDashboard from './pages/PredictDashboard'
 import QualityTracker from './pages/QualityTracker'
+import ErrorBoundary from './components/ErrorBoundary'
 
 function App() {
   return (
@@ -34,11 +35,13 @@ function App() {
             Quality
           </NavLink>
         </nav>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/predict" element={<PredictDashboard />} />
-          <Route path="/quality" element={<QualityTracker />} />
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/predict" element={<PredictDashboard />} />
+            <Route path="/quality" element={<QualityTracker />} />
+          </Routes>
+        </ErrorBoundary>
       </div>
     </BrowserRouter>
   )

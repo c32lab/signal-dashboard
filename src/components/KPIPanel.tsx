@@ -1,6 +1,4 @@
 import { useOverview } from '../hooks/useApi'
-import { validatePercent } from '../utils/dataValidation'
-import DataWarning from './DataWarning'
 
 export default function KPIPanel() {
   const { data, error, isLoading } = useOverview()
