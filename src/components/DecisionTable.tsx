@@ -1,12 +1,26 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import type { Decision } from '../types'
 import { useDecisions } from '../hooks/useApi'
 import { validatePrice, validateConfidence } from '../utils/dataValidation'
 import DataWarning from './DataWarning'
 
 const PAGE_SIZE = 20
-const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT', 'AVAXUSDT', 'LINKUSDT']
+const SYMBOLS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT', 'AVAX/USDT', 'LINK/USDT']
 const DIRECTIONS = ['LONG', 'SHORT', 'HOLD']
+
+type TimePreset = '1h' | '6h' | '24h' | '7d' | 'all'
+
+const TIME_PRESETS: { label: string; value: TimePreset; hours?: number }[] = [
+  { label: '1h', value: '1h', hours: 1 },
+  { label: '6h', value: '6h', hours: 6 },
+  { label: '24h', value: '24h', hours: 24 },
+  { label: '7d', value: '7d', hours: 168 },
+  { label: 'All', value: 'all' },
+]
+
+function fromIso(hours: number): string {
+  return new Date(Date.now() - hours * 3600_000).toISOString()
+}
 
 function directionBadge(direction: string) {
   switch (direction) {
@@ -47,7 +61,7 @@ function DecisionRow({ d }: { d: Decision }) {
       <td className="px-3 py-2 text-xs text-gray-500 font-mono">{String(d.id).slice(-6)}</td>
       <td className="px-3 py-2 text-xs text-gray-400 whitespace-nowrap">{formatTs(d.timestamp)}</td>
       <td className="px-3 py-2 text-xs font-semibold text-gray-200">
-        {d.symbol.replace('USDT', '')}
+        {d.symbol.replace('/USDT', '')}
       </td>
       <td className="px-3 py-2">
         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${directionBadge(d.direction)}`}>
@@ -101,22 +115,26 @@ function DecisionRow({ d }: { d: Decision }) {
 export default function DecisionTable() {
   const [symbolFilter, setSymbolFilter] = useState('')
   const [directionFilter, setDirectionFilter] = useState('')
+  const [timePreset, setTimePreset] = useState<TimePreset>('24h')
   const [page, setPage] = useState(1)
 
-  const { data, error, isLoading } = useDecisions({ limit: 500 })
+  const fromTime = TIME_PRESETS.find((p) => p.value === timePreset)?.hours
+    ? fromIso(TIME_PRESETS.find((p) => p.value === timePreset)!.hours!)
+    : undefined
 
-  const filtered = useMemo(() => {
-    if (!data?.decisions) return []
-    return data.decisions.filter((d) => {
-      if (symbolFilter && d.symbol !== symbolFilter) return false
-      if (directionFilter && d.direction !== directionFilter) return false
-      return true
-    })
-  }, [data, symbolFilter, directionFilter])
+  const offset = (page - 1) * PAGE_SIZE
+  const { data, error, isLoading } = useDecisions({
+    limit: PAGE_SIZE,
+    offset,
+    symbol: symbolFilter || undefined,
+    direction: directionFilter || undefined,
+    from: fromTime,
+  })
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const total = data?.total ?? 0
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const safePage = Math.min(page, totalPages)
-  const pageRows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+  const pageRows = data?.decisions ?? []
 
   function handleSymbol(v: string) {
     setSymbolFilter(v)
@@ -126,6 +144,10 @@ export default function DecisionTable() {
     setDirectionFilter(v)
     setPage(1)
   }
+  function handleTimePreset(v: TimePreset) {
+    setTimePreset(v)
+    setPage(1)
+  }
 
   return (
     <div className="px-6">
@@ -133,7 +155,23 @@ export default function DecisionTable() {
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest">
           Decision History
         </h2>
-        <div className="ml-auto flex gap-2">
+        <div className="ml-auto flex flex-wrap gap-2 items-center">
+          {/* Time preset buttons */}
+          <div className="flex gap-1">
+            {TIME_PRESETS.map((p) => (
+              <button
+                key={p.value}
+                onClick={() => handleTimePreset(p.value)}
+                className={`px-2.5 py-1 rounded text-xs font-medium transition-colors ${
+                  timePreset === p.value
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200'
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
           <select
             value={symbolFilter}
             onChange={(e) => handleSymbol(e.target.value)}
@@ -142,7 +180,7 @@ export default function DecisionTable() {
             <option value="">All symbols</option>
             {SYMBOLS.map((s) => (
               <option key={s} value={s}>
-                {s.replace('USDT', '')}
+                {s.replace('/USDT', '')}
               </option>
             ))}
           </select>
@@ -205,8 +243,8 @@ export default function DecisionTable() {
           {/* Pagination */}
           <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
             <span>
-              {filtered.length} record{filtered.length !== 1 ? 's' : ''}
-              {(symbolFilter || directionFilter) ? ' (filtered)' : ''}
+              {total} record{total !== 1 ? 's' : ''}
+              {(symbolFilter || directionFilter || timePreset !== 'all') ? ' (filtered)' : ''}
             </span>
             <div className="flex items-center gap-1">
               <button
