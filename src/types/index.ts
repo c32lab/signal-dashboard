@@ -108,4 +108,5 @@ export interface DecisionFilters {
   symbol?: string
   type?: string
   action?: string
+  direction?: string
 }
