@@ -61,7 +61,7 @@ export const api = {
     fetcher<SignalQualityResponse>(`${BASE_URL}/api/signal_quality?hours=${hours}`),
 
   accuracyTrend: (hours = 24) =>
-    fetcher<AccuracyTrendItem[]>(`${BASE_URL}/api/accuracy/trend?hours=${hours}`),
+    fetcher<{ trend: AccuracyTrendItem[] }>(`${BASE_URL}/api/accuracy/trend?hours=${hours}`).then(r => r.trend),
 
   accuracy: () =>
     fetcher<AccuracyResponse>(`${BASE_URL}/api/accuracy`),
