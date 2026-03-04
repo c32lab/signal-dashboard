@@ -19,6 +19,8 @@ import type {
   Trend,
   ChainNode,
   ChainEdge,
+  AccuracyEntry,
+  Validation,
 } from '../types/predict'
 
 // ─── Shared components ────────────────────────────────────────────────────────
@@ -522,6 +524,106 @@ function IndustryChainSection({ nodes, edges }: { nodes: ChainNode[]; edges: Cha
   )
 }
 
+// ─── Section D: Prediction Accuracy ──────────────────────────────────────────
+
+function AccuracySection({ accuracy }: { accuracy: Record<string, AccuracyEntry> }) {
+  const entries = Object.entries(accuracy)
+  if (entries.length === 0) {
+    return <p className="text-center text-gray-500 py-8 text-sm">No accuracy data yet</p>
+  }
+  return (
+    <div className="flex flex-wrap gap-6">
+      {entries.map(([horizon, stat]) => {
+        // accuracy field is already_pct (e.g. 42.9 = 42.9%) — no ×100
+        const pct = stat.accuracy
+        const colorClass =
+          pct > 50 ? 'text-green-400' : pct >= 40 ? 'text-yellow-400' : 'text-red-400'
+        return (
+          <div key={horizon} className="flex flex-col items-center gap-1 min-w-[120px]">
+            <span className="text-xs text-gray-500 uppercase tracking-wider">{horizon}</span>
+            <span className={`text-4xl font-bold font-mono ${colorClass}`}>
+              {pct.toFixed(1)}%
+            </span>
+            <span className="text-sm text-gray-400">
+              {stat.correct}/{stat.total}
+            </span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// ─── Section E: Recent Validations ────────────────────────────────────────────
+
+function ValidationsTable({ validations }: { validations: Validation[] }) {
+  if (validations.length === 0) {
+    return <p className="text-center text-gray-600 py-8 text-sm">No validation records</p>
+  }
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-gray-500 border-b border-gray-800">
+            <th className="text-left py-2 px-3 font-medium">Time</th>
+            <th className="text-left py-2 px-3 font-medium">Symbol</th>
+            <th className="text-left py-2 px-3 font-medium">Direction</th>
+            <th className="text-left py-2 px-3 font-medium">Confidence</th>
+            <th className="text-left py-2 px-3 font-medium">Actual Δ</th>
+            <th className="text-left py-2 px-3 font-medium">Result</th>
+            <th className="text-left py-2 px-3 font-medium">Price Entry→Exit</th>
+            <th className="text-left py-2 px-3 font-medium">Trigger</th>
+          </tr>
+        </thead>
+        <tbody>
+          {validations.map((v) => (
+            <tr key={v.id} className="border-b border-gray-800 hover:bg-gray-800/40 transition-colors">
+              <td className="py-2 px-3 text-gray-500 whitespace-nowrap">
+                {new Date(v.validated_at).toLocaleString()}
+              </td>
+              <td className="py-2 px-3 font-mono text-blue-300">{v.symbol}</td>
+              <td className="py-2 px-3">
+                <DirectionBadge direction={v.direction} />
+              </td>
+              {/* confidence: decimal_0_1 → ×100 */}
+              <td className="py-2 px-3 text-gray-300">{(v.confidence * 100).toFixed(0)}%</td>
+              {/* actual_change: already_pct — direct display, no ×100 */}
+              <td
+                className={`py-2 px-3 font-mono font-bold ${
+                  v.actual_change > 0
+                    ? 'text-green-400'
+                    : v.actual_change < 0
+                    ? 'text-red-400'
+                    : 'text-gray-400'
+                }`}
+              >
+                {v.actual_change > 0 ? '+' : ''}{v.actual_change.toFixed(2)}%
+              </td>
+              <td className="py-2 px-3 whitespace-nowrap">
+                {v.is_correct === 1 ? (
+                  <span className="text-green-400 font-medium">✅ Correct</span>
+                ) : (
+                  <span className="text-red-400 font-medium">❌ Wrong</span>
+                )}
+              </td>
+              <td className="py-2 px-3 font-mono text-gray-300 whitespace-nowrap">
+                ${v.price_at_prediction.toLocaleString()} → ${v.price_at_validation.toLocaleString()}
+              </td>
+              <td className="py-2 px-3 text-gray-500 max-w-[200px]">
+                <span title={v.trigger_event} className="cursor-help">
+                  {v.trigger_event?.length > 40
+                    ? v.trigger_event.slice(0, 40) + '…'
+                    : v.trigger_event}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 
 export default function PredictDashboard() {
@@ -553,7 +655,7 @@ export default function PredictDashboard() {
 
   if (!data) return null
 
-  const { macro, event_kb, predictions, macro_history } = data
+  const { macro, event_kb, predictions, macro_history, accuracy, recent_validations } = data
   const activeList = predictions?.active ?? []
   const events = event_kb?.events ?? []
   const patterns = event_kb?.patterns ?? []
@@ -693,6 +795,31 @@ export default function PredictDashboard() {
           ) : (
             <TrendsSection trends={trends} />
           )}
+        </div>
+      </section>
+
+      {/* ── Section D: Prediction Accuracy ────────────────────────────────── */}
+      <section className="bg-gray-900 rounded-xl border border-gray-800">
+        <div className="px-4 py-3 border-b border-gray-800">
+          <h2 className="text-sm font-semibold text-gray-200">Prediction Accuracy</h2>
+        </div>
+        <div className="p-4">
+          <AccuracySection accuracy={accuracy ?? {}} />
+        </div>
+      </section>
+
+      {/* ── Section E: Recent Validations ─────────────────────────────────── */}
+      <section className="bg-gray-900 rounded-xl border border-gray-800">
+        <div className="px-4 py-3 border-b border-gray-800">
+          <h2 className="text-sm font-semibold text-gray-200">
+            Recent Validations
+            {recent_validations?.length > 0 && (
+              <span className="ml-2 text-xs text-gray-500">({recent_validations.length})</span>
+            )}
+          </h2>
+        </div>
+        <div className="p-2">
+          <ValidationsTable validations={recent_validations ?? []} />
         </div>
       </section>
 

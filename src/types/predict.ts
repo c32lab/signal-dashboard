@@ -99,12 +99,33 @@ export interface PredictionsGroup {
   failed?: Prediction[]
 }
 
+export interface AccuracyEntry {
+  total: number
+  correct: number
+  accuracy: number // already_pct (e.g. 42.9 = 42.9%) — do NOT ×100
+}
+
+export interface Validation {
+  id: number
+  prediction_id: number
+  horizon: string
+  actual_change: number     // already_pct — direct display, do NOT ×100
+  is_correct: number        // 0 or 1
+  price_at_validation: number
+  validated_at: string
+  symbol: string
+  direction: string
+  trigger_event: string
+  price_at_prediction: number
+  confidence: number        // decimal_0_1 → ×100 for display
+}
+
 export interface PredictionOverview {
   macro: Macro
   event_kb: EventKB
   predictions: PredictionsGroup
-  accuracy: unknown
-  recent_validations: unknown[]
+  accuracy: Record<string, AccuracyEntry>
+  recent_validations: Validation[]
   macro_history: MacroSnapshot[]
 }
 
