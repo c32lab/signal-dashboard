@@ -13,6 +13,8 @@ import {
 } from 'recharts'
 import { usePerformance, useAccuracyTrend, useSignalQuality } from '../hooks/useApi'
 import type { PerformanceSymbol, AccuracyTrendItem, SignalQualitySymbol } from '../types'
+import { validatePercent, validatePnL } from '../utils/dataValidation'
+import DataWarning from '../components/DataWarning'
 
 const SYMBOL_COLORS: Record<string, string> = {
   BTCUSDT: '#60a5fa',
@@ -114,25 +116,32 @@ function AccuracyLeaderboard({ data }: { data: PerformanceSymbol[] }) {
             </tr>
           </thead>
           <tbody>
-            {sorted.map((row) => (
-              <tr key={row.symbol} className="border-b border-gray-800/50">
-                <td className="py-1.5 px-3 font-semibold text-gray-200">
-                  {row.symbol.replace('USDT', '')}
-                </td>
-                <td
-                  className="py-1.5 px-3 text-right font-mono font-bold"
-                  style={{ color: accuracyColor(row.accuracy_pct) }}
-                >
-                  {row.accuracy_pct.toFixed(1)}%
-                </td>
-                <td className="py-1.5 px-3 text-right text-gray-400">
-                  {row.correct} / {row.total}
-                </td>
-                <td className={`py-1.5 px-3 text-right font-mono ${pnlColor(row.avg_pnl_pct)}`}>
-                  {pnlStr(row.avg_pnl_pct)}
-                </td>
-              </tr>
-            ))}
+            {sorted.map((row) => {
+              const accVal = validatePercent(row.accuracy_pct, 'Accuracy')
+              const pnlVal = row.avg_pnl_pct != null ? validatePnL(row.avg_pnl_pct) : { valid: true }
+              const hasAnomaly = !accVal.valid || !pnlVal.valid
+              return (
+                <tr key={row.symbol} className={`border-b border-gray-800/50 ${hasAnomaly ? 'bg-red-900/20' : ''}`}>
+                  <td className="py-1.5 px-3 font-semibold text-gray-200">
+                    {row.symbol.replace('USDT', '')}
+                  </td>
+                  <td
+                    className="py-1.5 px-3 text-right font-mono font-bold"
+                    style={{ color: accuracyColor(row.accuracy_pct) }}
+                  >
+                    {row.accuracy_pct.toFixed(1)}%
+                    {!accVal.valid && <DataWarning message={accVal.warning!} />}
+                  </td>
+                  <td className="py-1.5 px-3 text-right text-gray-400">
+                    {row.correct} / {row.total}
+                  </td>
+                  <td className={`py-1.5 px-3 text-right font-mono ${pnlColor(row.avg_pnl_pct)}`}>
+                    {pnlStr(row.avg_pnl_pct)}
+                    {!pnlVal.valid && <DataWarning message={pnlVal.warning!} />}
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
@@ -293,10 +302,13 @@ function SignalQualityTable({
               data.map((row) => {
                 const isBest = bestPnl !== null && row.best_pnl === bestPnl
                 const isWorst = worstPnl !== null && row.worst_pnl === worstPnl
+                const accVal = validatePercent(row.accuracy_pct, 'Accuracy')
+                const avgPnlVal = row.avg_pnl_pct != null ? validatePnL(row.avg_pnl_pct) : { valid: true }
+                const hasAnomaly = !accVal.valid || !avgPnlVal.valid
                 return (
                   <tr
                     key={row.symbol}
-                    className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors"
+                    className={`border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors ${hasAnomaly ? 'bg-red-900/20' : ''}`}
                   >
                     <td className="py-2 px-3 font-semibold text-gray-200">
                       {row.symbol.replace('USDT', '')}
@@ -308,9 +320,11 @@ function SignalQualityTable({
                       style={{ color: accuracyColor(row.accuracy_pct) }}
                     >
                       {row.accuracy_pct.toFixed(1)}%
+                      {!accVal.valid && <DataWarning message={accVal.warning!} />}
                     </td>
                     <td className={`py-2 px-3 text-right font-mono ${pnlColor(row.avg_pnl_pct)}`}>
                       {pnlStr(row.avg_pnl_pct)}
+                      {!avgPnlVal.valid && <DataWarning message={avgPnlVal.warning!} />}
                     </td>
                     <td
                       className={`py-2 px-3 text-right font-mono font-bold ${

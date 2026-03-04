@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react'
 import type { Decision } from '../types'
 import { useDecisions } from '../hooks/useApi'
+import { validatePrice, validateConfidence } from '../utils/dataValidation'
+import DataWarning from './DataWarning'
 
 const PAGE_SIZE = 20
 const SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT', 'AVAXUSDT', 'LINKUSDT']
@@ -59,10 +61,32 @@ function DecisionRow({ d }: { d: Decision }) {
       </td>
       <td className="px-3 py-2 text-xs text-gray-300">{d.action}</td>
       <td className="px-3 py-2 text-xs text-gray-300 text-right font-mono">
-        {typeof d.price_at_decision === 'number' ? d.price_at_decision.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}
+        {typeof d.price_at_decision === 'number' ? (
+          <>
+            {d.price_at_decision.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {(() => {
+              const v = validatePrice(d.price_at_decision, d.symbol)
+              return v.valid ? null : <DataWarning message={v.warning!} />
+            })()}
+          </>
+        ) : '—'}
       </td>
       <td className="px-3 py-2 text-xs text-gray-300 text-right">
-        {Math.round(d.confidence * 100)}%
+        {(() => {
+          const confV = validateConfidence(d.confidence)
+          const zeroConf = d.confidence === 0 && d.action !== 'HOLD'
+          const warn = !confV.valid
+            ? confV.warning!
+            : zeroConf
+            ? `Confidence=0 但 action=${d.action}`
+            : undefined
+          return (
+            <>
+              {Math.round(d.confidence * 100)}%
+              {warn && <DataWarning message={warn} />}
+            </>
+          )
+        })()}
       </td>
       <td className="px-3 py-2 text-xs text-gray-400 text-right">
         {typeof d.combined_score === 'number' ? d.combined_score.toFixed(3) : '—'}
