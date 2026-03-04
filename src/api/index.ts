@@ -5,11 +5,12 @@ import type {
   Signal,
   Overview,
   HealthResponse,
-  Performance,
+  PerformanceResponse,
   ConfidenceData,
-  SignalQuality,
+  SignalQualityResponse,
   BacktestData,
   AccuracyTrendItem,
+  AccuracyResponse,
 } from '../types'
 
 const BASE_URL = ''
@@ -47,16 +48,19 @@ export const api = {
     fetcher<{ signals: Signal[] }>(`${BASE_URL}/api/signals/latest`).then(r => r.signals),
 
   performance: () =>
-    fetcher<Performance>(`${BASE_URL}/api/performance`),
+    fetcher<PerformanceResponse>(`${BASE_URL}/api/performance`),
 
   confidence: () =>
     fetcher<ConfidenceData>(`${BASE_URL}/api/confidence`),
 
   signalQuality: (hours = 6) =>
-    fetcher<SignalQuality>(`${BASE_URL}/api/signal_quality?hours=${hours}`),
+    fetcher<SignalQualityResponse>(`${BASE_URL}/api/signal_quality?hours=${hours}`),
 
   accuracyTrend: (hours = 24) =>
     fetcher<AccuracyTrendItem[]>(`${BASE_URL}/api/accuracy/trend?hours=${hours}`),
+
+  accuracy: () =>
+    fetcher<AccuracyResponse>(`${BASE_URL}/api/accuracy`),
 
   backtest: () =>
     fetcher<BacktestData>(`${BASE_URL}/api/backtest`),

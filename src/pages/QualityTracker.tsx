@@ -11,19 +11,26 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
-import { usePerformance, useAccuracyTrend, useSignalQuality } from '../hooks/useApi'
-import type { PerformanceSymbol, AccuracyTrendItem, SignalQualitySymbol } from '../types'
+import { usePerformance, useAccuracyTrend, useSignalQuality, useAccuracy } from '../hooks/useApi'
+import type {
+  PerformanceSymbol,
+  PerformanceResponse,
+  AccuracyTrendItem,
+  SignalQualitySymbol,
+  SignalQualityResponse,
+  AccuracyResponse,
+} from '../types'
 import { validatePercent, validatePnL } from '../utils/dataValidation'
 import DataWarning from '../components/DataWarning'
 
 const SYMBOL_COLORS: Record<string, string> = {
-  BTCUSDT: '#60a5fa',
-  ETHUSDT: '#a78bfa',
-  SOLUSDT: '#22d3ee',
-  BNBUSDT: '#fbbf24',
-  XRPUSDT: '#34d399',
-  AVAXUSDT: '#f87171',
-  LINKUSDT: '#f472b6',
+  'BTC/USDT': '#60a5fa',
+  'ETH/USDT': '#a78bfa',
+  'SOL/USDT': '#22d3ee',
+  'BNB/USDT': '#fbbf24',
+  'XRP/USDT': '#34d399',
+  'AVAX/USDT': '#f87171',
+  'LINK/USDT': '#f472b6',
 }
 
 function accuracyColor(pct: number) {
@@ -62,6 +69,77 @@ const TOOLTIP_STYLE = {
   itemStyle: { color: '#e5e7eb' },
 }
 
+// ── Overall Summary Card ──────────────────────────────────────────────────────
+
+function OverallSummary({ overall }: { overall: PerformanceResponse['overall'] }) {
+  return (
+    <section className="bg-gray-900 rounded-xl border border-gray-800 p-4">
+      <h2 className="text-sm font-semibold text-gray-200 mb-4">Overall Performance</h2>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="text-center">
+          <p className="text-xs text-gray-500 mb-1">Overall Accuracy</p>
+          <p
+            className="text-3xl font-bold font-mono"
+            style={{ color: accuracyColor(overall.accuracy_pct) }}
+          >
+            {overall.accuracy_pct.toFixed(2)}%
+          </p>
+        </div>
+        <div className="text-center">
+          <p className="text-xs text-gray-500 mb-1">Avg PnL</p>
+          <p className={`text-3xl font-bold font-mono ${pnlColor(overall.avg_pnl_pct)}`}>
+            {pnlStr(overall.avg_pnl_pct)}
+          </p>
+        </div>
+        <div className="text-center">
+          <p className="text-xs text-gray-500 mb-1">Total Trades</p>
+          <p className="text-2xl font-bold text-gray-200">{overall.total}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-xs text-gray-500 mb-1">Correct</p>
+          <p className="text-2xl font-bold text-gray-200">{overall.correct}</p>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// ── Accuracy Overview Card ────────────────────────────────────────────────────
+
+function AccuracyOverview({ data }: { data: AccuracyResponse }) {
+  const acc1h = (data.accuracy['1h'] * 100).toFixed(1)
+  const acc4h = (data.accuracy['4h'] * 100).toFixed(1)
+  return (
+    <section className="bg-gray-900 rounded-xl border border-gray-800 p-4">
+      <h2 className="text-sm font-semibold text-gray-200 mb-4">Accuracy Overview</h2>
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="text-center">
+          <p className="text-xs text-gray-500 mb-1">1h Accuracy</p>
+          <p
+            className="text-3xl font-bold font-mono"
+            style={{ color: accuracyColor(Number(acc1h)) }}
+          >
+            {acc1h}%
+          </p>
+        </div>
+        <div className="text-center">
+          <p className="text-xs text-gray-500 mb-1">4h Accuracy</p>
+          <p
+            className="text-3xl font-bold font-mono"
+            style={{ color: accuracyColor(Number(acc4h)) }}
+          >
+            {acc4h}%
+          </p>
+        </div>
+      </div>
+      <div className="flex justify-between text-xs text-gray-500 border-t border-gray-800 pt-3">
+        <span>Period: {data.period_hours}h</span>
+        <span>Actionable signals: {data.total_actionable}</span>
+      </div>
+    </section>
+  )
+}
+
 // ── Section A: Accuracy Leaderboard ──────────────────────────────────────────
 
 function AccuracyLeaderboard({ data }: { data: PerformanceSymbol[] }) {
@@ -87,7 +165,7 @@ function AccuracyLeaderboard({ data }: { data: PerformanceSymbol[] }) {
           <YAxis
             type="category"
             dataKey="symbol"
-            tickFormatter={(v: string) => v.replace('USDT', '')}
+            tickFormatter={(v: string) => v.replace('/USDT', '')}
             tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 600 }}
             tickLine={false}
             axisLine={false}
@@ -123,7 +201,7 @@ function AccuracyLeaderboard({ data }: { data: PerformanceSymbol[] }) {
               return (
                 <tr key={row.symbol} className={`border-b border-gray-800/50 ${hasAnomaly ? 'bg-red-900/20' : ''}`}>
                   <td className="py-1.5 px-3 font-semibold text-gray-200">
-                    {row.symbol.replace('USDT', '')}
+                    {row.symbol.replace('/USDT', '')}
                   </td>
                   <td
                     className="py-1.5 px-3 text-right font-mono font-bold"
@@ -168,7 +246,7 @@ function AccuracyTrend({
       const h = formatHour(item.hour)
       if (!map.has(h)) map.set(h, { hour: h })
       const row = map.get(h)!
-      row[item.symbol.replace('USDT', '')] = item.accuracy_pct
+      row[item.symbol.replace('/USDT', '')] = item.accuracy_pct
     }
     return Array.from(map.values())
   }, [data])
@@ -223,12 +301,12 @@ function AccuracyTrend({
               <Line
                 key={sym}
                 type="monotone"
-                dataKey={sym.replace('USDT', '')}
+                dataKey={sym.replace('/USDT', '')}
                 stroke={SYMBOL_COLORS[sym] ?? '#9ca3af'}
                 strokeWidth={2}
                 dot={false}
                 connectNulls
-                name={sym.replace('USDT', '')}
+                name={sym.replace('/USDT', '')}
               />
             ))}
           </LineChart>
@@ -238,7 +316,7 @@ function AccuracyTrend({
   )
 }
 
-// ── Section C: Signal Quality Table ──────────────────────────────────────────
+// ── Section C: Signal Quality Table ──────────────────────────────────────���───
 
 function SignalQualityTable({
   data,
@@ -311,7 +389,7 @@ function SignalQualityTable({
                     className={`border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors ${hasAnomaly ? 'bg-red-900/20' : ''}`}
                   >
                     <td className="py-2 px-3 font-semibold text-gray-200">
-                      {row.symbol.replace('USDT', '')}
+                      {row.symbol.replace('/USDT', '')}
                     </td>
                     <td className="py-2 px-3 text-right text-gray-400">{row.total_signals}</td>
                     <td className="py-2 px-3 text-right text-gray-400">{row.correct}</td>
@@ -382,15 +460,39 @@ export default function QualityTracker() {
   const perfRes = usePerformance()
   const trendRes = useAccuracyTrend(trendHours)
   const qualityRes = useSignalQuality(qualityHours)
+  const accuracyRes = useAccuracy()
 
-  const perfData = (perfRes.data as { by_symbol?: PerformanceSymbol[] } | undefined)?.by_symbol
+  const perfData = (perfRes.data as PerformanceResponse | undefined)?.by_symbol
+  const perfOverall = (perfRes.data as PerformanceResponse | undefined)?.overall
   const trendData = trendRes.data as AccuracyTrendItem[] | undefined
-  const qualityData = (
-    qualityRes.data as { by_symbol?: SignalQualitySymbol[] } | undefined
-  )?.by_symbol
+  const qualityData = (qualityRes.data as SignalQualityResponse | undefined)?.by_symbol
+  const accuracyData = accuracyRes.data as AccuracyResponse | undefined
 
   return (
     <div className="p-6 space-y-6">
+      {/* Top row: Overall Summary + Accuracy Overview */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {perfRes.isLoading ? (
+          <SectionSkeleton text="Loading overall performance…" />
+        ) : perfRes.error ? (
+          <SectionError message={`Performance: ${perfRes.error.message}`} />
+        ) : perfOverall ? (
+          <OverallSummary overall={perfOverall} />
+        ) : (
+          <SectionSkeleton text="No overall data" />
+        )}
+
+        {accuracyRes.isLoading ? (
+          <SectionSkeleton text="Loading accuracy overview…" />
+        ) : accuracyRes.error ? (
+          <SectionError message={`Accuracy: ${accuracyRes.error.message}`} />
+        ) : accuracyData ? (
+          <AccuracyOverview data={accuracyData} />
+        ) : (
+          <SectionSkeleton text="No accuracy data" />
+        )}
+      </div>
+
       {/* A: Leaderboard */}
       {perfRes.isLoading ? (
         <SectionSkeleton text="Loading leaderboard…" />

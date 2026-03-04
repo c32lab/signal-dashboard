@@ -13,15 +13,15 @@ export function validatePercent(value: number, fieldName: string): ValidationRes
   return { valid: true }
 }
 
-// Price sanity by symbol (BTCUSDT format)
+// Price sanity by symbol (BTC/USDT format)
 const PRICE_RANGES: Record<string, [number, number]> = {
-  BTCUSDT: [10000, 200000],
-  ETHUSDT: [500, 10000],
-  SOLUSDT: [10, 500],
-  BNBUSDT: [100, 2000],
-  XRPUSDT: [0.1, 10],
-  AVAXUSDT: [2, 200],
-  LINKUSDT: [2, 100],
+  'BTC/USDT': [10000, 200000],
+  'ETH/USDT': [500, 10000],
+  'SOL/USDT': [10, 500],
+  'BNB/USDT': [100, 2000],
+  'XRP/USDT': [0.1, 10],
+  'AVAX/USDT': [2, 200],
+  'LINK/USDT': [2, 100],
 }
 
 export function validatePrice(price: number, symbol: string): ValidationResult {

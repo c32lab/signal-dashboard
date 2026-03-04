@@ -85,9 +85,21 @@ export interface SignalQualityResponse {
   by_symbol: SignalQualitySymbol[]
 }
 
-export type Performance = Record<string, unknown>
+export interface AccuracyResponse {
+  period_hours: number
+  total_actionable: number
+  accuracy: {
+    '1h': number
+    '4h': number
+  }
+  by_symbol: Record<string, {
+    total: number
+    accuracy_1h: number
+    accuracy_4h: number
+  }>
+}
+
 export type ConfidenceData = Record<string, unknown>
-export type SignalQuality = Record<string, unknown>
 export type BacktestData = Record<string, unknown>
 
 export interface DecisionFilters {

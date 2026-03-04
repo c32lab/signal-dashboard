@@ -37,6 +37,10 @@ export function useAccuracyTrend(hours = 24) {
   return useSWR(['accuracy/trend', hours], () => api.accuracyTrend(hours), { refreshInterval: REFRESH_INTERVAL })
 }
 
+export function useAccuracy() {
+  return useSWR('accuracy', () => api.accuracy(), { refreshInterval: REFRESH_INTERVAL })
+}
+
 export function useBacktest() {
   return useSWR('backtest', () => api.backtest(), { refreshInterval: REFRESH_INTERVAL })
 }
