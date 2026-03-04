@@ -113,4 +113,6 @@ export interface DecisionFilters {
   type?: string
   action?: string
   direction?: string
+  from?: string
+  to?: string
 }

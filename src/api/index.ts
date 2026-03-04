@@ -37,6 +37,8 @@ export const api = {
     if (params?.type) qs.set('type', params.type)
     if (params?.action) qs.set('action', params.action)
     if (params?.direction) qs.set('direction', params.direction)
+    if (params?.from) qs.set('from', params.from)
+    if (params?.to) qs.set('to', params.to)
     const query = qs.toString()
     return fetcher<DecisionsResponse>(
       `${BASE_URL}/api/decisions${query ? `?${query}` : ''}`
