@@ -79,16 +79,20 @@ export interface AccuracyTrendItem {
 
 export interface SignalQualitySymbol {
   symbol: string
-  total_signals: number
-  correct: number
-  accuracy_pct: number
-  avg_pnl_pct: number
-  best_pnl: number
-  worst_pnl: number
+  long: number
+  short: number
+  hold: number
 }
 
 export interface SignalQualityResponse {
-  by_symbol: SignalQualitySymbol[]
+  window_hours?: number
+  total_decisions?: number
+  actionable?: number
+  actionable_rate_pct?: number
+  by_type?: Record<string, number>
+  by_symbol: Record<string, { long: number; short: number; hold: number }>
+  avg_confidence?: number
+  recent_signals?: unknown[]
 }
 
 export interface AccuracyWindowData {
@@ -127,7 +131,7 @@ export interface BiasResponse {
   timestamp: string
   window_hours: number
   collectors: Record<string, BiasCollector>
-  overall: {
+  overall?: {
     long_pct: number
     short_pct: number
     neutral_pct: number

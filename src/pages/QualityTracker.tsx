@@ -347,7 +347,7 @@ function AccuracyTrend({
   )
 }
 
-// ── Section C: Signal Quality Table ──────────────────────────────────────���───
+// ── Section C: Signal Quality Table ──────────────────────────────────────────
 
 function SignalQualityTable({
   data,
@@ -358,9 +358,6 @@ function SignalQualityTable({
   hours: number
   onHoursChange: (h: number) => void
 }) {
-  const bestPnl = data.length ? Math.max(...data.map((d) => d.best_pnl ?? -Infinity)) : null
-  const worstPnl = data.length ? Math.min(...data.map((d) => d.worst_pnl ?? Infinity)) : null
-
   return (
     <section className="bg-gray-900 rounded-xl border border-gray-800 p-4">
       <div className="flex items-center justify-between mb-4">
@@ -386,72 +383,43 @@ function SignalQualityTable({
         <table className="w-full text-xs">
           <thead>
             <tr className="text-gray-500 border-b border-gray-800">
-              {['Symbol', 'Signals', 'Correct', 'Accuracy', 'Avg PnL', 'Best PnL', 'Worst PnL'].map(
-                (h) => (
-                  <th
-                    key={h}
-                    className={`py-2 px-3 font-semibold uppercase tracking-wider ${
-                      h === 'Symbol' ? 'text-left' : 'text-right'
-                    }`}
-                  >
-                    {h}
-                  </th>
-                )
-              )}
+              {['Symbol', 'Long', 'Short', 'Hold', 'Total', 'Actionable Rate'].map((h) => (
+                <th
+                  key={h}
+                  className={`py-2 px-3 font-semibold uppercase tracking-wider ${
+                    h === 'Symbol' ? 'text-left' : 'text-right'
+                  }`}
+                >
+                  {h}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-8 text-center text-gray-600">
+                <td colSpan={6} className="py-8 text-center text-gray-600">
                   No data
                 </td>
               </tr>
             ) : (
               data.map((row) => {
-                const isBest = bestPnl !== null && row.best_pnl === bestPnl
-                const isWorst = worstPnl !== null && row.worst_pnl === worstPnl
-                const accVal = validatePercent(row.accuracy_pct, 'Accuracy')
-                const avgPnlVal = row.avg_pnl_pct != null ? validatePnL(row.avg_pnl_pct) : { valid: true }
-                const hasAnomaly = !accVal.valid || !avgPnlVal.valid
+                const total = row.long + row.short + row.hold
+                const actionableRate = total ? ((row.long + row.short) / total) * 100 : 0
                 return (
                   <tr
                     key={row.symbol}
-                    className={`border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors ${hasAnomaly ? 'bg-red-900/20' : ''}`}
+                    className="border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors"
                   >
                     <td className="py-2 px-3 font-semibold text-gray-200">
                       {row.symbol.replace('/USDT', '')}
                     </td>
-                    <td className="py-2 px-3 text-right text-gray-400">{row.total_signals}</td>
-                    <td className="py-2 px-3 text-right text-gray-400">{row.correct}</td>
-                    <td
-                      className="py-2 px-3 text-right font-mono font-bold"
-                      style={{ color: accuracyColor(row.accuracy_pct) }}
-                    >
-                      {row.accuracy_pct.toFixed(1)}%
-                      {!accVal.valid && <DataWarning message={accVal.warning!} />}
-                    </td>
-                    <td className={`py-2 px-3 text-right font-mono ${pnlColor(row.avg_pnl_pct)}`}>
-                      {pnlStr(row.avg_pnl_pct)}
-                      {!avgPnlVal.valid && <DataWarning message={avgPnlVal.warning!} />}
-                    </td>
-                    <td
-                      className={`py-2 px-3 text-right font-mono font-bold ${
-                        isBest
-                          ? 'text-green-300 bg-green-900/20'
-                          : pnlColor(row.best_pnl)
-                      }`}
-                    >
-                      {pnlStr(row.best_pnl)}
-                    </td>
-                    <td
-                      className={`py-2 px-3 text-right font-mono font-bold ${
-                        isWorst
-                          ? 'text-red-300 bg-red-900/20'
-                          : pnlColor(row.worst_pnl)
-                      }`}
-                    >
-                      {pnlStr(row.worst_pnl)}
+                    <td className="py-2 px-3 text-right text-green-400">{row.long}</td>
+                    <td className="py-2 px-3 text-right text-red-400">{row.short}</td>
+                    <td className="py-2 px-3 text-right text-gray-400">{row.hold}</td>
+                    <td className="py-2 px-3 text-right text-gray-300">{total}</td>
+                    <td className="py-2 px-3 text-right font-mono text-gray-300">
+                      {actionableRate.toFixed(1)}%
                     </td>
                   </tr>
                 )
@@ -502,7 +470,16 @@ export default function QualityTracker() {
   const perfData = (perfRes.data as PerformanceResponse | undefined)?.by_symbol
   const perfOverall = (perfRes.data as PerformanceResponse | undefined)?.overall
   const trendData = trendRes.data as AccuracyTrendItem[] | undefined
-  const qualityData = (qualityRes.data as SignalQualityResponse | undefined)?.by_symbol
+  const qualityData = useMemo<SignalQualitySymbol[]>(() => {
+    const bySymbol = (qualityRes.data as SignalQualityResponse | undefined)?.by_symbol
+    if (!bySymbol) return []
+    return Object.entries(bySymbol).map(([symbol, counts]) => ({
+      symbol,
+      long: counts.long,
+      short: counts.short,
+      hold: counts.hold,
+    }))
+  }, [qualityRes.data])
   const accuracyData = accuracyRes.data as AccuracyResponse | undefined
 
   return (
