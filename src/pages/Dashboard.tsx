@@ -74,7 +74,19 @@ function SourceBias({ data }: { data: BiasResponse }) {
     bias_score: c.bias_score,
   })).sort((a, b) => b.bias_score - a.bias_score)
 
-  const overall = data.overall
+  const overall = data.overall ?? (() => {
+    const cols = Object.values(data.collectors ?? {})
+    const total = cols.reduce((s, c) => s + c.total_signals, 0)
+    const long_count = cols.reduce((s, c) => s + c.long_count, 0)
+    const short_count = cols.reduce((s, c) => s + c.short_count, 0)
+    const neutral_count = cols.reduce((s, c) => s + c.neutral_count, 0)
+    return {
+      long_pct: total ? (long_count / total) * 100 : 0,
+      short_pct: total ? (short_count / total) * 100 : 0,
+      neutral_pct: total ? (neutral_count / total) * 100 : 0,
+      bias_score: total ? (long_count - short_count) / total : 0,
+    }
+  })()
 
   return (
     <section className="bg-gray-900 rounded-xl border border-gray-800 p-4">

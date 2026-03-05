@@ -5,6 +5,9 @@ import type {
   Trend,
   IndustryChain,
   MacroSnapshot,
+  OpenInterestPoint,
+  LongShortRatioPoint,
+  TakerVolumePoint,
 } from '../types/predict'
 
 const BASE = '/predict-api'
@@ -26,7 +29,8 @@ export const predictApi = {
     const qs = new URLSearchParams()
     if (params?.status) qs.set('status', params.status)
     if (params?.limit != null) qs.set('limit', String(params.limit))
-    return fetcher<Prediction[]>(`${BASE}/api/predictions?${qs}`)
+    return fetcher<{ predictions: Prediction[] }>(`${BASE}/api/predictions?${qs}`)
+      .then(r => r.predictions)
   },
 
   events: (params?: { limit?: number; pattern?: string }) => {
@@ -57,4 +61,14 @@ export const predictApi = {
 
   eventChainLinks: (event_id: number) =>
     fetcher<unknown>(`${BASE}/api/event-chain-links?event_id=${event_id}`),
+
+  // Derivatives data from data-eng API (via /data-api proxy → localhost:8081)
+  openInterest: (symbol = 'BTC/USDT', limit = 24) =>
+    fetcher<OpenInterestPoint[]>(`/data-api/api/open-interest?symbol=${encodeURIComponent(symbol)}&limit=${limit}`),
+
+  longShortRatio: (symbol = 'BTC/USDT', limit = 24) =>
+    fetcher<LongShortRatioPoint[]>(`/data-api/api/long-short-ratio?symbol=${encodeURIComponent(symbol)}&limit=${limit}`),
+
+  takerVolume: (symbol = 'BTC/USDT', limit = 24) =>
+    fetcher<TakerVolumePoint[]>(`/data-api/api/taker-volume?symbol=${encodeURIComponent(symbol)}&limit=${limit}`),
 }
