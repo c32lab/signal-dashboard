@@ -67,7 +67,7 @@ function biasColor(score: number): string {
 }
 
 function SourceBias({ data }: { data: BiasResponse }) {
-  const entries = Object.entries(data.collectors).map(([name, c]) => ({
+  const entries = Object.entries(data.collectors ?? {}).map(([name, c]) => ({
     name,
     bias_score: c.bias_score,
   })).sort((a, b) => b.bias_score - a.bias_score)
@@ -76,17 +76,17 @@ function SourceBias({ data }: { data: BiasResponse }) {
 
   return (
     <section className="bg-gray-900 rounded-xl border border-gray-800 p-4">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-start justify-between mb-3 gap-2">
         <h2 className="text-sm font-semibold text-gray-200">Source Bias</h2>
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-gray-500">Overall bias:</span>
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="text-gray-500">Overall:</span>
           <span
             className="font-mono font-bold"
             style={{ color: biasColor(overall.bias_score) }}
           >
             {overall.bias_score >= 0 ? '+' : ''}{overall.bias_score.toFixed(3)}
           </span>
-          <span className="text-gray-600">
+          <span className="text-gray-600 hidden sm:inline">
             ({overall.long_pct.toFixed(1)}% L / {overall.short_pct.toFixed(1)}% S / {overall.neutral_pct.toFixed(1)}% N)
           </span>
         </div>
@@ -144,25 +144,25 @@ export default function Dashboard() {
     if (data) setLastUpdated(new Date())
   }, [data])
 
-  const biasData = biasRes.data as BiasResponse | undefined
-  const collectorData = collectorRes.data as CollectorHealthResponse | undefined
+  const biasData = biasRes.data
+  const collectorData = collectorRes.data
 
   return (
-    <div className="flex flex-col gap-8 py-6">
-      <div className="px-6">
+    <div className="flex flex-col gap-4 sm:gap-8 py-2 sm:py-6">
+      <div className="px-2 sm:px-6">
         <LastUpdated timestamp={lastUpdated} />
       </div>
       <KPIPanel />
       {collectorData && (
-        <div className="px-6">
+        <div className="px-2 sm:px-6">
           <CollectorStatus data={collectorData} />
         </div>
       )}
-      <div className="px-6">
+      <div className="px-2 sm:px-6">
         <CombinerWeights />
       </div>
       {biasData && (
-        <div className="px-6">
+        <div className="px-2 sm:px-6">
           <SourceBias data={biasData} />
         </div>
       )}
