@@ -110,7 +110,7 @@ function ScoreTrend() {
           />
           <Tooltip
             {...TOOLTIP_STYLE}
-            formatter={(v: number) => [v.toFixed(1), 'Score']}
+            formatter={(v: number | undefined) => [(v ?? 0).toFixed(1), 'Score']}
           />
           <ReferenceLine
             y={target_score}
