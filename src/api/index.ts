@@ -12,6 +12,8 @@ import type {
   AccuracyTrendItem,
   AccuracyResponse,
   CombinerWeightsResponse,
+  BiasResponse,
+  CollectorHealthResponse,
 } from '../types'
 
 const BASE_URL = ''
@@ -71,4 +73,10 @@ export const api = {
 
   combinerWeights: () =>
     fetcher<CombinerWeightsResponse>(`${BASE_URL}/api/combiner_weights`),
+
+  bias: () =>
+    fetcher<BiasResponse>(`${BASE_URL}/api/bias`),
+
+  collectorHealth: () =>
+    fetcher<CollectorHealthResponse>(`${BASE_URL}/api/collector-health`),
 }

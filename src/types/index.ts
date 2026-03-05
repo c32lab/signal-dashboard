@@ -43,6 +43,12 @@ export interface Overview {
 
 export interface HealthResponse {
   status: string
+  active_symbols?: string[]
+  disabled_symbols?: string[]
+  decision_rate_per_hour?: number
+  duplicate_ratio?: number
+  accuracy_trend?: AccuracyTrendItem[]
+  bias_alerts?: unknown[]
 }
 
 export interface PerformanceSymbol {
@@ -85,8 +91,7 @@ export interface SignalQualityResponse {
   by_symbol: SignalQualitySymbol[]
 }
 
-export interface AccuracyResponse {
-  period_hours: number
+export interface AccuracyWindowData {
   total_actionable: number
   accuracy: {
     '1h_pct': number
@@ -97,6 +102,49 @@ export interface AccuracyResponse {
     accuracy_1h_pct: number
     accuracy_4h_pct: number
   }>
+  dampened_symbols: string[]
+}
+
+export interface AccuracyResponse {
+  timestamp: string
+  windows: {
+    '6h': AccuracyWindowData
+    '12h': AccuracyWindowData
+    '24h': AccuracyWindowData
+  }
+  _meta?: Record<string, string>
+}
+
+export interface BiasCollector {
+  total_signals: number
+  long_count: number
+  short_count: number
+  neutral_count: number
+  bias_score: number
+}
+
+export interface BiasResponse {
+  timestamp: string
+  window_hours: number
+  collectors: Record<string, BiasCollector>
+  overall: {
+    long_pct: number
+    short_pct: number
+    neutral_pct: number
+    bias_score: number
+  }
+}
+
+export interface CollectorHealthItem {
+  name: string
+  error_count: number
+  is_disabled: boolean
+  disabled_remaining_secs: number
+  is_degraded: boolean
+}
+
+export interface CollectorHealthResponse {
+  collectors: CollectorHealthItem[]
 }
 
 export interface CombinerWeightsResponse {

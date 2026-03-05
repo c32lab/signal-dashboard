@@ -48,3 +48,11 @@ export function useBacktest() {
 export function useCombinerWeights() {
   return useSWR('combiner_weights', () => api.combinerWeights(), { refreshInterval: REFRESH_INTERVAL })
 }
+
+export function useBias() {
+  return useSWR('bias', () => api.bias(), { refreshInterval: REFRESH_INTERVAL })
+}
+
+export function useCollectorHealth() {
+  return useSWR('collector-health', () => api.collectorHealth(), { refreshInterval: REFRESH_INTERVAL })
+}
