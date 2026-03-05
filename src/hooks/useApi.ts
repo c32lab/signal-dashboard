@@ -58,10 +58,8 @@ export function useCollectorHealth() {
 }
 
 export function useRecentDecisions(minutes: number) {
-  // Round to nearest minute for a stable SWR cache key
-  const minuteKey = Math.floor(Date.now() / 60_000)
   return useSWR(
-    ['recent-decisions', minutes, minuteKey],
+    ['recent-decisions', minutes],
     () => {
       const from = new Date(Date.now() - minutes * 60_000).toISOString()
       return api.decisions({ limit: 50, from })
