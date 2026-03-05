@@ -11,6 +11,7 @@ import {
 } from 'recharts'
 import { usePrediction, useTrends, useIndustryChain } from '../hooks/usePredictApi'
 import { predictApi } from '../api/predict'
+import SectionErrorBoundary from '../components/SectionErrorBoundary'
 import type {
   Prediction,
   Event,
@@ -847,6 +848,7 @@ export default function PredictDashboard() {
   return (
     <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
       {/* Macro Score Cards */}
+      <SectionErrorBoundary title="Macro Overview">
       <section>
         <h2 className="text-xs text-gray-500 uppercase tracking-widest mb-3">Macro Overview</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -876,8 +878,10 @@ export default function PredictDashboard() {
           />
         </div>
       </section>
+      </SectionErrorBoundary>
 
       {/* Active Predictions */}
+      <SectionErrorBoundary title="Active Predictions">
       <section className="bg-gray-900 rounded-xl border border-gray-800">
         <div className="px-4 py-3 border-b border-gray-800">
           <h2 className="text-sm font-semibold text-gray-200">
@@ -893,8 +897,10 @@ export default function PredictDashboard() {
           )}
         </div>
       </section>
+      </SectionErrorBoundary>
 
       {/* Event KB */}
+      <SectionErrorBoundary title="Event Library">
       <section className="bg-gray-900 rounded-xl border border-gray-800">
         <div className="px-4 py-3 border-b border-gray-800">
           <h2 className="text-sm font-semibold text-gray-200">
@@ -910,8 +916,10 @@ export default function PredictDashboard() {
           )}
         </div>
       </section>
+      </SectionErrorBoundary>
 
       {/* Patterns + Chart */}
+      <SectionErrorBoundary title="Patterns & Macro Chart">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Patterns */}
         <section>
@@ -937,8 +945,10 @@ export default function PredictDashboard() {
           )}
         </section>
       </div>
+      </SectionErrorBoundary>
 
       {/* ── Section A: Prediction History ─��───────────────────────────────── */}
+      <SectionErrorBoundary title="Prediction History">
       <section className="bg-gray-900 rounded-xl border border-gray-800">
         <div className="px-4 py-3 border-b border-gray-800">
           <h2 className="text-sm font-semibold text-gray-200">
@@ -958,8 +968,10 @@ export default function PredictDashboard() {
           )}
         </div>
       </section>
+      </SectionErrorBoundary>
 
       {/* ── Section B: Trend Discovery ────────────────────────────────────── */}
+      <SectionErrorBoundary title="Trend Discovery">
       <section className="bg-gray-900 rounded-xl border border-gray-800">
         <div className="px-4 py-3 border-b border-gray-800">
           <h2 className="text-sm font-semibold text-gray-200">
@@ -977,14 +989,18 @@ export default function PredictDashboard() {
           )}
         </div>
       </section>
+      </SectionErrorBoundary>
 
       {/* ── Sections D+E: Prediction Accuracy + Validations ──────────────── */}
+      <SectionErrorBoundary title="Prediction Accuracy">
       <AccuracyAndValidationsSection
         accuracy={accuracy ?? {}}
         validations={recent_validations ?? []}
       />
+      </SectionErrorBoundary>
 
       {/* ── Section C: Industry Chain Visualization ───────────────────────── */}
+      <SectionErrorBoundary title="Industry Chain">
       <section className="bg-gray-900 rounded-xl border border-gray-800">
         <div className="px-4 py-3 border-b border-gray-800">
           <h2 className="text-sm font-semibold text-gray-200">
@@ -1006,6 +1022,7 @@ export default function PredictDashboard() {
           )}
         </div>
       </section>
+      </SectionErrorBoundary>
     </div>
   )
 }

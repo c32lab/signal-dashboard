@@ -15,6 +15,7 @@ import SignalCards from '../components/SignalCards'
 import CombinerWeights from '../components/CombinerWeights'
 import DecisionTable from '../components/DecisionTable'
 import LastUpdated from '../components/LastUpdated'
+import SectionErrorBoundary from '../components/SectionErrorBoundary'
 import { useOverview, useBias, useCollectorHealth } from '../hooks/useApi'
 import type { BiasResponse, CollectorHealthResponse } from '../types'
 
@@ -154,24 +155,38 @@ export default function Dashboard() {
         <LastUpdated timestamp={lastUpdated} />
       </div>
       <div className="px-2 sm:px-6">
-        <LiveSignalFeed />
+        <SectionErrorBoundary title="Live Signal Feed">
+          <LiveSignalFeed />
+        </SectionErrorBoundary>
       </div>
-      <KPIPanel />
+      <SectionErrorBoundary title="KPI Panel">
+        <KPIPanel />
+      </SectionErrorBoundary>
       {collectorData && (
         <div className="px-2 sm:px-6">
-          <CollectorStatus data={collectorData} />
+          <SectionErrorBoundary title="Collector Status">
+            <CollectorStatus data={collectorData} />
+          </SectionErrorBoundary>
         </div>
       )}
       <div className="px-2 sm:px-6">
-        <CombinerWeights />
+        <SectionErrorBoundary title="Combiner Weights">
+          <CombinerWeights />
+        </SectionErrorBoundary>
       </div>
       {biasData && (
         <div className="px-2 sm:px-6">
-          <SourceBias data={biasData} />
+          <SectionErrorBoundary title="Source Bias">
+            <SourceBias data={biasData} />
+          </SectionErrorBoundary>
         </div>
       )}
-      <SignalCards />
-      <DecisionTable />
+      <SectionErrorBoundary title="Signal Cards">
+        <SignalCards />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary title="Decision History">
+        <DecisionTable />
+      </SectionErrorBoundary>
     </div>
   )
 }

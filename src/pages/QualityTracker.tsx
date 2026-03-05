@@ -24,6 +24,7 @@ import { validatePercent, validatePnL } from '../utils/dataValidation'
 import DataWarning from '../components/DataWarning'
 import LastUpdated from '../components/LastUpdated'
 import CombinerWeights from '../components/CombinerWeights'
+import SectionErrorBoundary from '../components/SectionErrorBoundary'
 
 const SYMBOL_COLORS: Record<string, string> = {
   'BTC/USDT': '#60a5fa',
@@ -514,7 +515,9 @@ export default function QualityTracker() {
         ) : perfRes.error ? (
           <SectionError message={`Performance: ${perfRes.error.message}`} />
         ) : perfOverall ? (
-          <OverallSummary overall={perfOverall} />
+          <SectionErrorBoundary title="Overall Performance">
+            <OverallSummary overall={perfOverall} />
+          </SectionErrorBoundary>
         ) : (
           <SectionSkeleton text="No overall data" />
         )}
@@ -524,7 +527,9 @@ export default function QualityTracker() {
         ) : accuracyRes.error ? (
           <SectionError message={`Accuracy: ${accuracyRes.error.message}`} />
         ) : accuracyData ? (
-          <AccuracyOverview data={accuracyData} />
+          <SectionErrorBoundary title="Accuracy Overview">
+            <AccuracyOverview data={accuracyData} />
+          </SectionErrorBoundary>
         ) : (
           <SectionSkeleton text="No accuracy data" />
         )}
@@ -536,7 +541,9 @@ export default function QualityTracker() {
       ) : perfRes.error ? (
         <SectionError message={`Leaderboard: ${perfRes.error.message}`} />
       ) : perfData?.length ? (
-        <AccuracyLeaderboard data={perfData} />
+        <SectionErrorBoundary title="Accuracy Leaderboard">
+          <AccuracyLeaderboard data={perfData} />
+        </SectionErrorBoundary>
       ) : (
         <SectionSkeleton text="No performance data" />
       )}
@@ -547,11 +554,13 @@ export default function QualityTracker() {
       ) : trendRes.error ? (
         <SectionError message={`Trend: ${trendRes.error.message}`} />
       ) : (
-        <AccuracyTrend
-          data={trendData ?? []}
-          hours={trendHours}
-          onHoursChange={setTrendHours}
-        />
+        <SectionErrorBoundary title="Accuracy Trend">
+          <AccuracyTrend
+            data={trendData ?? []}
+            hours={trendHours}
+            onHoursChange={setTrendHours}
+          />
+        </SectionErrorBoundary>
       )}
 
       {/* C: Signal Quality */}
@@ -560,15 +569,19 @@ export default function QualityTracker() {
       ) : qualityRes.error ? (
         <SectionError message={`Quality: ${qualityRes.error.message}`} />
       ) : (
-        <SignalQualityTable
-          data={qualityData ?? []}
-          hours={qualityHours}
-          onHoursChange={setQualityHours}
-        />
+        <SectionErrorBoundary title="Signal Quality">
+          <SignalQualityTable
+            data={qualityData ?? []}
+            hours={qualityHours}
+            onHoursChange={setQualityHours}
+          />
+        </SectionErrorBoundary>
       )}
 
       {/* D: Combiner Weights */}
-      <CombinerWeights />
+      <SectionErrorBoundary title="Combiner Weights">
+        <CombinerWeights />
+      </SectionErrorBoundary>
     </div>
   )
 }
