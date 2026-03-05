@@ -77,11 +77,11 @@ function OverallSummary({ overall }: { overall: PerformanceResponse['overall'] }
   return (
     <section className="bg-gray-900 rounded-xl border border-gray-800 p-4">
       <h2 className="text-sm font-semibold text-gray-200 mb-4">Overall Performance</h2>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4">
         <div className="text-center">
           <p className="text-xs text-gray-500 mb-1">Overall Accuracy</p>
           <p
-            className="text-3xl font-bold font-mono"
+            className="text-2xl sm:text-3xl font-bold font-mono"
             style={{ color: accuracyColor(overall.accuracy_pct) }}
           >
             {overall.accuracy_pct.toFixed(2)}%
@@ -89,17 +89,17 @@ function OverallSummary({ overall }: { overall: PerformanceResponse['overall'] }
         </div>
         <div className="text-center">
           <p className="text-xs text-gray-500 mb-1">Avg PnL</p>
-          <p className={`text-3xl font-bold font-mono ${pnlColor(overall.avg_pnl_pct)}`}>
+          <p className={`text-2xl sm:text-3xl font-bold font-mono ${pnlColor(overall.avg_pnl_pct)}`}>
             {pnlStr(overall.avg_pnl_pct)}
           </p>
         </div>
         <div className="text-center">
           <p className="text-xs text-gray-500 mb-1">Total Trades</p>
-          <p className="text-2xl font-bold text-gray-200">{overall.total}</p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-200">{overall.total}</p>
         </div>
         <div className="text-center">
           <p className="text-xs text-gray-500 mb-1">Correct</p>
-          <p className="text-2xl font-bold text-gray-200">{overall.correct}</p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-200">{overall.correct}</p>
         </div>
       </div>
     </section>
@@ -135,11 +135,11 @@ function AccuracyOverview({ data }: { data: AccuracyResponse }) {
           ))}
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4">
         <div className="text-center">
           <p className="text-xs text-gray-500 mb-1">1h Accuracy</p>
           <p
-            className="text-3xl font-bold font-mono"
+            className="text-2xl sm:text-3xl font-bold font-mono"
             style={{ color: accuracyColor(Number(acc1h)) }}
           >
             {acc1h}%
@@ -148,7 +148,7 @@ function AccuracyOverview({ data }: { data: AccuracyResponse }) {
         <div className="text-center">
           <p className="text-xs text-gray-500 mb-1">4h Accuracy</p>
           <p
-            className="text-3xl font-bold font-mono"
+            className="text-2xl sm:text-3xl font-bold font-mono"
             style={{ color: accuracyColor(Number(acc4h)) }}
           >
             {acc4h}%
@@ -303,42 +303,44 @@ function AccuracyTrend({
       {pivoted.length === 0 ? (
         <p className="text-center text-gray-600 py-12 text-sm">No trend data</p>
       ) : (
-        <ResponsiveContainer width="100%" height={260}>
-          <LineChart data={pivoted} margin={{ top: 4, right: 16, bottom: 0, left: 0 }}>
-            <XAxis
-              dataKey="hour"
-              tick={{ fill: '#6b7280', fontSize: 10 }}
-              tickLine={false}
-              axisLine={false}
-              interval="preserveStartEnd"
-            />
-            <YAxis
-              domain={[0, 100]}
-              tickFormatter={(v) => `${v}%`}
-              tick={{ fill: '#6b7280', fontSize: 11 }}
-              tickLine={false}
-              axisLine={false}
-              width={36}
-            />
-            <Tooltip
-              formatter={(value: number | undefined, name?: string) => [`${Number(value ?? 0).toFixed(1)}%`, name ?? '']}
-              {...TOOLTIP_STYLE}
-            />
-            <Legend wrapperStyle={{ fontSize: 12, color: '#9ca3af' }} />
-            {symbols.map((sym) => (
-              <Line
-                key={sym}
-                type="monotone"
-                dataKey={sym.replace('/USDT', '')}
-                stroke={SYMBOL_COLORS[sym] ?? '#9ca3af'}
-                strokeWidth={2}
-                dot={false}
-                connectNulls
-                name={sym.replace('/USDT', '')}
+        <div className="h-[200px] sm:h-[260px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={pivoted} margin={{ top: 4, right: 16, bottom: 0, left: 0 }}>
+              <XAxis
+                dataKey="hour"
+                tick={{ fill: '#6b7280', fontSize: 10 }}
+                tickLine={false}
+                axisLine={false}
+                interval="preserveStartEnd"
               />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
+              <YAxis
+                domain={[0, 100]}
+                tickFormatter={(v) => `${v}%`}
+                tick={{ fill: '#6b7280', fontSize: 11 }}
+                tickLine={false}
+                axisLine={false}
+                width={36}
+              />
+              <Tooltip
+                formatter={(value: number | undefined, name?: string) => [`${Number(value ?? 0).toFixed(1)}%`, name ?? '']}
+                {...TOOLTIP_STYLE}
+              />
+              <Legend wrapperStyle={{ fontSize: 12, color: '#9ca3af' }} />
+              {symbols.map((sym) => (
+                <Line
+                  key={sym}
+                  type="monotone"
+                  dataKey={sym.replace('/USDT', '')}
+                  stroke={SYMBOL_COLORS[sym] ?? '#9ca3af'}
+                  strokeWidth={2}
+                  dot={false}
+                  connectNulls
+                  name={sym.replace('/USDT', '')}
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       )}
     </section>
   )
@@ -503,7 +505,7 @@ export default function QualityTracker() {
   const accuracyData = accuracyRes.data as AccuracyResponse | undefined
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
       <LastUpdated timestamp={lastUpdated} />
       {/* Top row: Overall Summary + Accuracy Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

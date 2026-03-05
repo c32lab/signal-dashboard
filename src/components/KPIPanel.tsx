@@ -28,7 +28,7 @@ export default function KPIPanel() {
   const recent1hTotal = Object.values(data.recent_1h).reduce((a, b) => a + b, 0)
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 px-2 sm:px-6 py-2 sm:py-4">
       {/* Total decisions */}
       <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
         <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Total Decisions</p>

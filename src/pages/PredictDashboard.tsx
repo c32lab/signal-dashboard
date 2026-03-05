@@ -27,9 +27,9 @@ import type {
 
 function MacroCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="bg-gray-900 rounded-lg p-4 flex flex-col gap-1">
+    <div className="bg-gray-900 rounded-lg p-3 sm:p-4 flex flex-col gap-1">
       <span className="text-xs text-gray-500 uppercase tracking-wide">{label}</span>
-      <span className="text-2xl font-bold text-gray-100">{value}</span>
+      <span className="text-lg sm:text-2xl font-bold text-gray-100">{value}</span>
       {sub && <span className="text-xs text-gray-500">{sub}</span>}
     </div>
   )
@@ -191,8 +191,9 @@ function MacroHistoryChart({ snapshots }: { snapshots: MacroSnapshot[] }) {
     }))
 
   return (
-    <ResponsiveContainer width="100%" height={260}>
-      <LineChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
+    <div className="h-[200px] sm:h-[260px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
         <XAxis
           dataKey="time"
           tick={{ fill: '#6b7280', fontSize: 11 }}
@@ -243,6 +244,7 @@ function MacroHistoryChart({ snapshots }: { snapshots: MacroSnapshot[] }) {
         />
       </LineChart>
     </ResponsiveContainer>
+    </div>
   )
 }
 
@@ -413,7 +415,7 @@ function IndustryChainSection({ nodes, edges }: { nodes: ChainNode[]; edges: Cha
           placeholder="Search nodes…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gray-600 w-52"
+          className="bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-gray-600 w-full sm:w-52"
         />
         <div className="flex flex-wrap gap-1.5">
           <button
@@ -642,20 +644,20 @@ function AccuracyAndValidationsSection({
               No validations for selected filter
             </p>
           ) : (
-            <div className="flex flex-wrap gap-6">
-              <div className="flex flex-col items-center gap-1 min-w-[120px]">
+            <div className="flex flex-wrap gap-4 sm:gap-6">
+              <div className="flex flex-col items-center gap-1 min-w-[100px] sm:min-w-[120px]">
                 <span className="text-xs text-gray-500 uppercase tracking-wider">Total</span>
-                <span className="text-4xl font-bold font-mono text-gray-100">{total}</span>
+                <span className="text-3xl sm:text-4xl font-bold font-mono text-gray-100">{total}</span>
                 <span className="text-sm text-gray-400">predictions</span>
               </div>
-              <div className="flex flex-col items-center gap-1 min-w-[120px]">
+              <div className="flex flex-col items-center gap-1 min-w-[100px] sm:min-w-[120px]">
                 <span className="text-xs text-gray-500 uppercase tracking-wider">Correct</span>
-                <span className="text-4xl font-bold font-mono text-green-400">{correct}</span>
+                <span className="text-3xl sm:text-4xl font-bold font-mono text-green-400">{correct}</span>
                 <span className="text-sm text-gray-400">of {total}</span>
               </div>
-              <div className="flex flex-col items-center gap-1 min-w-[120px]">
+              <div className="flex flex-col items-center gap-1 min-w-[100px] sm:min-w-[120px]">
                 <span className="text-xs text-gray-500 uppercase tracking-wider">Accuracy</span>
-                <span className={`text-4xl font-bold font-mono ${colorClass}`}>
+                <span className={`text-3xl sm:text-4xl font-bold font-mono ${colorClass}`}>
                   {accuracy_pct.toFixed(1)}%
                 </span>
                 <span className="text-sm text-gray-400">from validations</span>
@@ -667,46 +669,48 @@ function AccuracyAndValidationsSection({
           {trendData.length > 0 && (
             <div>
               <h3 className="text-xs text-gray-500 uppercase tracking-wider mb-2">Accuracy Trend</h3>
-              <ResponsiveContainer width="100%" height={220}>
-                <LineChart data={trendData} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
-                  <XAxis
-                    dataKey="date"
-                    tick={{ fill: '#6b7280', fontSize: 11 }}
-                    tickLine={false}
-                    axisLine={false}
-                    interval="preserveStartEnd"
-                  />
-                  <YAxis
-                    domain={[0, 100]}
-                    tick={{ fill: '#6b7280', fontSize: 11 }}
-                    tickLine={false}
-                    axisLine={false}
-                    width={36}
-                    tickFormatter={(v) => `${v}%`}
-                  />
-                  <Tooltip
-                    contentStyle={{ background: '#111827', border: '1px solid #374151', borderRadius: 6, fontSize: 12 }}
-                    labelStyle={{ color: '#9ca3af' }}
-                    itemStyle={{ color: '#e5e7eb' }}
-                    formatter={(value: number | undefined, name?: string) => [`${Number(value ?? 0).toFixed(1)}%`, name ?? '']}
-                  />
-                  {chartSymbols.length > 1 && (
-                    <Legend wrapperStyle={{ fontSize: 12, color: '#9ca3af' }} />
-                  )}
-                  {chartSymbols.map((sym) => (
-                    <Line
-                      key={sym}
-                      type="monotone"
-                      dataKey={sym}
-                      stroke={getSymbolColor(sym)}
-                      strokeWidth={2}
-                      dot={false}
-                      connectNulls
-                      name={sym}
+              <div className="h-[180px] sm:h-[220px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={trendData} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fill: '#6b7280', fontSize: 11 }}
+                      tickLine={false}
+                      axisLine={false}
+                      interval="preserveStartEnd"
                     />
-                  ))}
-                </LineChart>
-              </ResponsiveContainer>
+                    <YAxis
+                      domain={[0, 100]}
+                      tick={{ fill: '#6b7280', fontSize: 11 }}
+                      tickLine={false}
+                      axisLine={false}
+                      width={36}
+                      tickFormatter={(v) => `${v}%`}
+                    />
+                    <Tooltip
+                      contentStyle={{ background: '#111827', border: '1px solid #374151', borderRadius: 6, fontSize: 12 }}
+                      labelStyle={{ color: '#9ca3af' }}
+                      itemStyle={{ color: '#e5e7eb' }}
+                      formatter={(value: number | undefined, name?: string) => [`${Number(value ?? 0).toFixed(1)}%`, name ?? '']}
+                    />
+                    {chartSymbols.length > 1 && (
+                      <Legend wrapperStyle={{ fontSize: 12, color: '#9ca3af' }} />
+                    )}
+                    {chartSymbols.map((sym) => (
+                      <Line
+                        key={sym}
+                        type="monotone"
+                        dataKey={sym}
+                        stroke={getSymbolColor(sym)}
+                        strokeWidth={2}
+                        dot={false}
+                        connectNulls
+                        name={sym}
+                      />
+                    ))}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           )}
         </div>
@@ -841,7 +845,7 @@ export default function PredictDashboard() {
   const chainEdges = chainData?.edges ?? []
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
       {/* Macro Score Cards */}
       <section>
         <h2 className="text-xs text-gray-500 uppercase tracking-widest mb-3">Macro Overview</h2>

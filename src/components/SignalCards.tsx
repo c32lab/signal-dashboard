@@ -28,7 +28,7 @@ function SignalCard({ symbol, signal }: { symbol: string; signal: Signal | undef
   const style = directionStyle(signal?.direction ?? '')
 
   return (
-    <div className={`bg-gray-900 rounded-xl p-5 border ${style.border} flex flex-col gap-3`}>
+    <div className={`bg-gray-900 rounded-xl p-3 sm:p-5 border ${style.border} flex flex-col gap-2 sm:gap-3`}>
       <div className="flex items-center justify-between">
         <span className="text-base font-bold text-white">{label}</span>
         {signal ? (
@@ -83,11 +83,11 @@ export default function SignalCards() {
   }
 
   return (
-    <div className="px-6">
-      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-4">
+    <div className="px-2 sm:px-6">
+      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3 sm:mb-4">
         Latest Signals
       </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2 sm:gap-3">
         {SYMBOLS.map((sym) => (
           <SignalCard key={sym} symbol={sym} signal={signalMap[sym]} />
         ))}

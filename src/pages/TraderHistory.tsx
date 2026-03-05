@@ -104,9 +104,9 @@ function KpiCard({
   color?: string
 }) {
   return (
-    <div className="bg-gray-900 rounded-xl border border-gray-800 p-4 flex flex-col gap-1">
+    <div className="bg-gray-900 rounded-xl border border-gray-800 p-3 sm:p-4 flex flex-col gap-1">
       <p className="text-xs text-gray-500 uppercase tracking-wider">{label}</p>
-      <p className={`text-2xl font-bold font-mono ${color}`}>{value}</p>
+      <p className={`text-xl sm:text-2xl font-bold font-mono ${color}`}>{value}</p>
     </div>
   )
 }
@@ -374,9 +374,9 @@ export default function TraderHistory() {
   }, [symbolFilter, actionFilter, directionFilter, typeFilter])
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
       {/* A. KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
         <KpiCard
           label="Total Trades"
           value={overall ? String(overall.total) : '—'}
@@ -492,7 +492,7 @@ export default function TraderHistory() {
 
       {/* D. Pagination */}
       {!isLoading && !error && total > 0 && (
-        <div className="flex items-center justify-between text-xs text-gray-500">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500">
           <span>
             第 {startRecord}–{endRecord} 条 / 共 {total} 条
           </span>

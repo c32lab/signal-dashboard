@@ -79,7 +79,7 @@ export default function CombinerWeights() {
         <BarChart
           data={entries}
           layout="vertical"
-          margin={{ top: 4, right: 80, bottom: 4, left: 100 }}
+          margin={{ top: 4, right: 64, bottom: 4, left: 80 }}
         >
           <XAxis
             type="number"
@@ -92,10 +92,10 @@ export default function CombinerWeights() {
           <YAxis
             type="category"
             dataKey="source"
-            tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 600 }}
+            tick={{ fill: '#9ca3af', fontSize: 11, fontWeight: 600 }}
             tickLine={false}
             axisLine={false}
-            width={90}
+            width={76}
           />
           <Tooltip
             formatter={(value: number | undefined) => [
