@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { SWRConfig } from 'swr'
 import Dashboard from './pages/Dashboard'
 import PredictDashboard from './pages/PredictDashboard'
 import QualityTracker from './pages/QualityTracker'
@@ -21,6 +22,14 @@ function App() {
   useEffect(() => { fetchDynamicPriceRanges() }, [])
 
   return (
+    <SWRConfig value={{
+      onError: (error, key) => {
+        console.error(`[SWR Error] ${key}:`, error.message)
+      },
+      shouldRetryOnError: true,
+      errorRetryCount: 3,
+      errorRetryInterval: 5000,
+    }}>
     <BrowserRouter>
       <div className="bg-gray-950 text-gray-100 min-h-screen">
         <nav className="bg-gray-900 border-b border-gray-800">
@@ -89,6 +98,7 @@ function App() {
         </ErrorBoundary>
       </div>
     </BrowserRouter>
+    </SWRConfig>
   )
 }
 

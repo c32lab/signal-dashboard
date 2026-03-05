@@ -4,6 +4,7 @@ import { useDecisions, usePerformance, useOverview } from '../hooks/useApi'
 import { api } from '../api'
 import { validatePrice, validateConfidence } from '../utils/dataValidation'
 import DataWarning from '../components/DataWarning'
+import SectionErrorBoundary from '../components/SectionErrorBoundary'
 
 const PAGE_SIZE = 50
 
@@ -376,27 +377,29 @@ export default function TraderHistory() {
   return (
     <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
       {/* A. KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-        <KpiCard
-          label="Total Trades"
-          value={overall ? String(overall.total) : '—'}
-        />
-        <KpiCard
-          label="Win Rate"
-          value={overall ? `${overall.accuracy_pct.toFixed(1)}%` : '—'}
-          color={accColor(overall?.accuracy_pct)}
-        />
-        <KpiCard
-          label="Avg PnL"
-          value={overall ? pnlStr(overall.avg_pnl_pct) : '—'}
-          color={pnlColor(overall?.avg_pnl_pct)}
-        />
-        <KpiCard
-          label="Active Signals"
-          value={activeSignals != null ? String(activeSignals) : '—'}
-          color="text-blue-400"
-        />
-      </div>
+      <SectionErrorBoundary title="KPI Cards">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+          <KpiCard
+            label="Total Trades"
+            value={overall ? String(overall.total) : '—'}
+          />
+          <KpiCard
+            label="Win Rate"
+            value={overall ? `${overall.accuracy_pct.toFixed(1)}%` : '—'}
+            color={accColor(overall?.accuracy_pct)}
+          />
+          <KpiCard
+            label="Avg PnL"
+            value={overall ? pnlStr(overall.avg_pnl_pct) : '—'}
+            color={pnlColor(overall?.avg_pnl_pct)}
+          />
+          <KpiCard
+            label="Active Signals"
+            value={activeSignals != null ? String(activeSignals) : '—'}
+            color="text-blue-400"
+          />
+        </div>
+      </SectionErrorBoundary>
 
       {/* B. Filter Bar */}
       <div className="bg-gray-900 rounded-xl border border-gray-800 p-4">
@@ -449,6 +452,7 @@ export default function TraderHistory() {
       )}
 
       {/* C. Decision Table */}
+      <SectionErrorBoundary title="Decision Table">
       <div className="bg-gray-900 rounded-xl border border-gray-800">
         {isLoading && (
           <p className="text-gray-400 text-sm p-8 text-center">Loading decisions…</p>
@@ -489,6 +493,7 @@ export default function TraderHistory() {
           </div>
         )}
       </div>
+      </SectionErrorBoundary>
 
       {/* D. Pagination */}
       {!isLoading && !error && total > 0 && (
