@@ -9,7 +9,11 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
-import { usePrediction, useTrends, useIndustryChain } from '../hooks/usePredictApi'
+import {
+  usePrediction,
+  useTrends,
+  useIndustryChain,
+} from '../hooks/usePredictApi'
 import { predictApi } from '../api/predict'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
 import type {
