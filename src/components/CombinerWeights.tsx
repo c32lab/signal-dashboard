@@ -65,8 +65,8 @@ export default function CombinerWeights() {
   const entries: WeightEntry[] = Object.entries(data.weights)
     .map(([source, weight]) => ({
       source,
-      weight,
-      disabled: weight === 0,
+      weight: Number(weight),
+      disabled: Number(weight) === 0,
     }))
     .sort((a, b) => b.weight - a.weight)
 
@@ -104,7 +104,7 @@ export default function CombinerWeights() {
             ]}
             {...TOOLTIP_STYLE}
           />
-          <Bar dataKey="weight" name="Weight" radius={[0, 4, 4, 0]}>
+          <Bar dataKey="weight" name="Weight" radius={[0, 4, 4, 0]} fill="#4b5563" isAnimationActive={false}>
             {entries.map((entry) => (
               <Cell key={entry.source} fill={weightColor(entry.weight)} />
             ))}

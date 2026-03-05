@@ -172,7 +172,14 @@ function AccuracyOverview({ data }: { data: AccuracyResponse }) {
 // ── Section A: Accuracy Leaderboard ──────────────────────────────────────────
 
 function AccuracyLeaderboard({ data }: { data: PerformanceSymbol[] }) {
-  const sorted = [...data].sort((a, b) => b.accuracy_pct - a.accuracy_pct)
+  const sorted = [...data]
+    .map((entry) => ({
+      ...entry,
+      accuracy_pct: entry.accuracy_pct != null && !isNaN(entry.accuracy_pct)
+        ? entry.accuracy_pct
+        : entry.total > 0 ? (entry.correct / entry.total) * 100 : 0,
+    }))
+    .sort((a, b) => b.accuracy_pct - a.accuracy_pct)
 
   return (
     <section className="bg-gray-900 rounded-xl border border-gray-800 p-4">
@@ -204,7 +211,7 @@ function AccuracyLeaderboard({ data }: { data: PerformanceSymbol[] }) {
             formatter={(value: number | undefined) => [`${Number(value ?? 0).toFixed(1)}%`, 'Accuracy']}
             {...TOOLTIP_STYLE}
           />
-          <Bar dataKey="accuracy_pct" name="Accuracy" radius={[0, 4, 4, 0]}>
+          <Bar dataKey="accuracy_pct" name="Accuracy" radius={[0, 4, 4, 0]} fill="#6b7280" isAnimationActive={false}>
             {sorted.map((entry) => (
               <Cell key={entry.symbol} fill={accuracyColor(entry.accuracy_pct)} />
             ))}
@@ -275,7 +282,10 @@ function AccuracyTrend({
       const h = formatHour(item.hour)
       if (!map.has(h)) map.set(h, { hour: h })
       const row = map.get(h)!
-      row[item.symbol.replace('/USDT', '')] = item.accuracy_pct
+      const acc = item.accuracy_pct != null && !isNaN(item.accuracy_pct)
+        ? item.accuracy_pct
+        : item.total > 0 ? (item.correct / item.total) * 100 : null
+      if (acc != null) row[item.symbol.replace('/USDT', '')] = acc
     }
     return Array.from(map.values())
   }, [data])
@@ -334,8 +344,10 @@ function AccuracyTrend({
                   dataKey={sym.replace('/USDT', '')}
                   stroke={SYMBOL_COLORS[sym] ?? '#9ca3af'}
                   strokeWidth={2}
-                  dot={false}
+                  dot={{ r: 2 }}
+                  activeDot={{ r: 4 }}
                   connectNulls
+                  isAnimationActive={false}
                   name={sym.replace('/USDT', '')}
                 />
               ))}
