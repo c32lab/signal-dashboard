@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import KPIPanel from '../components/KPIPanel'
+import LiveSignalFeed from '../components/LiveSignalFeed'
 import SignalCards from '../components/SignalCards'
 import CombinerWeights from '../components/CombinerWeights'
 import DecisionTable from '../components/DecisionTable'
@@ -151,6 +152,9 @@ export default function Dashboard() {
     <div className="flex flex-col gap-4 sm:gap-8 py-2 sm:py-6">
       <div className="px-2 sm:px-6">
         <LastUpdated timestamp={lastUpdated} />
+      </div>
+      <div className="px-2 sm:px-6">
+        <LiveSignalFeed />
       </div>
       <KPIPanel />
       {collectorData && (

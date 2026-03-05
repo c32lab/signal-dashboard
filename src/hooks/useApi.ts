@@ -56,3 +56,16 @@ export function useBias() {
 export function useCollectorHealth() {
   return useSWR('collector-health', () => api.collectorHealth(), { refreshInterval: REFRESH_INTERVAL })
 }
+
+export function useRecentDecisions(minutes: number) {
+  // Round to nearest minute for a stable SWR cache key
+  const minuteKey = Math.floor(Date.now() / 60_000)
+  return useSWR(
+    ['recent-decisions', minutes, minuteKey],
+    () => {
+      const from = new Date(Date.now() - minutes * 60_000).toISOString()
+      return api.decisions({ limit: 50, from })
+    },
+    { refreshInterval: 15_000 },
+  )
+}
