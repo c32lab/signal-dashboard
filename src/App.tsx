@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import PredictDashboard from './pages/PredictDashboard'
 import QualityTracker from './pages/QualityTracker'
 import TraderHistory from './pages/TraderHistory'
+import CodeQuality from './pages/CodeQuality'
 import ErrorBoundary from './components/ErrorBoundary'
 import { fetchDynamicPriceRanges } from './utils/dataValidation'
 
@@ -13,6 +14,7 @@ const NAV_LINKS: { to: string; label: string; end?: boolean }[] = [
   { to: '/predict', label: 'Predict' },
   { to: '/quality', label: 'Quality' },
   { to: '/history', label: 'History' },
+  { to: '/code-quality', label: 'Code Quality' },
 ]
 
 function App() {
@@ -94,6 +96,7 @@ function App() {
             <Route path="/predict" element={<PredictDashboard />} />
             <Route path="/quality" element={<QualityTracker />} />
             <Route path="/history" element={<TraderHistory />} />
+            <Route path="/code-quality" element={<CodeQuality />} />
           </Routes>
         </ErrorBoundary>
       </div>
