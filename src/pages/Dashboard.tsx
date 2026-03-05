@@ -95,7 +95,7 @@ function SourceBias({ data }: { data: BiasResponse }) {
         <BarChart
           data={entries}
           layout="vertical"
-          margin={{ top: 4, right: 80, bottom: 4, left: 100 }}
+          margin={{ top: 4, right: 12, bottom: 4, left: 100 }}
         >
           <XAxis
             type="number"
