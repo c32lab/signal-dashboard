@@ -302,18 +302,15 @@ function IssuesSummary() {
 
 export default function CodeQuality() {
   return (
-    <div className="bg-gray-950 min-h-screen p-4 sm:p-6">
-      <div className="max-w-5xl mx-auto flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-lg font-semibold text-gray-100">Code Quality Dashboard</h1>
-          <span className="text-xs text-gray-600">mock data</span>
-        </div>
-        <ScoreOverview />
-        <ScoreTrend />
-        <KeyMetrics />
-        <ModuleHealth />
-        <IssuesSummary />
+    <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
+      <div className="bg-yellow-900/40 border border-yellow-700 rounded-lg px-4 py-3 text-sm text-yellow-300">
+        ⚠️ Showing mock data — connect QA audit API for live data
       </div>
+      <ScoreOverview />
+      <ScoreTrend />
+      <KeyMetrics />
+      <ModuleHealth />
+      <IssuesSummary />
     </div>
   )
 }
