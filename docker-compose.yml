@@ -2,12 +2,12 @@ services:
   signal-dashboard:
     build: .
     ports:
-      - "18800:18800"
+      - "3080:3080"
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:18800/"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3080/"]
       interval: 30s
       timeout: 5s
       retries: 3
