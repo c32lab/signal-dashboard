@@ -10,7 +10,7 @@ export interface TradingPosition {
   size: number
   entry_price: number
   unrealized_pnl: number
-  leverage: number
+  leverage?: number
 }
 
 export interface TradingTrade {
@@ -21,8 +21,9 @@ export interface TradingTrade {
   entry_price: number
   exit_price: number | null
   size: number
+  confidence: number | null
   pnl_usdt: number | null
-  duration_seconds: number | null
+  duration_seconds?: number | null
   status: 'open' | 'closed'
 }
 

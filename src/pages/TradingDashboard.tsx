@@ -44,8 +44,12 @@ function PositionCard({ pos }: { pos: TradingPosition }) {
         <span className="text-gray-200 text-right">{pos.size}</span>
         <span className="text-gray-500">Unrealized PnL</span>
         <span className="text-right"><PnlText value={pos.unrealized_pnl} /></span>
-        <span className="text-gray-500">Leverage</span>
-        <span className="text-gray-200 text-right">{pos.leverage}x</span>
+        {pos.leverage != null && (
+          <>
+            <span className="text-gray-500">Leverage</span>
+            <span className="text-gray-200 text-right">{pos.leverage}x</span>
+          </>
+        )}
       </div>
     </div>
   )
@@ -175,7 +179,7 @@ export default function TradingDashboard() {
                       {trade.exit_price !== null ? formatPrice(trade.exit_price, trade.symbol) : '—'}
                     </td>
                     <td className="px-4 py-3 text-right"><PnlText value={trade.pnl_usdt} /></td>
-                    <td className="px-4 py-3 text-right text-gray-400">{formatDuration(trade.duration_seconds)}</td>
+                    <td className="px-4 py-3 text-right text-gray-400">{formatDuration(trade.duration_seconds ?? null)}</td>
                   </tr>
                 ))
               )}
