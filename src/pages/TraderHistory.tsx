@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import type { Decision, PerformanceSymbol } from '../types'
 import { useDecisions, usePerformance, useOverview } from '../hooks/useApi'
 import { api } from '../api'
@@ -250,6 +250,7 @@ async function exportCsv(filters: {
   action?: string
   direction?: string
   type?: string
+  from?: string
 }) {
   const batchSize = 200
   const maxRecords = 2000
@@ -299,6 +300,13 @@ async function exportCsv(filters: {
   URL.revokeObjectURL(url)
 }
 
+const TIME_PERIODS: { label: string; ms: number }[] = [
+  { label: 'Last 1h',  ms: 1 * 60 * 60_000 },
+  { label: 'Last 6h',  ms: 6 * 60 * 60_000 },
+  { label: 'Last 24h', ms: 24 * 60 * 60_000 },
+  { label: 'Last 7d',  ms: 7 * 24 * 60 * 60_000 },
+]
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function TraderHistory() {
@@ -310,17 +318,14 @@ export default function TraderHistory() {
   const [offset, setOffset] = useState(0)
   const [exporting, setExporting] = useState(false)
 
-  const TIME_PERIODS: { label: string; ms: number }[] = [
-    { label: 'Last 1h',  ms: 1 * 60 * 60_000 },
-    { label: 'Last 4h',  ms: 4 * 60 * 60_000 },
-    { label: 'Last 12h', ms: 12 * 60 * 60_000 },
-    { label: 'Last 24h', ms: 24 * 60 * 60_000 },
-    { label: 'Last 7d',  ms: 7 * 24 * 60 * 60_000 },
-  ]
-
-  const fromTs = timePeriod
-    ? new Date(Date.now() - TIME_PERIODS.find(p => p.label === timePeriod)!.ms).toISOString()
-    : undefined
+  // Round to the nearest minute for SWR key stability
+  const fromTs = useMemo(() => {
+    if (!timePeriod) return undefined
+    const period = TIME_PERIODS.find(p => p.label === timePeriod)
+    if (!period) return undefined
+    const roundedMs = Math.floor((Date.now() - period.ms) / 60_000) * 60_000
+    return new Date(roundedMs).toISOString()
+  }, [timePeriod])
 
   // Server-side filters (symbol, action, type are supported by backend)
   const serverFilters = {
@@ -382,11 +387,12 @@ export default function TraderHistory() {
         action: actionFilter || undefined,
         direction: directionFilter || undefined,
         type: typeFilter || undefined,
+        from: fromTs,
       })
     } finally {
       setExporting(false)
     }
-  }, [symbolFilter, actionFilter, directionFilter, typeFilter])
+  }, [symbolFilter, actionFilter, directionFilter, typeFilter, fromTs])
 
   return (
     <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
