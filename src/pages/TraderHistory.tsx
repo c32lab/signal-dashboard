@@ -448,7 +448,7 @@ export default function TraderHistory() {
             {DIRECTIONS.map(d => <option key={d} value={d}>{d}</option>)}
           </FilterSelect>
 
-          <FilterSelect value={timePeriod} onChange={e => { setTimePeriod(e.target.value); setOffset(0) }}>
+          <FilterSelect value={timePeriod} onChange={v => { setTimePeriod(v); setOffset(0) }}>
             <option value="">All Time</option>
             {TIME_PERIODS.map(p => (
               <option key={p.label} value={p.label}>{p.label}</option>
