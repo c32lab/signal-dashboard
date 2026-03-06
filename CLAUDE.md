@@ -79,6 +79,8 @@ src/
 - 前缀：feat / fix / docs / config / chore / refactor / test
 - `git add` 用具体文件名，禁止 `git add -A`
 - 提交前运行 `npx tsc --project tsconfig.app.json --noEmit` 确保无 TS 错误（注意是 tsconfig.app.json 不是 tsconfig.json）
+- **提交后立即部署：** `cd ~/signal-dashboard && docker compose down && docker compose up -d --build`
+- Docker build 用 `tsc -b`（比 tsconfig.app.json 更严格），确保两者都 0 error
 
 ## Recharts Tooltip（⚠️ 重复教训 ×3）
 Recharts Tooltip 的 `labelFormatter` / `formatter` 回调参数类型可能是 `undefined` 或 `ReactNode`，不是 `string`。**必须加防御：**
