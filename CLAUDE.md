@@ -93,6 +93,7 @@ formatter={(value, name) => [`${Number(value).toFixed(2)}%`, String(name)]}
 ```
 
 ## 禁止
+- **一个 repo 同时只能有一个 CC 操作** — 多 CC 并行同一 repo 会导致冲突、互相覆盖文件、端口被改。串行执行，不并行
 - **绝对不要修改 vite.config.ts 的 proxy 端口** — `/api` → :18800, `/predict-api` → :18801, `/data-api` → :8081。这些端口是固定的。:18810 是被废弃的旧方案，绝不使用
 - **绝对不要修改 nginx.conf / docker-compose.yml / Dockerfile 的端口** — Dashboard 端口是 **3080**（开发和生产都是 3080）。:18800 是 amani-signal API，不是前端。CC 不要碰端口配置
 - **绝对不要删除或 revert 已有的组件文件** — 特别是 ConfidenceDistribution.tsx、AccuracyKPI.tsx 等。这些是人工审核后的正式功能，不是 out-of-scope artifact
