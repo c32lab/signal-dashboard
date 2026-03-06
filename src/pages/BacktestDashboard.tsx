@@ -25,7 +25,7 @@ function pct(v: number | undefined | null, decimals = 1): string {
 
 function Skeleton() {
   return (
-    <div className="p-6 space-y-6 animate-pulse">
+    <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6 animate-pulse">
       <div className="h-8 bg-gray-800 rounded w-64" />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[0, 1, 2].map((i) => (
@@ -281,7 +281,7 @@ export default function BacktestDashboard() {
 
   if (error) {
     return (
-      <div className="p-6">
+      <div className="p-2 sm:p-4 lg:p-6">
         <div className="bg-red-950 border border-red-800 text-red-300 rounded-xl p-4 text-sm">
           Failed to load backtest data: {error.message}
         </div>
@@ -291,7 +291,7 @@ export default function BacktestDashboard() {
 
   if (!data || data.results.length === 0) {
     return (
-      <div className="p-6">
+      <div className="p-2 sm:p-4 lg:p-6">
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center text-gray-500 text-sm">
           No backtest data available.
         </div>
@@ -302,7 +302,7 @@ export default function BacktestDashboard() {
   const result = data.results[0]
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
       <ResultView result={result} />
     </div>
   )
