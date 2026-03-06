@@ -26,7 +26,7 @@ function fmtTime(ts: number): string {
 function fmtOIValue(v: number): string {
   if (v >= 1e9) return `$${(v / 1e9).toFixed(1)}B`
   if (v >= 1e6) return `$${(v / 1e6).toFixed(0)}M`
-  return `$${v.toLocaleString()}`
+  return `$${v.toLocaleString('en-US')}`
 }
 
 function OIChart({ data, isLoading }: { data: OpenInterestPoint[] | undefined; isLoading: boolean }) {

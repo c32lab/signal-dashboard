@@ -196,3 +196,24 @@ export interface DecisionFilters {
   from?: string
   to?: string
 }
+
+export interface RawSignal {
+  source: string
+  direction: string
+  strength: number
+  confidence: number
+  timeframe?: string
+  reasoning: string
+}
+
+export interface RawDecisionJson {
+  combined?: {
+    signals?: RawSignal[]
+    agree_ratio?: number
+  }
+  combined_score?: number
+  decision_type?: string
+  reasoning?: string
+  suggested_stop_loss?: number
+  suggested_take_profit?: number
+}
