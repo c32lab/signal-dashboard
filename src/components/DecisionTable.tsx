@@ -6,7 +6,7 @@ import { formatDateTime, formatPrice } from '../utils/format'
 import DataWarning from './DataWarning'
 
 const PAGE_SIZE = 20
-const SYMBOLS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT']
+import { useSymbols } from '../hooks/useSymbols'
 const DIRECTIONS = ['LONG', 'SHORT', 'HOLD']
 
 type TimePreset = '1h' | '6h' | '24h' | '7d' | 'all'
@@ -111,6 +111,7 @@ function DecisionRow({ d }: { d: Decision }) {
 }
 
 export default function DecisionTable() {
+  const symbols = useSymbols()
   const [symbolFilter, setSymbolFilter] = useState('')
   const [directionFilter, setDirectionFilter] = useState('')
   const [timePreset, setTimePreset] = useState<TimePreset>('24h')
@@ -181,7 +182,7 @@ export default function DecisionTable() {
             className="bg-gray-900 border border-gray-700 text-gray-300 text-xs rounded-lg px-2 sm:px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500"
           >
             <option value="">All symbols</option>
-            {SYMBOLS.map((s) => (
+            {symbols.map((s) => (
               <option key={s} value={s}>
                 {s.replace('/USDT', '')}
               </option>

@@ -1,6 +1,7 @@
 import FilterSelect from './FilterSelect'
-import { SYMBOLS, ACTIONS, DIRECTIONS, TIME_PERIODS } from './constants'
+import { ACTIONS, DIRECTIONS, TIME_PERIODS } from './constants'
 import { stripUsdt } from './utils'
+import { useSymbols } from '../../hooks/useSymbols'
 
 interface FilterBarProps {
   symbolFilter: string
@@ -35,6 +36,7 @@ export default function FilterBar({
   onTimePeriod,
   onExport,
 }: FilterBarProps) {
+  const symbols = useSymbols()
   return (
     <div className="bg-gray-900 rounded-xl border border-gray-800 p-4">
       <div className="flex flex-wrap items-center gap-3">
@@ -42,7 +44,7 @@ export default function FilterBar({
 
         <FilterSelect value={symbolFilter} onChange={onSymbol}>
           <option value="">All Symbols</option>
-          {SYMBOLS.map(s => (
+          {symbols.map(s => (
             <option key={s} value={s}>{stripUsdt(s)}</option>
           ))}
         </FilterSelect>

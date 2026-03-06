@@ -1,8 +1,7 @@
 import type { Signal } from '../types'
 import { useSignalsLatest } from '../hooks/useApi'
 import { formatTime } from '../utils/format'
-
-const SYMBOLS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT']
+import { useSymbols } from '../hooks/useSymbols'
 
 function directionStyle(direction: string): { badge: string; bar: string; border: string } {
   switch (direction) {
@@ -61,6 +60,7 @@ function SignalCard({ symbol, signal }: { symbol: string; signal: Signal | undef
 }
 
 export default function SignalCards() {
+  const symbols = useSymbols()
   const { data, error, isLoading } = useSignalsLatest()
 
   if (isLoading) {
@@ -88,7 +88,7 @@ export default function SignalCards() {
         Latest Signals
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-        {SYMBOLS.map((sym) => (
+        {symbols.map((sym) => (
           <SignalCard key={sym} symbol={sym} signal={signalMap[sym]} />
         ))}
       </div>
