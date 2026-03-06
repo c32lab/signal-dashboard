@@ -1,6 +1,7 @@
 import type {
   PredictionOverview,
   Prediction,
+  PredictionDetail,
   Event,
   Trend,
   IndustryChain,
@@ -65,6 +66,9 @@ export const predictApi = {
 
   predictAccuracy: () =>
     fetcher<PredictAccuracyResponse>(`${BASE}/api/predict-accuracy`),
+
+  predictionDetail: (id: number) =>
+    fetcher<PredictionDetail>(`${BASE}/api/predictions/${id}`),
 
   // Derivatives data from data-eng API (via /data-api proxy → localhost:8081)
   openInterest: (symbol = 'BTC/USDT', limit = 24) =>
