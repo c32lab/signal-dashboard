@@ -6,14 +6,13 @@ import CombinerWeights from '../components/CombinerWeights'
 import DecisionTable from '../components/DecisionTable'
 import LastUpdated from '../components/LastUpdated'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
-import { useOverview, useBias, useCollectorHealth, useStatus, useHealth, usePerformance, useAccuracy } from '../hooks/useApi'
+import { useOverview, useBias, useCollectorHealth, useHealth, usePerformance, useAccuracy } from '../hooks/useApi'
 import { HealthSummary, AlertsPanel, CollectorStatus, DecisionDistribution, SourceBias, PerformanceOverview, AccuracyKPI, AccuracyMiniTrend } from '../components/dashboard'
 
 export default function Dashboard() {
   const { data } = useOverview()
   const biasRes = useBias()
   const collectorRes = useCollectorHealth()
-  const statusRes = useStatus()
   const healthRes = useHealth()
   const perfRes = usePerformance()
   const accuracyRes = useAccuracy()
@@ -25,7 +24,6 @@ export default function Dashboard() {
 
   const biasData = biasRes.data
   const collectorData = collectorRes.data
-  const statusData = statusRes.data
   const healthData = healthRes.data
   const perfData = perfRes.data
   const accuracyData = accuracyRes.data
@@ -35,9 +33,9 @@ export default function Dashboard() {
       <div className="px-2 sm:px-6">
         <LastUpdated timestamp={lastUpdated} />
       </div>
-      {statusData && (
+      {healthData && (
         <div className="px-2 sm:px-6">
-          <AlertsPanel data={statusData} />
+          <AlertsPanel data={healthData} />
         </div>
       )}
       {accuracyData && (

@@ -1,6 +1,6 @@
-import type { BiasAlert, StatusResponse } from '../../types'
+import type { BiasAlert, HealthResponse } from '../../types'
 
-export function AlertsPanel({ data }: { data: StatusResponse }) {
+export function AlertsPanel({ data }: { data: HealthResponse }) {
   const alerts = data.bias_alerts ?? []
   const dupRatio = data.duplicate_ratio ?? 0
   const disabledSymbols = data.disabled_symbols ?? []
