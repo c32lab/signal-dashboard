@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { DirectionBadge, StatusBadge } from './badges'
 import { formatDateTime, formatPrice } from '../../utils/format'
 import type { Prediction } from '../../types/predict'
-import { usePredictionDetail } from '../../hooks/usePredictApi'
+import { usePredictionDetail, useReasoningGraph } from '../../hooks/usePredictApi'
+import ReasoningFlowGraph from './ReasoningFlowGraph'
 
 export function PredictionTable({ predictions }: { predictions: Prediction[] }) {
   return (
@@ -47,6 +48,7 @@ export function PredictionTable({ predictions }: { predictions: Prediction[] }) 
 
 function DetailPanel({ id, reasoning }: { id: number; reasoning: string }) {
   const { data, error, isLoading } = usePredictionDetail(id)
+  const { data: graphData, isLoading: graphLoading } = useReasoningGraph(id)
 
   if (isLoading) {
     return (
@@ -120,25 +122,17 @@ function DetailPanel({ id, reasoning }: { id: number; reasoning: string }) {
         </div>
       )}
 
-      {/* Reasoning Chain */}
-      {data?.reasoning_chain && data.reasoning_chain.length > 0 && (
-        <div>
-          <div className="text-gray-500 font-semibold mb-1 uppercase tracking-wide text-xs">推理链</div>
-          <ol className="space-y-1">
-            {data.reasoning_chain.map((step, i) => (
-              <li key={i} className="flex gap-2">
-                <span className="shrink-0 w-5 h-5 rounded-full bg-gray-700 text-gray-300 text-xs flex items-center justify-center">
-                  {i + 1}
-                </span>
-                <div>
-                  <span className="text-blue-400 font-medium">[{step.step}]</span>{' '}
-                  <span className="text-gray-300">{step.content}</span>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      )}
+      {/* Reasoning Graph */}
+      <div>
+        <div className="text-gray-500 font-semibold mb-2 uppercase tracking-wide text-xs">推理链</div>
+        {graphLoading ? (
+          <div className="text-gray-500 text-xs py-8 text-center">加载推理链图…</div>
+        ) : graphData && graphData.nodes.length > 0 ? (
+          <ReasoningFlowGraph graph={graphData} />
+        ) : (
+          <div className="text-gray-600 text-xs py-4 text-center">暂无推理链数据</div>
+        )}
+      </div>
 
       {/* Confidence Factors */}
       {data?.confidence_factors && Object.keys(data.confidence_factors).length > 0 && (

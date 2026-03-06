@@ -10,6 +10,7 @@ import type {
   LongShortRatioPoint,
   TakerVolumePoint,
   PredictAccuracyResponse,
+  ReasoningGraph,
 } from '../types/predict'
 
 const BASE = '/predict-api'
@@ -69,6 +70,9 @@ export const predictApi = {
 
   predictionDetail: (id: number) =>
     fetcher<PredictionDetail>(`${BASE}/api/predictions/${id}`),
+
+  reasoningGraph: (id: number) =>
+    fetcher<ReasoningGraph>(`${BASE}/api/predictions/${id}/reasoning-graph`),
 
   // Derivatives data from data-eng API (via /data-api proxy → localhost:8081)
   openInterest: (symbol = 'BTC/USDT', limit = 24) =>
