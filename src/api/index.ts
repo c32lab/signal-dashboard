@@ -16,6 +16,7 @@ import type {
   StatusResponse,
 } from '../types'
 import type { BacktestResponse } from '../types/backtest'
+import type { TradingSummary } from '../types/trading'
 
 const BASE_URL = ''
 
@@ -83,4 +84,7 @@ export const api = {
 
   status: () =>
     fetcher<StatusResponse>(`${BASE_URL}/api/status`),
+
+  tradingSummary: () =>
+    fetcher<TradingSummary>(`${BASE_URL}/api/trading/summary`),
 }
