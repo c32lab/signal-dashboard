@@ -8,7 +8,6 @@ import type {
   PerformanceResponse,
   ConfidenceData,
   SignalQualityResponse,
-  BacktestData,
   AccuracyTrendItem,
   AccuracyResponse,
   CombinerWeightsResponse,
@@ -16,6 +15,7 @@ import type {
   CollectorHealthResponse,
   StatusResponse,
 } from '../types'
+import type { BacktestResponse } from '../types/backtest'
 
 const BASE_URL = ''
 
@@ -70,7 +70,7 @@ export const api = {
     fetcher<AccuracyResponse>(`${BASE_URL}/api/accuracy`),
 
   backtest: () =>
-    fetcher<BacktestData>(`${BASE_URL}/api/backtest`),
+    fetcher<BacktestResponse>(`${BASE_URL}/api/backtest`),
 
   combinerWeights: () =>
     fetcher<CombinerWeightsResponse>(`${BASE_URL}/api/combiner_weights`),

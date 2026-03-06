@@ -1,6 +1,7 @@
 import useSWR from 'swr'
 import { api } from '../api'
 import type { DecisionFilters } from '../types'
+import type { BacktestResponse } from '../types/backtest'
 
 const REFRESH_INTERVAL = 30_000
 
@@ -42,7 +43,7 @@ export function useAccuracy() {
 }
 
 export function useBacktest() {
-  return useSWR('backtest', () => api.backtest(), { refreshInterval: REFRESH_INTERVAL })
+  return useSWR<BacktestResponse>('backtest', () => api.backtest(), { refreshInterval: 60_000 })
 }
 
 export function useCombinerWeights() {
