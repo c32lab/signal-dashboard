@@ -99,7 +99,13 @@ formatter={(value, name) => [`${Number(value).toFixed(2)}%`, String(name)]}
 - 不要引入新的 CSS 框架（已有 Tailwind）
 - 不要使用 `sudo npm`
 
-## ⛔ 端口规范（禁止修改）
-- Dashboard 端口固定 **18800**，nginx listen 18800，docker-compose ports "18800:18800"
-- **禁止改成 3080 或其他端口**
+## Post-task Checklist（每次任务结束必须检查）
+
+After completing any task, verify these ports have NOT changed:
+- `nginx.conf`: `listen 3080`
+- `Dockerfile`: `EXPOSE 3080`
+- `docker-compose.yml`: `"3080:3080"`
+- `vite.config.ts` proxy targets: `/api` → `:18800`, `/predict-api` → `:18801`, `/data-api` → `:8081`
+
+If any port changed, **revert immediately** before committing.
 
