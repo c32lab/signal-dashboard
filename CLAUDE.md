@@ -98,3 +98,8 @@ formatter={(value, name) => [`${Number(value).toFixed(2)}%`, String(name)]}
 - 不要对 `price_change` / `avg_impact` / `expected_impact` 做 ×100
 - 不要引入新的 CSS 框架（已有 Tailwind）
 - 不要使用 `sudo npm`
+
+## ⛔ 端口规范（禁止修改）
+- Dashboard 端口固定 **18800**，nginx listen 18800，docker-compose ports "18800:18800"
+- **禁止改成 3080 或其他端口**
+
