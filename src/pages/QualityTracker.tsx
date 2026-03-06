@@ -213,7 +213,11 @@ function AccuracyLeaderboard({ data }: { data: PerformanceSymbol[] }) {
           />
           <Bar dataKey="accuracy_pct" name="Accuracy" radius={[0, 4, 4, 0]} fill="#6b7280" isAnimationActive={false}>
             {sorted.map((entry) => (
-              <Cell key={entry.symbol} fill={accuracyColor(entry.accuracy_pct)} />
+              <Cell
+                key={entry.symbol}
+                fill={accuracyColor(entry.accuracy_pct)}
+                fillOpacity={entry.total < 5 ? 0.5 : 1}
+              />
             ))}
           </Bar>
         </BarChart>
@@ -234,22 +238,29 @@ function AccuracyLeaderboard({ data }: { data: PerformanceSymbol[] }) {
               const accVal = validatePercent(row.accuracy_pct, 'Accuracy')
               const pnlVal = row.avg_pnl_pct != null ? validatePnL(row.avg_pnl_pct) : { valid: true }
               const hasAnomaly = !accVal.valid || !pnlVal.valid
+              const lowSample = row.total < 5
               return (
-                <tr key={row.symbol} className={`border-b border-gray-800/50 ${hasAnomaly ? 'bg-red-900/20' : ''}`}>
-                  <td className="py-1.5 px-3 font-semibold text-gray-200">
+                <tr
+                  key={row.symbol}
+                  className={`border-b border-gray-800/50 ${hasAnomaly ? 'bg-red-900/20' : ''} ${lowSample ? 'text-gray-600' : ''}`}
+                >
+                  <td className={`py-1.5 px-3 font-semibold ${lowSample ? 'text-gray-600' : 'text-gray-200'}`}>
                     {row.symbol.replace('/USDT', '')}
                   </td>
                   <td
                     className="py-1.5 px-3 text-right font-mono font-bold"
-                    style={{ color: accuracyColor(row.accuracy_pct) }}
+                    style={{ color: lowSample ? '#4b5563' : accuracyColor(row.accuracy_pct) }}
                   >
                     {row.accuracy_pct.toFixed(1)}%
+                    {row.total < 10 && (
+                      <span className="ml-1 text-gray-500 font-normal text-[10px]">(n={row.total})</span>
+                    )}
                     {!accVal.valid && <DataWarning message={accVal.warning!} />}
                   </td>
-                  <td className="py-1.5 px-3 text-right text-gray-400">
+                  <td className={`py-1.5 px-3 text-right ${lowSample ? 'text-gray-600' : 'text-gray-400'}`}>
                     {row.correct} / {row.total}
                   </td>
-                  <td className={`py-1.5 px-3 text-right font-mono ${pnlColor(row.avg_pnl_pct)}`}>
+                  <td className={`py-1.5 px-3 text-right font-mono ${lowSample ? 'text-gray-600' : pnlColor(row.avg_pnl_pct)}`}>
                     {pnlStr(row.avg_pnl_pct)}
                     {!pnlVal.valid && <DataWarning message={pnlVal.warning!} />}
                   </td>
