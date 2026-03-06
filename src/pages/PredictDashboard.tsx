@@ -522,7 +522,7 @@ function IndustryChainSection({ nodes, edges }: { nodes: ChainNode[]; edges: Cha
       </div>
 
       {/* ReactFlow Graph */}
-      <div className="h-[600px] bg-gray-950 rounded-lg border border-gray-800 overflow-hidden">
+      <div className="h-[400px] md:h-[600px] bg-gray-950 rounded-lg border border-gray-800 overflow-hidden">
         {filteredNodes.length === 0 ? (
           <p className="text-gray-600 text-sm text-center py-6 mt-4">No nodes match the filter</p>
         ) : (
