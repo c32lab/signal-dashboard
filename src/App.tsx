@@ -12,6 +12,7 @@ const CodeQuality = lazy(() => import('./pages/CodeQuality'))
 const BacktestDashboard = lazy(() => import('./pages/BacktestDashboard'))
 const IndustryChainPage = lazy(() => import('./pages/IndustryChainPage'))
 const SystemHealthPage = lazy(() => import('./pages/SystemHealthPage'))
+const TradingDashboard = lazy(() => import('./pages/TradingDashboard'))
 
 interface NavItem {
   to: string
@@ -34,6 +35,7 @@ const NAV_ENTRIES: NavEntry[] = [
   { to: '/', label: '概览', end: true },
   { to: '/predict', label: '预测' },
   { to: '/backtest', label: '回测' },
+  { to: '/trading', label: '📈 Trading' },
   { to: '/history', label: '历史' },
   {
     label: '高级分析',
@@ -236,6 +238,7 @@ function App() {
               <Route path="/code-quality" element={<CodeQuality />} />
               <Route path="/advanced/chain" element={<IndustryChainPage />} />
               <Route path="/advanced/system" element={<SystemHealthPage />} />
+              <Route path="/trading" element={<TradingDashboard />} />
             </Routes>
           </Suspense>
         </ErrorBoundary>
