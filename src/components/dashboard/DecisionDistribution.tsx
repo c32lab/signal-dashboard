@@ -1,8 +1,20 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
-import type { Decision } from '../../types'
+import { useDecisions } from '../../hooks/useApi'
 import { TOOLTIP_STYLE } from './utils'
 
-export function DecisionDistribution({ decisions }: { decisions: Decision[] }) {
+export function DecisionDistribution() {
+  const { data, isLoading } = useDecisions({ limit: 50 })
+  const decisions = data?.decisions ?? []
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-900 rounded-xl border border-gray-800 p-4">
+        <h2 className="text-sm font-semibold text-gray-200 mb-3">Decision Distribution (Last 50)</h2>
+        <p className="text-sm text-gray-500">Loading…</p>
+      </div>
+    )
+  }
+
   if (!decisions.length) {
     return (
       <div className="bg-gray-900 rounded-xl border border-gray-800 p-4">
@@ -12,9 +24,8 @@ export function DecisionDistribution({ decisions }: { decisions: Decision[] }) {
     )
   }
 
-  const recent = decisions.slice(0, 50)
   const counts: Record<string, { LONG: number; SHORT: number; HOLD: number }> = {}
-  for (const d of recent) {
+  for (const d of decisions) {
     if (!counts[d.symbol]) counts[d.symbol] = { LONG: 0, SHORT: 0, HOLD: 0 }
     const action = d.action as 'LONG' | 'SHORT' | 'HOLD'
     if (action in counts[d.symbol]) counts[d.symbol][action]++

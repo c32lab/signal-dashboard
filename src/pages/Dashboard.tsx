@@ -70,7 +70,7 @@ export default function Dashboard() {
       )}
       <div className="px-2 sm:px-6">
         <SectionErrorBoundary title="Decision Distribution">
-          <DecisionDistribution decisions={data?.decisions ?? []} />
+          <DecisionDistribution />
         </SectionErrorBoundary>
       </div>
       <SectionErrorBoundary title="Signal Cards">

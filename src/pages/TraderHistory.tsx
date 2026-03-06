@@ -168,7 +168,6 @@ export default function TraderHistory() {
           endRecord={endRecord}
           currentPage={currentPage}
           totalPages={totalPages}
-          isDirectionFiltered={isDirectionFiltered}
           onPrev={() => setOffset(o => Math.max(0, o - PAGE_SIZE))}
           onNext={() => setOffset(o => o + PAGE_SIZE)}
         />

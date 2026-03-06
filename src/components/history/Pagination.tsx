@@ -7,7 +7,6 @@ export default function Pagination({
   endRecord,
   currentPage,
   totalPages,
-  isDirectionFiltered,
   onPrev,
   onNext,
 }: {
@@ -17,7 +16,6 @@ export default function Pagination({
   endRecord: number
   currentPage: number
   totalPages: number
-  isDirectionFiltered: boolean
   onPrev: () => void
   onNext: () => void
 }) {
