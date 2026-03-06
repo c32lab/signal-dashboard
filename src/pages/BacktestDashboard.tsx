@@ -2,6 +2,8 @@ import { useState } from 'react'
 import {
   LineChart,
   Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -11,7 +13,7 @@ import {
 } from 'recharts'
 import { useBacktest } from '../hooks/useApi'
 import { formatDateTime, formatDate, formatChartTime } from '../utils/format'
-import type { BacktestResult, SymbolBacktest } from '../types/backtest'
+import type { BacktestResult, BacktestSummary, SymbolBacktest } from '../types/backtest'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
 
 const PAGE_SIZE = 20
@@ -24,6 +26,20 @@ const CONFIG_COLORS: Record<string, string> = {
 
 function pct(v: number | undefined | null, decimals = 1): string {
   return `${(v ?? 0).toFixed(decimals)}%`
+}
+
+function daysBetween(start: string, end: string): number {
+  const ms = new Date(end).getTime() - new Date(start).getTime()
+  return Math.round(ms / (1000 * 60 * 60 * 24))
+}
+
+function bestConfigName(summary: BacktestSummary[]): string | null {
+  if (summary.length === 0) return null
+  let best = summary[0]
+  for (const s of summary) {
+    if (s.total_pnl_pct > best.total_pnl_pct) best = s
+  }
+  return best.config
 }
 
 function Skeleton() {
@@ -51,12 +67,17 @@ interface SummaryCardProps {
   total_pnl_pct: number
   sharpe: number
   max_drawdown_pct: number
+  total_trades: number
+  isBest: boolean
 }
 
-function SummaryCard({ config, description, win_rate_pct, total_pnl_pct, sharpe, max_drawdown_pct }: SummaryCardProps) {
+function SummaryCard({ config, description, win_rate_pct, total_pnl_pct, sharpe, max_drawdown_pct, total_trades, isBest }: SummaryCardProps) {
   const color = CONFIG_COLORS[config] ?? '#9ca3af'
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
+    <div className="bg-gray-900 border border-gray-800 hover:border-gray-700 transition-colors rounded-xl p-4 space-y-3 relative">
+      {isBest && (
+        <span className="absolute top-2 right-2 text-amber-400 text-sm" title="Best PnL">⭐</span>
+      )}
       <div className="flex items-center gap-2">
         <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
         <span className="font-semibold text-sm text-gray-100">{config}</span>
@@ -82,6 +103,10 @@ function SummaryCard({ config, description, win_rate_pct, total_pnl_pct, sharpe,
         <div>
           <div className="text-gray-500 mb-0.5">Max DD</div>
           <div className="font-mono font-semibold text-red-400">{pct(max_drawdown_pct)}</div>
+        </div>
+        <div>
+          <div className="text-gray-500 mb-0.5">Trades</div>
+          <div className="font-mono font-semibold text-gray-200">{total_trades}</div>
         </div>
       </div>
     </div>
@@ -165,6 +190,61 @@ interface SymbolRowProps {
   rows: SymbolBacktest[]
 }
 
+interface TradeDistributionChartProps {
+  summary: BacktestSummary[]
+}
+
+function TradeDistributionChart({ summary }: TradeDistributionChartProps) {
+  const chartData = summary.map((s) => ({
+    config: s.config,
+    win_rate: s.win_rate_pct,
+    pnl: s.total_pnl_pct,
+  }))
+
+  return (
+    <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+      <h2 className="text-sm font-semibold text-gray-300 mb-4">Trade Distribution</h2>
+      <ResponsiveContainer width="100%" height={260}>
+        <BarChart data={chartData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
+          <XAxis
+            dataKey="config"
+            tick={{ fill: '#6b7280', fontSize: 11 }}
+          />
+          <YAxis
+            yAxisId="left"
+            tickFormatter={(v: number) => `${(v ?? 0).toFixed(0)}%`}
+            tick={{ fill: '#6b7280', fontSize: 11 }}
+            width={48}
+          />
+          <YAxis
+            yAxisId="right"
+            orientation="right"
+            tickFormatter={(v: number) => `${(v ?? 0).toFixed(0)}%`}
+            tick={{ fill: '#6b7280', fontSize: 11 }}
+            width={48}
+          />
+          <Tooltip
+            contentStyle={{ backgroundColor: '#111827', border: '1px solid #374151', borderRadius: 8 }}
+            labelStyle={{ color: '#9ca3af', fontSize: 11 }}
+            itemStyle={{ fontSize: 12 }}
+            formatter={(value: unknown, name: unknown) => [
+              `${Number(value ?? 0).toFixed(1)}%`,
+              String(name ?? '') === 'win_rate' ? 'Win Rate' : 'PnL%',
+            ]}
+          />
+          <Legend
+            wrapperStyle={{ fontSize: 12, color: '#9ca3af' }}
+            formatter={(value: unknown) => (String(value ?? '') === 'win_rate' ? 'Win Rate' : 'Total PnL%')}
+          />
+          <Bar yAxisId="left" dataKey="win_rate" fill="#4ade80" radius={[4, 4, 0, 0]} />
+          <Bar yAxisId="right" dataKey="pnl" fill="#60a5fa" radius={[4, 4, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  )
+}
+
 function SymbolRow({ symbol, rows }: SymbolRowProps) {
   const [expanded, setExpanded] = useState(false)
   return (
@@ -196,25 +276,46 @@ function SymbolRow({ symbol, rows }: SymbolRowProps) {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => (
-                <tr key={r.config} className="border-t border-gray-800 bg-gray-900">
-                  <td className="px-4 py-2">
-                    <span
-                      className="inline-block w-2 h-2 rounded-full mr-2"
-                      style={{ backgroundColor: CONFIG_COLORS[r.config] ?? '#9ca3af' }}
-                    />
-                    <span className="text-gray-200">{r.config}</span>
-                  </td>
-                  <td className="px-4 py-2 text-right font-mono text-gray-300">{r.trades}</td>
-                  <td className={`px-4 py-2 text-right font-mono ${(r.win_rate_pct ?? 0) >= 50 ? 'text-green-400' : 'text-red-400'}`}>
-                    {pct(r.win_rate_pct ?? 0)}
-                  </td>
-                  <td className={`px-4 py-2 text-right font-mono ${r.total_pnl_pct >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {pct(r.total_pnl_pct)}
-                  </td>
-                  <td className="px-4 py-2 text-right font-mono text-gray-300">{(r.sharpe ?? 0).toFixed(2)}</td>
-                </tr>
-              ))}
+              {rows.map((r) => {
+                const hasDirectional = (r.long_count ?? 0) > 0 || (r.short_count ?? 0) > 0
+                return (
+                  <tr key={r.config} className="border-t border-gray-800 bg-gray-900">
+                    <td className="px-4 py-2">
+                      <span
+                        className="inline-block w-2 h-2 rounded-full mr-2"
+                        style={{ backgroundColor: CONFIG_COLORS[r.config] ?? '#9ca3af' }}
+                      />
+                      <span className="text-gray-200">{r.config}</span>
+                      {hasDirectional && (
+                        <div className="mt-1.5 ml-4 space-y-0.5 text-[10px]">
+                          <div className="flex gap-3">
+                            <span className="text-green-400">LONG</span>
+                            <span className="text-gray-400">×{r.long_count ?? 0}</span>
+                            <span className={((r.long_pnl_pct ?? 0) >= 0) ? 'text-green-400' : 'text-red-400'}>
+                              {pct(r.long_pnl_pct ?? 0)}
+                            </span>
+                          </div>
+                          <div className="flex gap-3">
+                            <span className="text-red-400">SHORT</span>
+                            <span className="text-gray-400">×{r.short_count ?? 0}</span>
+                            <span className={((r.short_pnl_pct ?? 0) >= 0) ? 'text-green-400' : 'text-red-400'}>
+                              {pct(r.short_pnl_pct ?? 0)}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-4 py-2 text-right font-mono text-gray-300">{r.trades}</td>
+                    <td className={`px-4 py-2 text-right font-mono ${(r.win_rate_pct ?? 0) >= 50 ? 'text-green-400' : 'text-red-400'}`}>
+                      {pct(r.win_rate_pct ?? 0)}
+                    </td>
+                    <td className={`px-4 py-2 text-right font-mono ${r.total_pnl_pct >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {pct(r.total_pnl_pct)}
+                    </td>
+                    <td className="px-4 py-2 text-right font-mono text-gray-300">{(r.sharpe ?? 0).toFixed(2)}</td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
@@ -232,18 +333,25 @@ function ResultView({ result }: ResultViewProps) {
   const [page, setPage] = useState(1)
   const totalPages = Math.max(1, Math.ceil(symbols.length / PAGE_SIZE))
   const pageSymbols = symbols.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const best = bestConfigName(result.summary)
+  const totalTrades = result.summary.reduce((sum, s) => sum + s.total_trades, 0)
+  const days = daysBetween(result.data_range.start, result.data_range.end)
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-xl font-bold text-gray-100">Backtest A/B Test</h1>
-        <div className="mt-1 text-xs text-gray-500 space-x-3">
+        <div className="mt-1 text-xs text-gray-500 space-x-3 flex flex-wrap gap-y-1">
           <span>Generated: {formatDateTime(result.generated_at)}</span>
           <span>·</span>
           <span>
             Data: {formatDate(result.data_range.start)} – {formatDate(result.data_range.end)}
           </span>
+          <span>·</span>
+          <span>{days} 天</span>
+          <span>·</span>
+          <span>{totalTrades} 笔交易</span>
         </div>
       </div>
 
@@ -259,6 +367,8 @@ function ResultView({ result }: ResultViewProps) {
               total_pnl_pct={s.total_pnl_pct}
               sharpe={s.sharpe}
               max_drawdown_pct={s.max_drawdown_pct}
+              total_trades={s.total_trades}
+              isBest={s.config === best}
             />
           ))}
         </div>
@@ -268,6 +378,13 @@ function ResultView({ result }: ResultViewProps) {
       {Object.keys(result.pnl_curve).length > 0 && (
         <SectionErrorBoundary title="PnL Chart">
           <PnlChart pnl_curve={result.pnl_curve} />
+        </SectionErrorBoundary>
+      )}
+
+      {/* Trade Distribution chart */}
+      {result.summary.length > 1 && (
+        <SectionErrorBoundary title="Trade Distribution">
+          <TradeDistributionChart summary={result.summary} />
         </SectionErrorBoundary>
       )}
 
@@ -319,6 +436,7 @@ function ResultView({ result }: ResultViewProps) {
 
 export default function BacktestDashboard() {
   const { data, error, isLoading } = useBacktest()
+  const [activeIdx, setActiveIdx] = useState(0)
 
   if (isLoading) return <Skeleton />
 
@@ -342,10 +460,28 @@ export default function BacktestDashboard() {
     )
   }
 
-  const result = data.results[0]
+  const result = data.results[activeIdx] ?? data.results[0]
 
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+      {/* Multi-result tabs */}
+      {data.results.length > 1 && (
+        <div className="flex gap-1 border-b border-gray-800 overflow-x-auto">
+          {data.results.map((r, idx) => (
+            <button
+              key={idx}
+              onClick={() => setActiveIdx(idx)}
+              className={`px-4 py-2 text-sm whitespace-nowrap transition-colors border-b-2 ${
+                idx === activeIdx
+                  ? 'text-blue-400 border-blue-400 font-semibold'
+                  : 'text-gray-500 border-transparent hover:text-gray-300'
+              }`}
+            >
+              {formatDate(r.data_range.start)} – {formatDate(r.data_range.end)}
+            </button>
+          ))}
+        </div>
+      )}
       <ResultView result={result} />
     </div>
   )
