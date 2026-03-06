@@ -33,12 +33,14 @@ npm run lint   # ESLint
 ## 页面结构
 | 路由 | 页面 | 数据源 |
 |------|------|--------|
-| `/` | Dashboard | signal API |
-| `/quality` | Quality Tracker | signal API |
-| `/history` | Trader History | signal API |
-| `/predict` | Predict Dashboard | predict API |
-| `/backtest` | Backtest A/B Test | signal API |
-| `/code-quality` | Code Quality | — |
+| `/` | Dashboard (概览) | signal API |
+| `/predict` | Predict Dashboard (预测) | predict API |
+| `/backtest` | Backtest A/B Test (回测) | signal API |
+| `/history` | Trader History (历史) | signal API |
+| `/quality` | Quality Tracker (信号质量) | signal API |
+| `/advanced/chain` | Industry Chain (产业链图谱) | predict API |
+| `/advanced/system` | System Health (系统健康) | signal API |
+| `/code-quality` | Code Quality (内部工具,不在导航) | — |
 
 ## 百分比字段格式（⚠️ 关键 — RCA-006 教训）
 **改任何百分比显示前必读 `src/utils/fieldConventions.ts`**
