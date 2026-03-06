@@ -86,3 +86,11 @@ export function usePredictionDetail(id: number | null) {
     { revalidateOnFocus: false }
   )
 }
+
+export function useReasoningGraph(id: number | null) {
+  return useSWR(
+    id != null ? `predict/predictions/${id}/reasoning-graph` : null,
+    () => predictApi.reasoningGraph(id!),
+    { revalidateOnFocus: false }
+  )
+}

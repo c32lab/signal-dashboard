@@ -187,3 +187,23 @@ export interface PredictionDetail extends Prediction {
   reasoning_chain: ReasoningStep[]
   confidence_factors: Record<string, number>  // factor_name → weight (decimal_0_1)
 }
+
+export interface ReasoningGraphNode {
+  id: string
+  type: string  // 'source' | 'event' | 'match' | 'pattern' | 'chain' | 'symbol'
+  data: Record<string, unknown>
+  position: { x: number; y: number }
+}
+
+export interface ReasoningGraphEdge {
+  id: string
+  source: string
+  target: string
+  label?: string
+}
+
+export interface ReasoningGraph {
+  prediction_id: number
+  nodes: ReasoningGraphNode[]
+  edges: ReasoningGraphEdge[]
+}
