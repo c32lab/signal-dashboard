@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { usePerformance, useAccuracyTrend, useSignalQuality, useAccuracy, useConfidence } from '../hooks/useApi'
+import { usePerformance, useAccuracyTrend, useSignalQuality, useAccuracy } from '../hooks/useApi'
 import type {
   PerformanceResponse,
   AccuracyTrendItem,
@@ -18,7 +18,6 @@ import {
   AccuracyTrendChart,
   SectionSkeleton,
   SectionError,
-  ConfidenceDistribution,
 } from '../components/quality'
 
 export default function QualityTracker() {
@@ -29,7 +28,6 @@ export default function QualityTracker() {
   const trendRes = useAccuracyTrend()
   const qualityRes = useSignalQuality(qualityHours)
   const accuracyRes = useAccuracy()
-  const confidenceRes = useConfidence()
 
   const perfData = (perfRes.data as PerformanceResponse | undefined)?.by_symbol
   const perfOverall = (perfRes.data as PerformanceResponse | undefined)?.overall
@@ -137,13 +135,6 @@ export default function QualityTracker() {
       <SectionErrorBoundary title="Combiner Weights">
         <CombinerWeights />
       </SectionErrorBoundary>
-
-      {/* E: Confidence Distribution */}
-      {confidenceRes.data && (
-        <SectionErrorBoundary title="Confidence Distribution">
-          <ConfidenceDistribution data={confidenceRes.data} />
-        </SectionErrorBoundary>
-      )}
     </div>
   )
 }
