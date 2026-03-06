@@ -33,8 +33,8 @@ export function useSignalQuality(hours = 6) {
   return useSWR(['signal_quality', hours], () => api.signalQuality(hours), { refreshInterval: REFRESH_INTERVAL })
 }
 
-export function useAccuracyTrend(hours = 24) {
-  return useSWR(['accuracy/trend', hours], () => api.accuracyTrend(hours), { refreshInterval: REFRESH_INTERVAL })
+export function useAccuracyTrend() {
+  return useSWR('accuracy/trend', () => api.accuracyTrend(24), { refreshInterval: 60_000 })
 }
 
 export function useAccuracy() {
