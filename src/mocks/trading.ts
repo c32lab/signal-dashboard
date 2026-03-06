@@ -241,7 +241,7 @@ const DAILY_GAINS = [
   -200, 430, 260, -110, 510, 185, 340, -70, 290, 160,
 ]
 
-export const MOCK_EQUITY_CURVE: EquityPoint[] = DAILY_GAINS.map((delta, i) => {
+export const MOCK_EQUITY_CURVE: EquityPoint[] = DAILY_GAINS.map((_delta, i) => {
   const date = new Date('2026-02-05T00:00:00Z')
   date.setDate(date.getDate() + i)
   const cumSum = DAILY_GAINS.slice(0, i + 1).reduce((a, b) => a + b, 0)
