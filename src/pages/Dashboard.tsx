@@ -6,8 +6,8 @@ import CombinerWeights from '../components/CombinerWeights'
 import DecisionTable from '../components/DecisionTable'
 import LastUpdated from '../components/LastUpdated'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
-import { useOverview, useBias, useCollectorHealth, useStatus, useHealth } from '../hooks/useApi'
-import { HealthSummary, AlertsPanel, CollectorStatus, DecisionDistribution, SourceBias } from '../components/dashboard'
+import { useOverview, useBias, useCollectorHealth, useStatus, useHealth, usePerformance } from '../hooks/useApi'
+import { HealthSummary, AlertsPanel, CollectorStatus, DecisionDistribution, SourceBias, PerformanceOverview } from '../components/dashboard'
 
 export default function Dashboard() {
   const { data } = useOverview()
@@ -15,6 +15,7 @@ export default function Dashboard() {
   const collectorRes = useCollectorHealth()
   const statusRes = useStatus()
   const healthRes = useHealth()
+  const perfRes = usePerformance()
   const [lastUpdated, setLastUpdated] = useState<Date>()
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export default function Dashboard() {
   const collectorData = collectorRes.data
   const statusData = statusRes.data
   const healthData = healthRes.data
+  const perfData = perfRes.data
 
   return (
     <div className="flex flex-col gap-4 sm:gap-8 py-2 sm:py-6">
@@ -39,6 +41,13 @@ export default function Dashboard() {
       {healthData && (
         <div className="px-2 sm:px-6">
           <HealthSummary data={healthData} />
+        </div>
+      )}
+      {perfData && (
+        <div className="px-2 sm:px-6">
+          <SectionErrorBoundary title="Performance Overview">
+            <PerformanceOverview data={perfData} />
+          </SectionErrorBoundary>
         </div>
       )}
       <div className="px-2 sm:px-6">
