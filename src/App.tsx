@@ -1,13 +1,14 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, lazy, Suspense } from 'react'
 import { SWRConfig } from 'swr'
-import Dashboard from './pages/Dashboard'
-import PredictDashboard from './pages/PredictDashboard'
-import QualityTracker from './pages/QualityTracker'
-import TraderHistory from './pages/TraderHistory'
-import CodeQuality from './pages/CodeQuality'
 import ErrorBoundary from './components/ErrorBoundary'
 import { fetchDynamicPriceRanges } from './utils/dataValidation'
+
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const PredictDashboard = lazy(() => import('./pages/PredictDashboard'))
+const QualityTracker = lazy(() => import('./pages/QualityTracker'))
+const TraderHistory = lazy(() => import('./pages/TraderHistory'))
+const CodeQuality = lazy(() => import('./pages/CodeQuality'))
 
 const NAV_LINKS: { to: string; label: string; end?: boolean }[] = [
   { to: '/', label: 'Signal', end: true },
@@ -91,13 +92,19 @@ function App() {
           )}
         </nav>
         <ErrorBoundary>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/predict" element={<PredictDashboard />} />
-            <Route path="/quality" element={<QualityTracker />} />
-            <Route path="/history" element={<TraderHistory />} />
-            <Route path="/code-quality" element={<CodeQuality />} />
-          </Routes>
+          <Suspense fallback={
+            <div className="flex items-center justify-center h-64 text-gray-500 text-sm">
+              Loading…
+            </div>
+          }>
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/predict" element={<PredictDashboard />} />
+              <Route path="/quality" element={<QualityTracker />} />
+              <Route path="/history" element={<TraderHistory />} />
+              <Route path="/code-quality" element={<CodeQuality />} />
+            </Routes>
+          </Suspense>
         </ErrorBoundary>
       </div>
     </BrowserRouter>
