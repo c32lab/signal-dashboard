@@ -2,7 +2,7 @@ import type { Signal } from '../types'
 import { useSignalsLatest } from '../hooks/useApi'
 import { formatTime } from '../utils/format'
 
-const SYMBOLS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT', 'AVAX/USDT', 'LINK/USDT']
+const SYMBOLS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT']
 
 function directionStyle(direction: string): { badge: string; bar: string; border: string } {
   switch (direction) {

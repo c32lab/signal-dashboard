@@ -22,8 +22,7 @@ const STATIC_PRICE_RANGES: Record<string, [number, number]> = {
   'SOL/USDT': [10, 500],
   'BNB/USDT': [100, 2000],
   'XRP/USDT': [0.1, 10],
-  'AVAX/USDT': [2, 200],
-  'LINK/USDT': [2, 100],
+
 }
 
 // Cache for dynamic price ranges from data-eng API

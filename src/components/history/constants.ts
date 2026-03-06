@@ -1,6 +1,6 @@
 export const PAGE_SIZE = 50
 
-export const SYMBOLS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT', 'AVAX/USDT', 'LINK/USDT']
+export const SYMBOLS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT']
 
 export const ACTIONS = ['LONG', 'SHORT', 'HOLD']
 export const DIRECTIONS = ['LONG', 'SHORT', 'NEUTRAL']
