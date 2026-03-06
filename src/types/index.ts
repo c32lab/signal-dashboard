@@ -43,12 +43,16 @@ export interface Overview {
 
 export interface HealthResponse {
   status: string
+  uptime_seconds?: number
+  version?: string
+  total_decisions?: number
   active_symbols?: string[]
   disabled_symbols?: string[]
   decision_rate_per_hour?: number
   duplicate_ratio?: number
   accuracy_trend?: AccuracyTrendItem[]
-  bias_alerts?: unknown[]
+  bias_alerts?: Array<{ collector: string; bias_score: number; alert: string }>
+  last_scan?: string
 }
 
 export interface BiasAlert {
