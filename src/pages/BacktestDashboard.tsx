@@ -19,8 +19,7 @@ const CONFIG_COLORS: Record<string, string> = {
   C_balanced: '#a78bfa',    // purple
 }
 
-function pct(v: number | undefined | null, decimals = 1): string {
-  if (v == null || isNaN(v)) return '—'
+function pct(v: number, decimals = 1): string {
   return `${v.toFixed(decimals)}%`
 }
 
@@ -45,13 +44,13 @@ function Skeleton() {
 interface SummaryCardProps {
   config: string
   description: string
-  win_rate_pct: number
+  win_rate: number
   total_pnl_pct: number
   sharpe: number
   max_drawdown_pct: number
 }
 
-function SummaryCard({ config, description, win_rate_pct, total_pnl_pct, sharpe, max_drawdown_pct }: SummaryCardProps) {
+function SummaryCard({ config, description, win_rate, total_pnl_pct, sharpe, max_drawdown_pct }: SummaryCardProps) {
   const color = CONFIG_COLORS[config] ?? '#9ca3af'
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
@@ -63,8 +62,8 @@ function SummaryCard({ config, description, win_rate_pct, total_pnl_pct, sharpe,
       <div className="grid grid-cols-2 gap-2 text-xs">
         <div>
           <div className="text-gray-500 mb-0.5">Win Rate</div>
-          <div className={`font-mono font-semibold ${win_rate_pct >= 50 ? 'text-green-400' : 'text-red-400'}`}>
-            {pct(win_rate_pct)}
+          <div className={`font-mono font-semibold ${win_rate >= 50 ? 'text-green-400' : 'text-red-400'}`}>
+            {pct(win_rate)}
           </div>
         </div>
         <div>
@@ -75,7 +74,7 @@ function SummaryCard({ config, description, win_rate_pct, total_pnl_pct, sharpe,
         </div>
         <div>
           <div className="text-gray-500 mb-0.5">Sharpe</div>
-          <div className="font-mono font-semibold text-gray-200">{(sharpe ?? 0).toFixed(2)}</div>
+          <div className="font-mono font-semibold text-gray-200">{sharpe.toFixed(2)}</div>
         </div>
         <div>
           <div className="text-gray-500 mb-0.5">Max DD</div>
@@ -204,13 +203,13 @@ function SymbolRow({ symbol, rows }: SymbolRowProps) {
                     <span className="text-gray-200">{r.config}</span>
                   </td>
                   <td className="px-4 py-2 text-right font-mono text-gray-300">{r.trades}</td>
-                  <td className={`px-4 py-2 text-right font-mono ${r.win_rate_pct >= 50 ? 'text-green-400' : 'text-red-400'}`}>
-                    {pct(r.win_rate_pct)}
+                  <td className={`px-4 py-2 text-right font-mono ${r.win_rate >= 50 ? 'text-green-400' : 'text-red-400'}`}>
+                    {pct(r.win_rate)}
                   </td>
                   <td className={`px-4 py-2 text-right font-mono ${r.total_pnl_pct >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                     {pct(r.total_pnl_pct)}
                   </td>
-                  <td className="px-4 py-2 text-right font-mono text-gray-300">{(r.sharpe ?? 0).toFixed(2)}</td>
+                  <td className="px-4 py-2 text-right font-mono text-gray-300">{r.sharpe.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -249,7 +248,7 @@ function ResultView({ result }: ResultViewProps) {
             key={s.config}
             config={s.config}
             description={result.configs[s.config]?.description ?? ''}
-            win_rate_pct={s.win_rate_pct}
+            win_rate={s.win_rate}
             total_pnl_pct={s.total_pnl_pct}
             sharpe={s.sharpe}
             max_drawdown_pct={s.max_drawdown_pct}

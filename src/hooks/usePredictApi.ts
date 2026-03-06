@@ -78,3 +78,11 @@ export function useTakerVolume(symbol = 'BTC/USDT', limit = 24) {
     { refreshInterval: REFRESH_INTERVAL }
   )
 }
+
+export function usePredictionDetail(id: number | null) {
+  return useSWR(
+    id != null ? `predict/predictions/${id}` : null,
+    () => predictApi.predictionDetail(id!),
+    { revalidateOnFocus: false }
+  )
+}

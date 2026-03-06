@@ -166,3 +166,24 @@ export interface TakerVolumePoint {
   sell_vol: number
   buy_sell_ratio: number
 }
+
+export interface MatchedEvent {
+  event_id: number
+  date: string
+  event: string
+  symbol: string
+  price_change: number    // already_pct
+  similarity: number      // decimal_0_1 → ×100 for display
+}
+
+export interface ReasoningStep {
+  step: string            // e.g. "trigger", "match", "pattern", "direction", "confidence"
+  content: string
+}
+
+export interface PredictionDetail extends Prediction {
+  trigger_event_text: string
+  matched_events: MatchedEvent[]
+  reasoning_chain: ReasoningStep[]
+  confidence_factors: Record<string, number>  // factor_name → weight (decimal_0_1)
+}
