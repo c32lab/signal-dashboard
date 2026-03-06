@@ -87,7 +87,7 @@ export default function SignalCards() {
       <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3 sm:mb-4">
         Latest Signals
       </h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2 sm:gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         {SYMBOLS.map((sym) => (
           <SignalCard key={sym} symbol={sym} signal={signalMap[sym]} />
         ))}

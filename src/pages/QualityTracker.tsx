@@ -224,7 +224,7 @@ function AccuracyLeaderboard({ data }: { data: PerformanceSymbol[] }) {
       </ResponsiveContainer>
 
       <div className="mt-2 overflow-x-auto">
-        <table className="w-full text-xs">
+        <table className="w-full text-xs min-w-[600px]">
           <thead>
             <tr className="text-gray-500 border-b border-gray-800">
               <th className="text-left py-2 px-3">Symbol</th>
@@ -325,7 +325,7 @@ function AccuracyTrend({
       {pivoted.length === 0 ? (
         <p className="text-center text-gray-600 py-12 text-sm">No trend data</p>
       ) : (
-        <div className="h-[200px] sm:h-[260px]">
+        <div className="h-[200px] sm:h-[260px] min-h-[200px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={pivoted} margin={{ top: 4, right: 16, bottom: 0, left: 0 }}>
               <XAxis
@@ -403,7 +403,7 @@ function SignalQualityTable({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-xs">
+        <table className="w-full text-xs min-w-[600px]">
           <thead>
             <tr className="text-gray-500 border-b border-gray-800">
               {['Symbol', 'Long', 'Short', 'Hold', 'Total', 'Actionable Rate'].map((h) => (

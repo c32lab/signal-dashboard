@@ -486,7 +486,7 @@ export default function TraderHistory() {
 
         {!isLoading && !error && (
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-left min-w-[600px]">
               <thead className="bg-gray-950 sticky top-0 z-10">
                 <tr>
                   {['Time', 'Symbol', 'Action', 'Dir', 'Type', 'Conf', 'Score', 'Price', 'SL', 'TP', 'Reasoning'].map(h => (
