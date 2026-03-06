@@ -32,7 +32,7 @@ export default function KPIPanel() {
       {/* Total decisions */}
       <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
         <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Total Decisions</p>
-        <p className="text-3xl font-bold text-white">{data.total_decisions.toLocaleString()}</p>
+        <p className="text-3xl font-bold text-white">{data.total_decisions.toLocaleString('en-US')}</p>
       </div>
 
       {/* Recent 1h */}

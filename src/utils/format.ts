@@ -50,7 +50,7 @@ export function formatChartTime(ts: string | number): string {
 export function formatPrice(value: number, symbol?: string): string {
   const isMajor = symbol && (symbol.startsWith("BTC") || symbol.startsWith("ETH"))
   if (isMajor || value >= 1) {
-    return `$${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
   }
-  return `$${value.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`
+  return `$${value.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`
 }

@@ -1,3 +1,5 @@
+import { formatDateTime } from '../../utils/format'
+
 export function actionBadge(action: string): string {
   switch (action) {
     case 'LONG': return 'bg-green-900 text-green-300'
@@ -48,15 +50,14 @@ export function pnlStr(pnl: number | null | undefined): string {
 }
 
 export function formatTs(ts: string): string {
-  const d = new Date(ts)
-  if (isNaN(d.getTime())) return ts
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+  if (isNaN(new Date(ts).getTime())) return ts
+  return formatDateTime(ts)
 }
 
 export function formatPrice(p: number | null | undefined): string {
   if (p == null) return '—'
-  return p.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })
+  if (p >= 1) return `$${p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  return `$${p.toLocaleString('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`
 }
 
 export function stripUsdt(sym: string): string {
