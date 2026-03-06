@@ -3,6 +3,7 @@ import { useEffect, useState, useRef, lazy, Suspense } from 'react'
 import { SWRConfig } from 'swr'
 import ErrorBoundary from './components/ErrorBoundary'
 import { fetchDynamicPriceRanges } from './utils/dataValidation'
+import { SymbolsProvider } from './hooks/useSymbols'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const PredictDashboard = lazy(() => import('./pages/PredictDashboard'))
@@ -126,6 +127,7 @@ function App() {
       errorRetryInterval: 5000,
     }}>
     <BrowserRouter>
+    <SymbolsProvider>
       <div className="bg-gray-950 text-gray-100 min-h-screen">
         <nav className="bg-gray-900 border-b border-gray-800">
           <div className="flex items-center justify-between px-4 py-3">
@@ -243,6 +245,7 @@ function App() {
           </Suspense>
         </ErrorBoundary>
       </div>
+    </SymbolsProvider>
     </BrowserRouter>
     </SWRConfig>
   )

@@ -194,10 +194,11 @@ function TakerVolumeChart({ data, isLoading }: { data: TakerVolumePoint[] | unde
   )
 }
 
-const DERIV_SYMBOLS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT']
+import { useSymbols } from '../../hooks/useSymbols'
 
 export function DerivativesOverviewSection() {
-  const [derivSymbol, setDerivSymbol] = useState('BTC/USDT')
+  const symbols = useSymbols()
+  const [derivSymbol, setDerivSymbol] = useState(symbols[0] ?? 'BTC/USDT')
   const { data: oiData, isLoading: oiLoading } = useOpenInterest(derivSymbol, 24)
   const { data: lsrData, isLoading: lsrLoading } = useLongShortRatio(derivSymbol, 24)
   const { data: tvData, isLoading: tvLoading } = useTakerVolume(derivSymbol, 24)
@@ -207,7 +208,7 @@ export function DerivativesOverviewSection() {
       <div className="px-4 py-3 border-b border-gray-800 flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-sm font-semibold text-gray-200">Derivatives Overview</h2>
         <div className="flex gap-1">
-          {DERIV_SYMBOLS.map((s) => (
+          {symbols.map((s) => (
             <button
               key={s}
               onClick={() => setDerivSymbol(s)}
