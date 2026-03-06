@@ -19,6 +19,12 @@ export function usePredictions(status = 'active', limit = 50) {
   )
 }
 
+export function usePredictAccuracy() {
+  return useSWR('predict/accuracy', () => predictApi.predictAccuracy(), {
+    refreshInterval: REFRESH_INTERVAL,
+  })
+}
+
 export function usePredictEvents(limit = 50, pattern?: string) {
   return useSWR(
     ['predict/events', limit, pattern],

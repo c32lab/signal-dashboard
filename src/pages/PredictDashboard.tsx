@@ -3,6 +3,7 @@ import {
   usePrediction,
   useTrends,
   useIndustryChain,
+  usePredictAccuracy,
 } from '../hooks/usePredictApi'
 import { predictApi } from '../api/predict'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
@@ -23,11 +24,12 @@ import {
 export default function PredictDashboard() {
   const { data, error, isLoading } = usePrediction()
   // Fetch all predictions without status filter for the history table
-  const { data: allPredictions, isLoading: histLoading } = useSWR(
+  const { data: allPredictionsData, isLoading: histLoading } = useSWR(
     'predict/predictions/all',
     () => predictApi.predictions({ limit: 50 }),
     { refreshInterval: 30_000 }
   )
+  const { data: accuracyData } = usePredictAccuracy()
   const { data: trendsData, isLoading: trendsLoading } = useTrends()
   const { data: chainData, isLoading: chainLoading } = useIndustryChain()
 
@@ -167,17 +169,17 @@ export default function PredictDashboard() {
           <h2 className="text-sm font-semibold text-gray-200">
             Prediction History
             <span className="ml-2 text-xs text-gray-500">
-              {histLoading ? 'loading…' : `(${(allPredictions ?? []).length})`}
+              {histLoading ? 'loading…' : `(${(allPredictionsData?.predictions ?? []).length})`}
             </span>
           </h2>
         </div>
         <div className="p-2">
           {histLoading ? (
             <p className="text-center text-gray-600 py-8 text-sm">Loading…</p>
-          ) : !allPredictions || allPredictions.length === 0 ? (
+          ) : !allPredictionsData?.predictions || allPredictionsData.predictions.length === 0 ? (
             <p className="text-center text-gray-600 py-8 text-sm">No prediction history</p>
           ) : (
-            <PredictionHistoryTable predictions={allPredictions} />
+            <PredictionHistoryTable predictions={allPredictionsData.predictions} />
           )}
         </div>
       </section>
@@ -207,8 +209,8 @@ export default function PredictDashboard() {
       {/* ── Sections D+E: Prediction Accuracy + Validations ──────────────── */}
       <SectionErrorBoundary title="Prediction Accuracy">
       <AccuracyAndValidationsSection
-        accuracy={accuracy ?? {}}
-        validations={recent_validations ?? []}
+        accuracy={accuracyData?.accuracy ?? accuracy ?? {}}
+        validations={accuracyData?.recent_validations ?? recent_validations ?? []}
       />
       </SectionErrorBoundary>
 

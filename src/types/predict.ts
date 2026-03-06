@@ -120,6 +120,11 @@ export interface Validation {
   confidence: number        // decimal_0_1 → ×100 for display
 }
 
+export interface PredictAccuracyResponse {
+  accuracy: Record<string, AccuracyEntry>
+  recent_validations: Validation[]
+}
+
 export interface PredictionOverview {
   macro: Macro
   event_kb: EventKB
