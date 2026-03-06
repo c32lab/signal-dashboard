@@ -306,8 +306,21 @@ export default function TraderHistory() {
   const [actionFilter, setActionFilter] = useState('')
   const [directionFilter, setDirectionFilter] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
+  const [timePeriod, setTimePeriod] = useState('')
   const [offset, setOffset] = useState(0)
   const [exporting, setExporting] = useState(false)
+
+  const TIME_PERIODS: { label: string; ms: number }[] = [
+    { label: 'Last 1h',  ms: 1 * 60 * 60_000 },
+    { label: 'Last 4h',  ms: 4 * 60 * 60_000 },
+    { label: 'Last 12h', ms: 12 * 60 * 60_000 },
+    { label: 'Last 24h', ms: 24 * 60 * 60_000 },
+    { label: 'Last 7d',  ms: 7 * 24 * 60 * 60_000 },
+  ]
+
+  const fromTs = timePeriod
+    ? new Date(Date.now() - TIME_PERIODS.find(p => p.label === timePeriod)!.ms).toISOString()
+    : undefined
 
   // Server-side filters (symbol, action, type are supported by backend)
   const serverFilters = {
@@ -316,6 +329,7 @@ export default function TraderHistory() {
     symbol: symbolFilter || undefined,
     action: actionFilter || undefined,
     type: typeFilter || undefined,
+    from: fromTs,
     // NOTE: direction is NOT supported server-side, handled client-side below
   }
 
@@ -428,11 +442,12 @@ export default function TraderHistory() {
             {DIRECTIONS.map(d => <option key={d} value={d}>{d}</option>)}
           </FilterSelect>
 
-          <div title="Coming soon">
-            <FilterSelect value="" disabled>
-              <option value="">All Time</option>
-            </FilterSelect>
-          </div>
+          <FilterSelect value={timePeriod} onChange={e => { setTimePeriod(e.target.value); setOffset(0) }}>
+            <option value="">All Time</option>
+            {TIME_PERIODS.map(p => (
+              <option key={p.label} value={p.label}>{p.label}</option>
+            ))}
+          </FilterSelect>
 
           <div className="ml-auto">
             <button
