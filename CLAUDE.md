@@ -24,7 +24,7 @@ npm run lint   # ESLint
 ### Proxy 映射
 | 前缀 | 目标 | 后端服务 |
 |------|------|---------|
-| `/api` | `localhost:18800` | amani-signal（信号引擎）|
+| `/api` | `localhost:18810` | amani-signal（信号引擎）|
 | `/predict-api` | `localhost:18801` | amani-predict（预测引擎）|
 | `/data-api` | `localhost:8081` | data-eng（数据工程）|
 
