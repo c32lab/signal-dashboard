@@ -5,6 +5,7 @@ import CombinerWeights from '../components/CombinerWeights'
 import DecisionTable from '../components/DecisionTable'
 import LastUpdated from '../components/LastUpdated'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
+import TradingStatus from '../components/TradingStatus'
 import { useOverview, useBias, useHealth, usePerformance, useAccuracy } from '../hooks/useApi'
 import { HealthSummary, AlertsPanel, DecisionDistribution, SourceBias, PerformanceOverview, AccuracyKPI, AccuracyMiniTrend } from '../components/dashboard'
 
@@ -62,6 +63,11 @@ export default function Dashboard() {
       <SectionErrorBoundary title="KPI Panel">
         <KPIPanel />
       </SectionErrorBoundary>
+      <div className="px-2 sm:px-6">
+        <SectionErrorBoundary title="Trading Status">
+          <TradingStatus />
+        </SectionErrorBoundary>
+      </div>
       <div className="px-2 sm:px-6">
         <SectionErrorBoundary title="Combiner Weights">
           <CombinerWeights />
