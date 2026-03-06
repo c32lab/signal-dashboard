@@ -8,12 +8,13 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import type { MacroSnapshot } from '../../types/predict'
+import { formatDate } from '../../utils/format'
 
 export function MacroHistoryChart({ snapshots }: { snapshots: MacroSnapshot[] }) {
   const data = [...snapshots]
     .sort((a, b) => a.timestamp.localeCompare(b.timestamp))
     .map((s) => ({
-      time: new Date(s.timestamp).toLocaleDateString(),
+      time: formatDate(s.timestamp),
       macro_score: s.macro_score,
       fear_greed: s.fear_greed,
     }))

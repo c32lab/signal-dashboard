@@ -1,5 +1,6 @@
 import type { Signal } from '../types'
 import { useSignalsLatest } from '../hooks/useApi'
+import { formatTime } from '../utils/format'
 
 const SYMBOLS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT', 'AVAX/USDT', 'LINK/USDT']
 
@@ -14,10 +15,9 @@ function directionStyle(direction: string): { badge: string; bar: string; border
   }
 }
 
-function formatTime(ts: string): string {
-  const date = new Date(ts)
-  if (isNaN(date.getTime())) return ts
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+function formatTimeSafe(ts: string): string {
+  if (isNaN(new Date(ts).getTime())) return ts
+  return formatTime(ts)
 }
 
 function SignalCard({ symbol, signal }: { symbol: string; signal: Signal | undefined }) {
@@ -54,7 +54,7 @@ function SignalCard({ symbol, signal }: { symbol: string; signal: Signal | undef
       </div>
 
       <p className="text-xs text-gray-600">
-        {signal ? formatTime(signal.timestamp) : 'No data'}
+        {signal ? formatTimeSafe(signal.timestamp) : 'No data'}
       </p>
     </div>
   )

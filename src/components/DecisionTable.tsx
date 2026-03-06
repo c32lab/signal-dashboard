@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import type { Decision } from '../types'
 import { useDecisions } from '../hooks/useApi'
 import { validatePrice, validateConfidence } from '../utils/dataValidation'
+import { formatDateTime, formatPrice } from '../utils/format'
 import DataWarning from './DataWarning'
 
 const PAGE_SIZE = 20
@@ -48,14 +49,8 @@ function typeBadge(type: string) {
 }
 
 function formatTs(ts: string): string {
-  const d = new Date(ts)
-  if (isNaN(d.getTime())) return ts
-  return d.toLocaleString([], {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
+  if (isNaN(new Date(ts).getTime())) return ts
+  return formatDateTime(ts)
 }
 
 function DecisionRow({ d }: { d: Decision }) {
@@ -80,7 +75,7 @@ function DecisionRow({ d }: { d: Decision }) {
       <td className="px-3 py-2 text-xs text-gray-300 text-right font-mono">
         {typeof d.price_at_decision === 'number' ? (
           <>
-            {d.price_at_decision.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            {formatPrice(d.price_at_decision, d.symbol)}
             {(() => {
               const v = validatePrice(d.price_at_decision, d.symbol)
               return v.valid ? null : <DataWarning message={v.warning!} />

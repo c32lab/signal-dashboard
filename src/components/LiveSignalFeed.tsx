@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useRecentDecisions } from '../hooks/useApi'
 import type { Decision } from '../types'
+import { formatTime } from '../utils/format'
 
 function actionBadgeClass(action: string): string {
   switch (action?.toUpperCase()) {
@@ -26,10 +27,9 @@ function typePillClass(type: string): string {
   }
 }
 
-function formatTime(ts: string): string {
-  const d = new Date(ts)
-  if (isNaN(d.getTime())) return ts
-  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
+function formatTimeFeed(ts: string): string {
+  if (isNaN(new Date(ts).getTime())) return ts
+  return formatTime(ts)
 }
 
 function ConfidenceBar({ value }: { value: number }) {
@@ -47,7 +47,7 @@ function ConfidenceBar({ value }: { value: number }) {
 function FeedRow({ d }: { d: Decision }) {
   return (
     <div className="flex items-center gap-2 py-1.5 border-t border-gray-800 hover:bg-gray-800/30 px-3 transition-colors text-xs">
-      <span className="text-gray-500 font-mono w-16 shrink-0">{formatTime(d.timestamp)}</span>
+      <span className="text-gray-500 font-mono w-16 shrink-0">{formatTimeFeed(d.timestamp)}</span>
       <span className="font-semibold text-gray-200 w-10 shrink-0">{d.symbol.replace('/USDT', '')}</span>
       <span className={`px-1.5 py-0.5 rounded-full font-semibold shrink-0 ${actionBadgeClass(d.action)}`}>
         {d.action}

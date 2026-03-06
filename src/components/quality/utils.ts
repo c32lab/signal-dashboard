@@ -1,3 +1,5 @@
+import { formatDateTime } from '../../utils/format'
+
 export const SYMBOL_COLORS: Record<string, string> = {
   'BTC/USDT': '#60a5fa',
   'ETH/USDT': '#a78bfa',
@@ -23,15 +25,8 @@ export function accuracyColor(pct: number) {
 }
 
 export function formatHour(hour: string): string {
-  const d = new Date(hour)
-  if (isNaN(d.getTime())) return hour
-  return d.toLocaleString([], {
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  })
+  if (isNaN(new Date(hour).getTime())) return hour
+  return formatDateTime(hour)
 }
 
 export function pnlColor(pnl: number | null | undefined) {

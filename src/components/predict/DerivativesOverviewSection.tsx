@@ -15,11 +15,12 @@ import {
   useTakerVolume,
 } from '../../hooks/usePredictApi'
 import type { OpenInterestPoint, LongShortRatioPoint, TakerVolumePoint } from '../../types/predict'
+import { formatChartTime } from '../../utils/format'
 
 const DERIV_TOOLTIP_STYLE = { background: '#111827', border: '1px solid #374151', borderRadius: 6, fontSize: 12 }
 
 function fmtTime(ts: number): string {
-  return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+  return formatChartTime(ts)
 }
 
 function fmtOIValue(v: number): string {
