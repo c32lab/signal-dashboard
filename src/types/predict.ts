@@ -142,3 +142,22 @@ export interface IndustryChain {
   nodes: ChainNode[]
   edges: ChainEdge[]
 }
+
+export interface OpenInterestPoint {
+  timestamp: number
+  sum_open_interest_value: number
+}
+
+export interface LongShortRatioPoint {
+  timestamp: number
+  long_account: number
+  short_account: number
+  long_short_ratio: number
+}
+
+export interface TakerVolumePoint {
+  timestamp: number
+  buy_vol: number
+  sell_vol: number
+  buy_sell_ratio: number
+}
