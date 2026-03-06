@@ -183,7 +183,19 @@ export interface CombinerWeightsResponse {
   weights: Record<string, number>
 }
 
-export type ConfidenceData = Record<string, unknown>
+export interface ConfidenceBucket {
+  bucket: string
+  action: string
+  decision_type: string
+  cnt: number
+  avg_conf: number
+  avg_score: number
+}
+
+export interface ConfidenceData {
+  confidence_buckets: ConfidenceBucket[]
+  _meta?: Record<string, string>
+}
 
 export interface DecisionFilters {
   limit?: number
