@@ -57,6 +57,10 @@ export function useCollectorHealth() {
   return useSWR('collector-health', () => api.collectorHealth(), { refreshInterval: REFRESH_INTERVAL })
 }
 
+export function useStatus() {
+  return useSWR('status', () => api.status(), { refreshInterval: REFRESH_INTERVAL })
+}
+
 export function useRecentDecisions(minutes: number) {
   return useSWR(
     ['recent-decisions', minutes],

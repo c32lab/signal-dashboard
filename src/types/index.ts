@@ -51,6 +51,18 @@ export interface HealthResponse {
   bias_alerts?: unknown[]
 }
 
+export interface BiasAlert {
+  collector: string
+  alert: string
+  bias_score: number
+}
+
+export interface StatusResponse {
+  bias_alerts?: BiasAlert[]
+  duplicate_ratio?: number
+  disabled_symbols?: string[]
+}
+
 export interface PerformanceSymbol {
   symbol: string
   total: number
