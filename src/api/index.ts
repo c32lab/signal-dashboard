@@ -14,6 +14,7 @@ import type {
   CombinerWeightsResponse,
   BiasResponse,
   CollectorHealthResponse,
+  StatusResponse,
 } from '../types'
 
 const BASE_URL = ''
@@ -79,4 +80,7 @@ export const api = {
 
   collectorHealth: () =>
     fetcher<CollectorHealthResponse>(`${BASE_URL}/api/collector-health`),
+
+  status: () =>
+    fetcher<StatusResponse>(`${BASE_URL}/api/status`),
 }
