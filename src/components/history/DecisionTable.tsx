@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Decision } from '../../types'
 import SectionErrorBoundary from '../SectionErrorBoundary'
 import DecisionRow from './DecisionRow'
@@ -11,6 +12,12 @@ export default function DecisionTable({
   isLoading: boolean
   error: unknown
 }) {
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+
+  function handleToggle(id: string) {
+    setExpandedId(prev => (prev === id ? null : id))
+  }
+
   return (
     <SectionErrorBoundary title="Decision Table">
       <div className="bg-gray-900 rounded-xl border border-gray-800">
@@ -46,7 +53,17 @@ export default function DecisionTable({
                     </td>
                   </tr>
                 ) : (
-                  decisions.map(d => <DecisionRow key={String(d.id)} d={d} />)
+                  decisions.map(d => {
+                    const id = String(d.id)
+                    return (
+                      <DecisionRow
+                        key={id}
+                        d={d}
+                        isExpanded={expandedId === id}
+                        onToggle={() => handleToggle(id)}
+                      />
+                    )
+                  })
                 )}
               </tbody>
             </table>
