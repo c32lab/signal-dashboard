@@ -37,6 +37,8 @@ npm run lint   # ESLint
 | `/quality` | Quality Tracker | signal API |
 | `/history` | Trader History | signal API |
 | `/predict` | Predict Dashboard | predict API |
+| `/backtest` | Backtest A/B Test | signal API |
+| `/code-quality` | Code Quality | — |
 
 ## 百分比字段格式（⚠️ 关键 — RCA-006 教训）
 **改任何百分比显示前必读 `src/utils/fieldConventions.ts`**
@@ -74,7 +76,19 @@ src/
 ## 提交规范
 - 前缀：feat / fix / docs / config / chore / refactor / test
 - `git add` 用具体文件名，禁止 `git add -A`
-- 提交前运行 `npx tsc --noEmit` 确保无 TS 错误
+- 提交前运行 `npx tsc --project tsconfig.app.json --noEmit` 确保无 TS 错误（注意是 tsconfig.app.json 不是 tsconfig.json）
+
+## Recharts Tooltip（⚠️ 重复教训 ×3）
+Recharts Tooltip 的 `labelFormatter` / `formatter` 回调参数类型可能是 `undefined` 或 `ReactNode`，不是 `string`。**必须加防御：**
+```typescript
+// ✅ 正确
+labelFormatter={(ts: unknown) => formatDateTime(String(ts ?? ''))}
+formatter={(value: unknown, name: unknown) => [`${Number(value ?? 0).toFixed(2)}%`, String(name ?? '')]}
+
+// ❌ 错误 — 会报 TS 类型错误
+labelFormatter={(ts) => formatDateTime(String(ts))}
+formatter={(value, name) => [`${Number(value).toFixed(2)}%`, String(name)]}
+```
 
 ## 禁止
 - **绝对不要修改 vite.config.ts 的 proxy 端口** — `/api` → :18800, `/predict-api` → :18801, `/data-api` → :8081。这些端口是固定的。:18810 是被废弃的旧方案，绝不使用
