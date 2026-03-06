@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useTimelineData } from '../hooks/useTimelineData'
+import { useSymbols } from '../hooks/useSymbols'
 import { formatDateTime, formatPrice } from '../utils/format'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
 
@@ -91,12 +92,14 @@ function SignalTimeline() {
   const decisions = data?.decisions ?? []
   const total = data?.total ?? 0
 
-  // Extract unique symbols from current data for the filter dropdown
-  const symbols = useMemo(() => {
-    if (!data?.decisions) return []
-    const set = new Set(data.decisions.map((d) => d.symbol))
-    return Array.from(set).sort()
-  }, [data?.decisions])
+  // Client-side direction filter (backend does not support direction param)
+  const filteredDecisions = useMemo(() => {
+    if (!direction) return decisions
+    return decisions.filter(d => d.direction === direction)
+  }, [decisions, direction])
+
+  // Full symbol list from health endpoint
+  const symbols = useSymbols()
 
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
@@ -145,7 +148,9 @@ function SignalTimeline() {
           </div>
 
           {total > 0 && (
-            <span className="text-xs text-gray-500 ml-auto">共 {total} 条</span>
+            <span className="text-xs text-gray-500 ml-auto">
+              {direction ? `${filteredDecisions.length} / ` : ''}共 {total} 条
+            </span>
           )}
         </div>
 
@@ -160,17 +165,17 @@ function SignalTimeline() {
         {isLoading && <SkeletonCards />}
 
         {/* Timeline */}
-        {!isLoading && !error && decisions.length === 0 && (
+        {!isLoading && !error && filteredDecisions.length === 0 && (
           <p className="text-sm text-gray-500 text-center py-8">暂无数据</p>
         )}
 
-        {!isLoading && decisions.length > 0 && (
+        {!isLoading && filteredDecisions.length > 0 && (
           <div className="relative">
             {/* Vertical line */}
             <div className="absolute left-[7rem] md:left-[8.5rem] top-0 bottom-0 w-px bg-gray-700" />
 
             <div className="space-y-4">
-              {decisions.map((d) => (
+              {filteredDecisions.map((d) => (
                 <div key={d.id} className="flex gap-4 relative">
                   {/* Time label */}
                   <div className="w-24 md:w-32 shrink-0 text-right pr-4 pt-3">

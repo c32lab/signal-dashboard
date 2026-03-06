@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   LineChart,
   Line,
@@ -460,24 +460,42 @@ export default function BacktestDashboard() {
     )
   }
 
-  const result = data.results[activeIdx] ?? data.results[0]
+  // Clamp activeIdx to avoid out-of-bounds after data reload
+  const safeIdx = Math.min(activeIdx, data.results.length - 1)
+  const result = data.results[safeIdx] ?? data.results[0]
+
+  // Detect duplicate tab labels to add index prefix
+  const tabLabels = useMemo(() => {
+    const raw = data.results.map(r => `${formatDate(r.data_range.start)} – ${formatDate(r.data_range.end)}`)
+    const counts = new Map<string, number>()
+    raw.forEach(l => counts.set(l, (counts.get(l) ?? 0) + 1))
+    const seen = new Map<string, number>()
+    return raw.map(l => {
+      if ((counts.get(l) ?? 0) > 1) {
+        const idx = (seen.get(l) ?? 0) + 1
+        seen.set(l, idx)
+        return `#${idx} ${l}`
+      }
+      return l
+    })
+  }, [data.results])
 
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Multi-result tabs */}
       {data.results.length > 1 && (
         <div className="flex gap-1 border-b border-gray-800 overflow-x-auto">
-          {data.results.map((r, idx) => (
+          {data.results.map((_r, idx) => (
             <button
               key={idx}
               onClick={() => setActiveIdx(idx)}
               className={`px-4 py-2 text-sm whitespace-nowrap transition-colors border-b-2 ${
-                idx === activeIdx
+                idx === safeIdx
                   ? 'text-blue-400 border-blue-400 font-semibold'
                   : 'text-gray-500 border-transparent hover:text-gray-300'
               }`}
             >
-              {formatDate(r.data_range.start)} – {formatDate(r.data_range.end)}
+              {tabLabels[idx]}
             </button>
           ))}
         </div>
