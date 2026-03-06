@@ -184,7 +184,6 @@ export interface CombinerWeightsResponse {
 }
 
 export type ConfidenceData = Record<string, unknown>
-export type BacktestData = Record<string, unknown>
 
 export interface DecisionFilters {
   limit?: number

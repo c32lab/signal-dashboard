@@ -9,12 +9,14 @@ const PredictDashboard = lazy(() => import('./pages/PredictDashboard'))
 const QualityTracker = lazy(() => import('./pages/QualityTracker'))
 const TraderHistory = lazy(() => import('./pages/TraderHistory'))
 const CodeQuality = lazy(() => import('./pages/CodeQuality'))
+const BacktestDashboard = lazy(() => import('./pages/BacktestDashboard'))
 
 const NAV_LINKS: { to: string; label: string; end?: boolean }[] = [
   { to: '/', label: 'Signal', end: true },
   { to: '/predict', label: 'Predict' },
   { to: '/quality', label: 'Quality' },
   { to: '/history', label: 'History' },
+  { to: '/backtest', label: 'Backtest' },
   { to: '/code-quality', label: 'Code Quality' },
 ]
 
@@ -102,6 +104,7 @@ function App() {
               <Route path="/predict" element={<PredictDashboard />} />
               <Route path="/quality" element={<QualityTracker />} />
               <Route path="/history" element={<TraderHistory />} />
+              <Route path="/backtest" element={<BacktestDashboard />} />
               <Route path="/code-quality" element={<CodeQuality />} />
             </Routes>
           </Suspense>
