@@ -32,11 +32,11 @@ function isGroup(entry: NavEntry): entry is NavGroup {
 }
 
 const NAV_ENTRIES: NavEntry[] = [
-  { to: '/', label: '概览', end: true },
-  { to: '/predict', label: '预测' },
-  { to: '/backtest', label: '回测' },
-  { to: '/trading', label: '📈 Trading' },
-  { to: '/history', label: '历史' },
+  { to: '/', label: '信号概览', end: true },
+  { to: '/predict', label: '预测历史' },
+  { to: '/backtest', label: '回测对比' },
+  { to: '/trading', label: '交易记录' },
+  { to: '/history', label: '事件库' },
   {
     label: '高级分析',
     items: [
