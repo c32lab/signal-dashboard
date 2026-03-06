@@ -3,7 +3,6 @@ import {
   usePrediction,
   usePredictHealth,
   useTrends,
-  useIndustryChain,
   usePredictAccuracy,
 } from '../hooks/usePredictApi'
 import { predictApi } from '../api/predict'
@@ -17,7 +16,6 @@ import {
   PatternCard,
   MacroHistoryChart,
   TrendsSection,
-  IndustryChainSection,
   AccuracyAndValidationsSection,
   DerivativesOverviewSection,
   PredictHealthHeader,
@@ -34,7 +32,6 @@ export default function PredictDashboard() {
   )
   const { data: accuracyData } = usePredictAccuracy()
   const { data: trendsData, isLoading: trendsLoading } = useTrends()
-  const { data: chainData, isLoading: chainLoading } = useIndustryChain()
 
   if (isLoading) {
     return (
@@ -60,8 +57,7 @@ export default function PredictDashboard() {
   const patterns = event_kb?.patterns ?? []
 
   const trends = Array.isArray(trendsData) ? trendsData : (trendsData as unknown as { trends?: Trend[] })?.trends ?? []
-  const chainNodes = chainData?.nodes ?? []
-  const chainEdges = chainData?.edges ?? []
+
 
   return (
     <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
@@ -226,31 +222,6 @@ export default function PredictDashboard() {
         accuracy={accuracyData?.accuracy ?? accuracy ?? {}}
         validations={accuracyData?.recent_validations ?? recent_validations ?? []}
       />
-      </SectionErrorBoundary>
-
-      {/* ── Section C: Industry Chain Visualization ───────────────────────── */}
-      <SectionErrorBoundary title="Industry Chain">
-      <section className="bg-gray-900 rounded-xl border border-gray-800">
-        <div className="px-4 py-3 border-b border-gray-800">
-          <h2 className="text-sm font-semibold text-gray-200">
-            Industry Chain
-            {!chainLoading && chainNodes.length > 0 && (
-              <span className="ml-2 text-xs text-gray-500">
-                {chainNodes.length} nodes · {chainEdges.length} edges
-              </span>
-            )}
-          </h2>
-        </div>
-        <div className="p-4">
-          {chainLoading ? (
-            <p className="text-center text-gray-600 py-8 text-sm">Loading…</p>
-          ) : chainNodes.length === 0 ? (
-            <p className="text-center text-gray-600 py-8 text-sm">No industry chain data</p>
-          ) : (
-            <IndustryChainSection nodes={chainNodes} edges={chainEdges} />
-          )}
-        </div>
-      </section>
       </SectionErrorBoundary>
 
       {/* ── Section F: Derivatives Overview ───────────────────────────────── */}

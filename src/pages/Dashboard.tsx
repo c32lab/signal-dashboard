@@ -5,19 +5,17 @@ import CombinerWeights from '../components/CombinerWeights'
 import DecisionTable from '../components/DecisionTable'
 import LastUpdated from '../components/LastUpdated'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
-import { useOverview, useBias, useCollectorHealth, useHealth, usePerformance, useAccuracy } from '../hooks/useApi'
-import { HealthSummary, AlertsPanel, CollectorStatus, DecisionDistribution, SourceBias, PerformanceOverview, AccuracyKPI, AccuracyMiniTrend } from '../components/dashboard'
+import { useOverview, useBias, useHealth, usePerformance, useAccuracy } from '../hooks/useApi'
+import { HealthSummary, AlertsPanel, DecisionDistribution, SourceBias, PerformanceOverview, AccuracyKPI, AccuracyMiniTrend } from '../components/dashboard'
 
 export default function Dashboard() {
   const { data } = useOverview()
   const biasRes = useBias()
-  const collectorRes = useCollectorHealth()
   const healthRes = useHealth()
   const perfRes = usePerformance()
   const accuracyRes = useAccuracy()
 
   const biasData = biasRes.data
-  const collectorData = collectorRes.data
   const healthData = healthRes.data
   const perfData = perfRes.data
   const accuracyData = accuracyRes.data
@@ -64,13 +62,6 @@ export default function Dashboard() {
       <SectionErrorBoundary title="KPI Panel">
         <KPIPanel />
       </SectionErrorBoundary>
-      {collectorData && (
-        <div className="px-2 sm:px-6">
-          <SectionErrorBoundary title="Collector Status">
-            <CollectorStatus data={collectorData} />
-          </SectionErrorBoundary>
-        </div>
-      )}
       <div className="px-2 sm:px-6">
         <SectionErrorBoundary title="Combiner Weights">
           <CombinerWeights />
