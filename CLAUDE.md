@@ -24,7 +24,7 @@ npm run lint   # ESLint
 ### Proxy 映射
 | 前缀 | 目标 | 后端服务 |
 |------|------|---------|
-| `/api` | `localhost:18810` | amani-signal（信号引擎）|
+| `/api` | `localhost:18800` | amani-signal（信号引擎）|
 | `/predict-api` | `localhost:18801` | amani-predict（预测引擎）|
 | `/data-api` | `localhost:8081` | data-eng（数据工程）|
 
@@ -33,10 +33,11 @@ npm run lint   # ESLint
 ## 页面结构
 | 路由 | 页面 | 数据源 |
 |------|------|--------|
-| `/` | Dashboard (概览) | signal API |
-| `/predict` | Predict Dashboard (预测) | predict API |
-| `/backtest` | Backtest A/B Test (回测) | signal API |
-| `/history` | Trader History (历史) | signal API |
+| `/` | Dashboard (信号概览) | signal API |
+| `/predict` | Predict Dashboard (预测历史) | predict API |
+| `/backtest` | Backtest A/B Test (回测对比) | signal API |
+| `/trading` | Trading Dashboard (交易记录) | signal API |
+| `/history` | Trader History (事件库) | signal API |
 | `/quality` | Quality Tracker (信号质量) | signal API |
 | `/advanced/chain` | Industry Chain (产业链图谱) | predict API |
 | `/advanced/system` | System Health (系统健康) | signal API |
@@ -64,11 +65,14 @@ npm run lint   # ESLint
 ```
 src/
 ├── api/          # API 客户端（index.ts=signal, predict.ts=predict）
-├── hooks/        # SWR hooks（useApi.ts, usePredictApi.ts）
-├── types/        # TypeScript 类型定义
-├── utils/        # 工具函数（字段格式、数据验证）
-├── components/   # 共享组件
+├── assets/       # 静态资源
+├── components/   # 共享组件（含 dashboard/ history/ predict/ quality/ 子目录）
+├── hooks/        # SWR hooks（useApi.ts, usePredictApi.ts, useSymbols.tsx）
 ├── pages/        # 页面组件（每页一个文件）
+├── types/        # TypeScript 类型定义
+├── utils/        # 工具函数（字段格式、数据验证、格式化）
+├── App.tsx       # 路由 + 导航布局
+├── index.css     # 全局样式（Tailwind 入口）
 └── main.tsx      # 入口
 ```
 
@@ -79,6 +83,7 @@ src/
 - 前缀：feat / fix / docs / config / chore / refactor / test
 - `git add` 用具体文件名，禁止 `git add -A`
 - 提交前运行 `npx tsc --project tsconfig.app.json --noEmit` 确保无 TS 错误（注意是 tsconfig.app.json 不是 tsconfig.json）
+- **Pre-commit hook**（`.git/hooks/pre-commit`）：自动阻止端口被篡改 — 检查 vite.config.ts 不含 18810、dashboard port 必须是 3080、nginx.conf/docker-compose.yml 不被改成错误端口
 - **提交后立即部署：** `cd ~/signal-dashboard && docker compose down && docker compose up -d --build`
 - Docker build 用 `tsc -b`（比 tsconfig.app.json 更严格），确保两者都 0 error
 
