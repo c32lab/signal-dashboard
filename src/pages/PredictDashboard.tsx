@@ -460,6 +460,15 @@ function IndustryChainSection({ nodes, edges }: { nodes: ChainNode[]; edges: Cha
     return result
   }, [filteredNodes])
 
+  // O(1) type lookup for MiniMap (avoids O(n²) nodes.find)
+  const nodeTypeMap = useMemo<Record<string, string>>(() => {
+    const map: Record<string, string> = {}
+    for (const n of filteredNodes) {
+      map[n.id] = n.type
+    }
+    return map
+  }, [filteredNodes])
+
   // Build ReactFlow edges
   const rfEdges: Edge[] = useMemo(() => edges
     .filter((e) => filteredNodeIds.has(e.from_node) && filteredNodeIds.has(e.to_node))
@@ -530,7 +539,7 @@ function IndustryChainSection({ nodes, edges }: { nodes: ChainNode[]; edges: Cha
             <Controls />
             <MiniMap
               nodeColor={(n) => {
-                const type = nodes.find((cn) => cn.id === n.id)?.type ?? ''
+                const type = nodeTypeMap[n.id] ?? ''
                 return (NODE_COLORS[type] ?? { border: '#6b7280' }).border
               }}
               style={{ background: '#111827' }}
