@@ -9,7 +9,7 @@ export interface BacktestSummary {
   signal_count?: number
   win_count?: number
   loss_count?: number
-  win_rate: number            // already_pct — display directly with %
+  win_rate_pct: number
   total_pnl_pct: number      // already_pct
   sharpe: number
   max_drawdown_pct: number   // already_pct
@@ -23,7 +23,7 @@ export interface PnlCurvePoint {
 export interface SymbolBacktest {
   config: string
   trades: number
-  win_rate: number            // already_pct
+  win_rate_pct: number            // already_pct
   total_pnl_pct: number      // already_pct
   sharpe: number
   max_drawdown_pct?: number  // already_pct
