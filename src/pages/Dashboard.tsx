@@ -7,7 +7,7 @@ import DecisionTable from '../components/DecisionTable'
 import LastUpdated from '../components/LastUpdated'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
 import { useOverview, useBias, useCollectorHealth, useStatus, useHealth, usePerformance, useAccuracy } from '../hooks/useApi'
-import { HealthSummary, AlertsPanel, CollectorStatus, DecisionDistribution, SourceBias, PerformanceOverview, AccuracyKPI } from '../components/dashboard'
+import { HealthSummary, AlertsPanel, CollectorStatus, DecisionDistribution, SourceBias, PerformanceOverview, AccuracyKPI, AccuracyMiniTrend } from '../components/dashboard'
 
 export default function Dashboard() {
   const { data } = useOverview()
@@ -47,6 +47,11 @@ export default function Dashboard() {
           </SectionErrorBoundary>
         </div>
       )}
+      <div className="px-2 sm:px-6">
+        <SectionErrorBoundary title="Accuracy Trend">
+          <AccuracyMiniTrend />
+        </SectionErrorBoundary>
+      </div>
       {healthData && (
         <div className="px-2 sm:px-6">
           <HealthSummary data={healthData} />
