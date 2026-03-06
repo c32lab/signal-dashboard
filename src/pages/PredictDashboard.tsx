@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import useSWR from 'swr'
 import {
   LineChart,
@@ -23,6 +23,9 @@ import {
 } from '../hooks/usePredictApi'
 import { predictApi } from '../api/predict'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
+import { ReactFlow, Background, Controls, MiniMap, BackgroundVariant } from '@xyflow/react'
+import type { Node, Edge } from '@xyflow/react'
+import '@xyflow/react/dist/style.css'
 import type {
   Prediction,
   Event,
@@ -369,60 +372,110 @@ function TrendsSection({ trends }: { trends: Trend[] }) {
 
 // ─── Section C: Industry Chain Visualization ──────────────────────────────────
 
-const NODE_TYPE_COLORS: Record<string, { bg: string; border: string; text: string; btn: string }> = {
-  theme:          { bg: 'bg-blue-900/40',   border: 'border-blue-700',   text: 'text-blue-300',   btn: 'bg-blue-900/60 text-blue-300 border border-blue-700' },
-  demand_driver:  { bg: 'bg-purple-900/40', border: 'border-purple-700', text: 'text-purple-300', btn: 'bg-purple-900/60 text-purple-300 border border-purple-700' },
-  core:           { bg: 'bg-amber-900/40',  border: 'border-amber-700',  text: 'text-amber-300',  btn: 'bg-amber-900/60 text-amber-300 border border-amber-700' },
-  supply_chain:   { bg: 'bg-cyan-900/40',   border: 'border-cyan-700',   text: 'text-cyan-300',   btn: 'bg-cyan-900/60 text-cyan-300 border border-cyan-700' },
-  stock:          { bg: 'bg-green-900/40',  border: 'border-green-700',  text: 'text-green-300',  btn: 'bg-green-900/60 text-green-300 border border-green-700' },
-  crypto:         { bg: 'bg-pink-900/40',   border: 'border-pink-700',   text: 'text-pink-300',   btn: 'bg-pink-900/60 text-pink-300 border border-pink-700' },
+// Hex colors for ReactFlow nodes
+const NODE_COLORS: Record<string, { bg: string; border: string; text: string }> = {
+  theme:          { bg: '#1e3a5f', border: '#3b82f6', text: '#93c5fd' },
+  demand_driver:  { bg: '#2d1b4e', border: '#a855f7', text: '#d8b4fe' },
+  core:           { bg: '#3d2a00', border: '#f59e0b', text: '#fcd34d' },
+  ticker:         { bg: '#1a3a2a', border: '#22c55e', text: '#86efac' },
+  upstream:       { bg: '#0c2e35', border: '#06b6d4', text: '#67e8f9' },
+  downstream:     { bg: '#3a1e2a', border: '#ec4899', text: '#f9a8d4' },
+  event:          { bg: '#1f2937', border: '#6b7280', text: '#d1d5db' },
 }
 
-function NodeCard({ node }: { node: ChainNode }) {
-  const colors = NODE_TYPE_COLORS[node.type] ?? { bg: 'bg-gray-800/40', border: 'border-gray-700', text: 'text-gray-400' }
-  return (
-    <div className={`${colors.bg} border ${colors.border} rounded px-3 py-2 text-xs min-w-0`}>
-      <div className={`font-semibold ${colors.text} truncate`} title={node.name}>
-        {node.name}
-      </div>
-      {node.labels?.length > 0 && (
-        <div className="text-gray-500 text-[10px] mt-0.5 truncate">
-          {node.labels.slice(0, 2).join(', ')}
-        </div>
-      )}
-    </div>
-  )
+// Tailwind classes for filter buttons
+const NODE_TYPE_COLORS: Record<string, { btn: string; text: string }> = {
+  theme:          { btn: 'bg-blue-900/60 text-blue-300 border border-blue-700',    text: 'text-blue-300' },
+  demand_driver:  { btn: 'bg-purple-900/60 text-purple-300 border border-purple-700', text: 'text-purple-300' },
+  core:           { btn: 'bg-amber-900/60 text-amber-300 border border-amber-700',  text: 'text-amber-300' },
+  ticker:         { btn: 'bg-green-900/60 text-green-300 border border-green-700',  text: 'text-green-300' },
+  upstream:       { btn: 'bg-cyan-900/60 text-cyan-300 border border-cyan-700',     text: 'text-cyan-300' },
+  downstream:     { btn: 'bg-pink-900/60 text-pink-300 border border-pink-700',     text: 'text-pink-300' },
+  event:          { btn: 'bg-gray-700/60 text-gray-300 border border-gray-600',     text: 'text-gray-400' },
 }
+
+const EDGE_COLORS: Record<string, string> = {
+  chain_member:  '#60a5fa',
+  affects_ticker:'#f59e0b',
+  has_ticker:    '#22c55e',
+  correlation:   '#a855f7',
+  transmits:     '#f43f5e',
+}
+
+const TYPE_ORDER = ['theme', 'demand_driver', 'core', 'ticker', 'upstream', 'downstream', 'event']
+const COL_WIDTH = 260
+const ROW_HEIGHT = 70
 
 function IndustryChainSection({ nodes, edges }: { nodes: ChainNode[]; edges: ChainEdge[] }) {
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
 
-  const types = Array.from(new Set(nodes.map((n) => n.type))).sort()
+  const types = useMemo(() => Array.from(new Set(nodes.map((n) => n.type))).sort(), [nodes])
 
-  const filteredNodes = nodes.filter((n) => {
+  const filteredNodes = useMemo(() => nodes.filter((n) => {
     const q = search.toLowerCase()
     const matchSearch = q === '' || n.name.toLowerCase().includes(q) || n.id.toLowerCase().includes(q)
     const matchType = typeFilter === 'all' || n.type === typeFilter
     return matchSearch && matchType
-  })
+  }), [nodes, search, typeFilter])
 
-  const grouped: Record<string, ChainNode[]> = {}
-  for (const n of filteredNodes) {
-    if (!grouped[n.type]) grouped[n.type] = []
-    grouped[n.type].push(n)
-  }
+  const filteredNodeIds = useMemo(() => new Set(filteredNodes.map((n) => n.id)), [filteredNodes])
 
-  const filteredNodeIds = new Set(filteredNodes.map((n) => n.id))
-  const relevantEdges = edges.filter(
-    (e) => filteredNodeIds.has(e.from_node) && filteredNodeIds.has(e.to_node)
-  )
+  // Build ReactFlow nodes with column-based layout
+  const rfNodes: Node[] = useMemo(() => {
+    const grouped: Record<string, ChainNode[]> = {}
+    for (const n of filteredNodes) {
+      if (!grouped[n.type]) grouped[n.type] = []
+      grouped[n.type].push(n)
+    }
+    const orderedTypes = TYPE_ORDER.filter((t) => grouped[t]?.length > 0)
+    for (const t of Object.keys(grouped)) {
+      if (!TYPE_ORDER.includes(t)) orderedTypes.push(t)
+    }
+    const result: Node[] = []
+    orderedTypes.forEach((type, colIdx) => {
+      const colNodes = grouped[type] ?? []
+      const colors = NODE_COLORS[type] ?? { bg: '#1f2937', border: '#6b7280', text: '#d1d5db' }
+      colNodes.forEach((n, rowIdx) => {
+        result.push({
+          id: n.id,
+          position: { x: colIdx * COL_WIDTH, y: rowIdx * ROW_HEIGHT },
+          data: { label: n.name },
+          style: {
+            background: colors.bg,
+            border: `1px solid ${colors.border}`,
+            color: colors.text,
+            borderRadius: '6px',
+            padding: '5px 10px',
+            fontSize: '11px',
+            fontWeight: 600,
+            maxWidth: '220px',
+            whiteSpace: 'nowrap' as const,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          },
+        })
+      })
+    })
+    return result
+  }, [filteredNodes])
 
-  const nodeNameById: Record<string, string> = {}
-  for (const n of nodes) nodeNameById[n.id] = n.name
+  // Build ReactFlow edges
+  const rfEdges: Edge[] = useMemo(() => edges
+    .filter((e) => filteredNodeIds.has(e.from_node) && filteredNodeIds.has(e.to_node))
+    .map((e, i) => ({
+      id: `e-${i}`,
+      source: e.from_node,
+      target: e.to_node,
+      style: {
+        stroke: EDGE_COLORS[e.relation] ?? '#6b7280',
+        strokeWidth: Math.max(1, Math.round(e.strength * 3)),
+        opacity: 0.6,
+      },
+    })), [edges, filteredNodeIds])
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-3">
         <input
@@ -436,9 +489,7 @@ function IndustryChainSection({ nodes, edges }: { nodes: ChainNode[]; edges: Cha
           <button
             onClick={() => setTypeFilter('all')}
             className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-              typeFilter === 'all'
-                ? 'bg-gray-600 text-gray-100'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+              typeFilter === 'all' ? 'bg-gray-600 text-gray-100' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
             }`}
           >
             All ({nodes.length})
@@ -451,9 +502,7 @@ function IndustryChainSection({ nodes, edges }: { nodes: ChainNode[]; edges: Cha
                 key={t}
                 onClick={() => setTypeFilter(t)}
                 className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                  typeFilter === t && colors
-                    ? colors.btn
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  typeFilter === t && colors ? colors.btn : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                 }`}
               >
                 {t} ({count})
@@ -463,80 +512,32 @@ function IndustryChainSection({ nodes, edges }: { nodes: ChainNode[]; edges: Cha
         </div>
       </div>
 
-      {/* Nodes grouped by type */}
-      <div className="space-y-4">
-        {Object.entries(grouped).map(([type, grpNodes]) => {
-          const colors = NODE_TYPE_COLORS[type] ?? { text: 'text-gray-400' }
-          return (
-            <div key={type}>
-              <h4 className={`text-xs font-semibold uppercase tracking-wider mb-2 ${colors.text}`}>
-                {type} <span className="text-gray-600 normal-case font-normal ml-1">({grpNodes.length})</span>
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                {grpNodes.map((n) => (
-                  <NodeCard key={n.id} node={n} />
-                ))}
-              </div>
-            </div>
-          )
-        })}
-        {filteredNodes.length === 0 && (
-          <p className="text-gray-600 text-sm text-center py-6">No nodes match the filter</p>
+      {/* ReactFlow Graph */}
+      <div className="h-[600px] bg-gray-950 rounded-lg border border-gray-800 overflow-hidden">
+        {filteredNodes.length === 0 ? (
+          <p className="text-gray-600 text-sm text-center py-6 mt-4">No nodes match the filter</p>
+        ) : (
+          <ReactFlow
+            nodes={rfNodes}
+            edges={rfEdges}
+            fitView
+            fitViewOptions={{ padding: 0.15 }}
+            minZoom={0.1}
+            maxZoom={2}
+            colorMode="dark"
+          >
+            <Background variant={BackgroundVariant.Dots} color="#374151" gap={20} size={1} />
+            <Controls />
+            <MiniMap
+              nodeColor={(n) => {
+                const type = nodes.find((cn) => cn.id === n.id)?.type ?? ''
+                return (NODE_COLORS[type] ?? { border: '#6b7280' }).border
+              }}
+              style={{ background: '#111827' }}
+            />
+          </ReactFlow>
         )}
       </div>
-
-      {/* Relations table */}
-      {relevantEdges.length > 0 && (
-        <div>
-          <h4 className="text-xs text-gray-500 uppercase tracking-wider mb-2">
-            Relations <span className="text-gray-600 ml-1">({relevantEdges.length})</span>
-          </h4>
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-gray-500 border-b border-gray-800">
-                  <th className="text-left py-1.5 px-3 font-medium">From</th>
-                  <th className="text-left py-1.5 px-3 font-medium">Relation</th>
-                  <th className="text-left py-1.5 px-3 font-medium">To</th>
-                  <th className="text-right py-1.5 px-3 font-medium">Strength</th>
-                </tr>
-              </thead>
-              <tbody>
-                {relevantEdges.slice(0, 40).map((e, i) => (
-                  <tr
-                    key={i}
-                    className="border-b border-gray-800/50 hover:bg-gray-800/40 transition-colors"
-                  >
-                    <td className="py-1.5 px-3 text-gray-300">
-                      {nodeNameById[e.from_node] ?? e.from_node}
-                    </td>
-                    <td className="py-1.5 px-3 text-gray-500 italic">{e.relation}</td>
-                    <td className="py-1.5 px-3 text-gray-300">
-                      {nodeNameById[e.to_node] ?? e.to_node}
-                    </td>
-                    <td className="py-1.5 px-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <div className="w-16 bg-gray-800 rounded-full h-1.5 overflow-hidden">
-                          <div
-                            className="bg-blue-500 h-1.5 rounded-full"
-                            style={{ width: `${Math.min(e.strength * 100, 100).toFixed(0)}%` }}
-                          />
-                        </div>
-                        <span className="text-gray-400 w-8 text-right">{e.strength.toFixed(2)}</span>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {relevantEdges.length > 40 && (
-              <p className="text-center text-gray-600 text-xs py-2">
-                Showing 40 of {relevantEdges.length} relations
-              </p>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
