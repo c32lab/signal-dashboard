@@ -876,7 +876,7 @@ function OIChart({ data, isLoading }: { data: OpenInterestPoint[] | undefined; i
               contentStyle={DERIV_TOOLTIP_STYLE}
               labelStyle={{ color: '#9ca3af' }}
               itemStyle={{ color: '#e5e7eb' }}
-              formatter={(v: number) => [fmtOIValue(v), 'OI Value']}
+              formatter={(v: number | undefined) => [fmtOIValue(v ?? 0), 'OI Value']}
             />
             <Area
               type="monotone"
@@ -936,7 +936,7 @@ function LSRChart({ data, isLoading }: { data: LongShortRatioPoint[] | undefined
               contentStyle={DERIV_TOOLTIP_STYLE}
               labelStyle={{ color: '#9ca3af' }}
               itemStyle={{ color: '#e5e7eb' }}
-              formatter={(v: number, name: string) => [`${v.toFixed(1)}%`, name]}
+              formatter={(v: number | undefined, name: string | undefined) => [`${(v ?? 0).toFixed(1)}%`, name ?? '']}
             />
             <Bar dataKey="long" stackId="a" fill="#22c55e" name="Long %" />
             <Bar dataKey="short" stackId="a" fill="#ef4444" name="Short %" />
