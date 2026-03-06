@@ -29,20 +29,19 @@ export default function QualityTracker() {
   const qualityRes = useSignalQuality(qualityHours)
   const accuracyRes = useAccuracy()
 
-  const [lastUpdated, setLastUpdated] = useState<Date>()
-
-  useEffect(() => {
-    if (perfRes.data) setLastUpdated(new Date())
-  }, [perfRes.data])
-
   const perfData = (perfRes.data as PerformanceResponse | undefined)?.by_symbol
   const perfOverall = (perfRes.data as PerformanceResponse | undefined)?.overall
   const trendData = trendRes.data as AccuracyTrendItem[] | undefined
+  const [nowMinute, setNowMinute] = useState(() => Math.floor(Date.now() / 60000) * 60000)
+  useEffect(() => {
+    const id = setInterval(() => setNowMinute(Math.floor(Date.now() / 60000) * 60000), 60_000)
+    return () => clearInterval(id)
+  }, [])
   const filteredTrendData = useMemo<AccuracyTrendItem[]>(() => {
     if (!trendData) return []
-    const cutoff = new Date(Date.now() - trendHours * 60 * 60 * 1000)
+    const cutoff = new Date(nowMinute - trendHours * 3600000)
     return trendData.filter((d) => new Date(d.hour) >= cutoff)
-  }, [trendData, trendHours])
+  }, [trendData, trendHours, nowMinute])
   const qualityData = useMemo(() => {
     const bySymbol = (qualityRes.data as SignalQualityResponse | undefined)?.by_symbol
     if (!bySymbol) return []
@@ -57,7 +56,7 @@ export default function QualityTracker() {
 
   return (
     <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
-      <LastUpdated timestamp={lastUpdated} />
+      <LastUpdated dataVersion={perfRes.data} />
       {/* Accuracy Trend Chart */}
       <SectionErrorBoundary title="Accuracy Trend Chart">
         <AccuracyTrendChart />

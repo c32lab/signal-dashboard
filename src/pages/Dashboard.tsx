@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import KPIPanel from '../components/KPIPanel'
 import LiveSignalFeed from '../components/LiveSignalFeed'
 import SignalCards from '../components/SignalCards'
@@ -16,11 +15,6 @@ export default function Dashboard() {
   const healthRes = useHealth()
   const perfRes = usePerformance()
   const accuracyRes = useAccuracy()
-  const [lastUpdated, setLastUpdated] = useState<Date>()
-
-  useEffect(() => {
-    if (data) setLastUpdated(new Date())
-  }, [data])
 
   const biasData = biasRes.data
   const collectorData = collectorRes.data
@@ -31,7 +25,7 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col gap-4 sm:gap-8 py-2 sm:py-6">
       <div className="px-2 sm:px-6">
-        <LastUpdated timestamp={lastUpdated} />
+        <LastUpdated dataVersion={data} />
       </div>
       {healthData && (
         <div className="px-2 sm:px-6">
