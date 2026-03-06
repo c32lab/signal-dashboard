@@ -17,11 +17,11 @@ export default function DecisionTable({
         {isLoading && (
           <p className="text-gray-400 text-sm p-8 text-center">Loading decisions…</p>
         )}
-        {error && (
+        {error ? (
           <p className="text-red-400 text-sm p-8 text-center">
-            Failed to load decisions: {(error as Error)?.message}
+            Failed to load decisions: {String((error as Error)?.message ?? error)}
           </p>
-        )}
+        ) : null}
 
         {!isLoading && !error && (
           <div className="overflow-x-auto">
