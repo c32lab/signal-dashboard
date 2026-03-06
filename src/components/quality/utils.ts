@@ -6,8 +6,7 @@ export const SYMBOL_COLORS: Record<string, string> = {
   'SOL/USDT': '#22d3ee',
   'BNB/USDT': '#fbbf24',
   'XRP/USDT': '#34d399',
-  'AVAX/USDT': '#f87171',
-  'LINK/USDT': '#f472b6',
+
 }
 
 export const TOOLTIP_STYLE = {

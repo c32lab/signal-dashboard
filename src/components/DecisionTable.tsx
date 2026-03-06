@@ -6,7 +6,7 @@ import { formatDateTime, formatPrice } from '../utils/format'
 import DataWarning from './DataWarning'
 
 const PAGE_SIZE = 20
-const SYMBOLS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT', 'AVAX/USDT', 'LINK/USDT']
+const SYMBOLS = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'XRP/USDT']
 const DIRECTIONS = ['LONG', 'SHORT', 'HOLD']
 
 type TimePreset = '1h' | '6h' | '24h' | '7d' | 'all'
