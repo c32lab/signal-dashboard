@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { DirectionBadge, StatusBadge } from './badges'
 import { formatDateTime, formatPrice } from '../../utils/format'
 import type { Prediction } from '../../types/predict'
@@ -180,9 +180,8 @@ export function PredictionHistoryTable({ predictions }: { predictions: Predictio
         </thead>
         <tbody>
           {sorted.map((p) => (
-            <>
+            <Fragment key={p.id}>
               <tr
-                key={p.id}
                 className="border-b border-gray-800 hover:bg-gray-800/40 transition-colors cursor-pointer"
                 onClick={() => setSelectedId(selectedId === p.id ? null : p.id)}
               >
@@ -216,7 +215,7 @@ export function PredictionHistoryTable({ predictions }: { predictions: Predictio
                   </td>
                 </tr>
               )}
-            </>
+            </Fragment>
           ))}
         </tbody>
       </table>
