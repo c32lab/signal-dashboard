@@ -12,6 +12,7 @@ export function EventTable({ events }: { events: Event[] }) {
             <th className="text-left py-2 px-3 font-medium">Event</th>
             <th className="text-left py-2 px-3 font-medium">Category</th>
             <th className="text-left py-2 px-3 font-medium">ΔPrice</th>
+            <th className="text-left py-2 px-3 font-medium">Source</th>
             <th className="text-left py-2 px-3 font-medium">Tags</th>
           </tr>
         </thead>
@@ -31,6 +32,15 @@ export function EventTable({ events }: { events: Event[] }) {
                 }`}
               >
                 {e.price_change != null ? `${e.price_change > 0 ? '+' : ''}${e.price_change.toFixed(2)}%` : '—'}
+              </td>
+              <td className="py-2 px-3 text-gray-400 whitespace-nowrap">
+                {e.url ? (
+                  <a href={e.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline underline-offset-2">
+                    {e.source || 'link'}
+                  </a>
+                ) : (
+                  e.source || '—'
+                )}
               </td>
               <td className="py-2 px-3">
                 <div className="flex flex-wrap gap-1">
