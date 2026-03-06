@@ -14,6 +14,7 @@ const BacktestDashboard = lazy(() => import('./pages/BacktestDashboard'))
 const IndustryChainPage = lazy(() => import('./pages/IndustryChainPage'))
 const SystemHealthPage = lazy(() => import('./pages/SystemHealthPage'))
 const TradingDashboard = lazy(() => import('./pages/TradingDashboard'))
+const SignalTimeline = lazy(() => import('./pages/SignalTimeline'))
 
 interface NavItem {
   to: string
@@ -38,6 +39,7 @@ const NAV_ENTRIES: NavEntry[] = [
   { to: '/backtest', label: '回测对比' },
   { to: '/trading', label: '交易记录' },
   { to: '/history', label: '事件库' },
+  { to: '/timeline', label: '信号时间轴' },
   {
     label: '高级分析',
     items: [
@@ -241,6 +243,7 @@ function App() {
               <Route path="/advanced/chain" element={<IndustryChainPage />} />
               <Route path="/advanced/system" element={<SystemHealthPage />} />
               <Route path="/trading" element={<TradingDashboard />} />
+              <Route path="/timeline" element={<SignalTimeline />} />
             </Routes>
           </Suspense>
         </ErrorBoundary>
