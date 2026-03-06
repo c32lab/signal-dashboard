@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import useSWR from 'swr'
 import {
   usePrediction,
@@ -24,12 +25,15 @@ import {
 export default function PredictDashboard() {
   const { data, error, isLoading } = usePrediction()
   const { data: healthData } = usePredictHealth()
-  // Fetch all predictions without status filter for the history table
+  const PAGE_SIZE = 20
+  const [histPage, setHistPage] = useState(0)
   const { data: allPredictionsData, isLoading: histLoading } = useSWR(
-    'predict/predictions/all',
-    () => predictApi.predictions({ limit: 50 }),
+    `predict/predictions/all?page=${histPage}`,
+    () => predictApi.predictions({ limit: PAGE_SIZE, offset: histPage * PAGE_SIZE }),
     { refreshInterval: 30_000 }
   )
+  const histTotal = allPredictionsData?.total ?? 0
+  const histTotalPages = Math.max(1, Math.ceil(histTotal / PAGE_SIZE))
   const { data: accuracyData } = usePredictAccuracy()
   const { data: trendsData, isLoading: trendsLoading } = useTrends()
 
@@ -179,7 +183,7 @@ export default function PredictDashboard() {
           <h2 className="text-sm font-semibold text-gray-200">
             Prediction History
             <span className="ml-2 text-xs text-gray-500">
-              {histLoading ? 'loading…' : `(${(allPredictionsData?.predictions ?? []).length})`}
+              {histLoading ? 'loading…' : `(${histTotal})`}
             </span>
           </h2>
         </div>
@@ -192,6 +196,28 @@ export default function PredictDashboard() {
             <PredictionHistoryTable predictions={allPredictionsData.predictions} />
           )}
         </div>
+        {/* Pagination */}
+        {histTotal > PAGE_SIZE && (
+          <div className="flex items-center justify-center gap-3 px-4 py-3 border-t border-gray-800">
+            <button
+              onClick={() => setHistPage((p) => Math.max(0, p - 1))}
+              disabled={histPage === 0}
+              className="px-3 py-1 text-xs rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              上一页
+            </button>
+            <span className="text-xs text-gray-500">
+              {histPage + 1} / {histTotalPages}
+            </span>
+            <button
+              onClick={() => setHistPage((p) => Math.min(histTotalPages - 1, p + 1))}
+              disabled={histPage >= histTotalPages - 1}
+              className="px-3 py-1 text-xs rounded border border-gray-700 text-gray-400 hover:text-gray-200 hover:border-gray-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              下一页
+            </button>
+          </div>
+        )}
       </section>
       </SectionErrorBoundary>
 
