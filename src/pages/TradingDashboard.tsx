@@ -2,15 +2,6 @@ import { useTradingSummary } from '../hooks/useApi'
 import { formatDateTime, formatPrice } from '../utils/format'
 import type { TradingPosition, TradingTrade } from '../types/trading'
 
-function formatDuration(seconds: number | null): string {
-  if (seconds === null) return '—'
-  const h = Math.floor(seconds / 3600)
-  const m = Math.floor((seconds % 3600) / 60)
-  if (h === 0) return `${m}m`
-  if (m === 0) return `${h}h`
-  return `${h}h ${m}m`
-}
-
 function SideBadge({ side }: { side: 'LONG' | 'SHORT' }) {
   return (
     <span
@@ -152,7 +143,7 @@ export default function TradingDashboard() {
                 <th className="text-right px-4 py-3 font-medium">开仓价</th>
                 <th className="text-right px-4 py-3 font-medium">平仓价</th>
                 <th className="text-right px-4 py-3 font-medium">PnL (USDT)</th>
-                <th className="text-right px-4 py-3 font-medium">持仓时长</th>
+                <th className="text-right px-4 py-3 font-medium">置信度</th>
               </tr>
             </thead>
             <tbody>
@@ -179,7 +170,7 @@ export default function TradingDashboard() {
                       {trade.exit_price !== null ? formatPrice(trade.exit_price, trade.symbol) : '—'}
                     </td>
                     <td className="px-4 py-3 text-right"><PnlText value={trade.pnl_usdt} /></td>
-                    <td className="px-4 py-3 text-right text-gray-400">{formatDuration(trade.duration_seconds ?? null)}</td>
+                    <td className="px-4 py-3 text-right text-gray-300">{(trade.confidence * 100).toFixed(0)}%</td>
                   </tr>
                 ))
               )}
