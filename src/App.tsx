@@ -36,11 +36,11 @@ function App() {
       <div className="bg-gray-950 text-gray-100 min-h-screen">
         <nav className="bg-gray-900 border-b border-gray-800">
           <div className="flex items-center justify-between px-4 py-3">
-            <span className="text-gray-400 text-sm font-semibold tracking-wide sm:hidden">
+            <span className="text-gray-400 text-sm font-semibold tracking-wide md:hidden">
               Signal Dashboard
             </span>
             {/* Desktop nav links */}
-            <div className="hidden sm:flex gap-4">
+            <div className="hidden md:flex gap-4">
               {NAV_LINKS.map(({ to, label, end }) => (
                 <NavLink
                   key={to}
@@ -56,7 +56,7 @@ function App() {
             </div>
             {/* Hamburger button (mobile only) */}
             <button
-              className="sm:hidden p-1 text-gray-400 hover:text-gray-200 transition-colors"
+              className="md:hidden p-1 text-gray-400 hover:text-gray-200 transition-colors"
               onClick={() => setMenuOpen((o) => !o)}
               aria-label="Toggle navigation menu"
             >
@@ -73,7 +73,7 @@ function App() {
           </div>
           {/* Mobile dropdown menu */}
           {menuOpen && (
-            <div className="sm:hidden border-t border-gray-800 px-4 pb-3 flex flex-col gap-1">
+            <div className="md:hidden border-t border-gray-800 px-4 pb-3 flex flex-col gap-1">
               {NAV_LINKS.map(({ to, label, end }) => (
                 <NavLink
                   key={to}

@@ -219,7 +219,7 @@ export default function DecisionTable() {
       {!isLoading && !error && (
         <>
           <div className="overflow-x-auto rounded-xl border border-gray-800">
-            <table className="w-full text-left">
+            <table className="w-full text-left min-w-[600px]">
               <thead className="bg-gray-900">
                 <tr>
                   {['ID', 'Time', 'Symbol', 'Direction', 'Type', 'Action', 'Price', 'Conf', 'Score', 'Reasoning'].map(
