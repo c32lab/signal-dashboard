@@ -16,7 +16,7 @@ const NODE_COLORS: Record<string, { bg: string; border: string; text: string }> 
 }
 
 // Tailwind classes for filter buttons
-export const NODE_TYPE_COLORS: Record<string, { btn: string; text: string }> = {
+const NODE_TYPE_COLORS: Record<string, { btn: string; text: string }> = {
   theme:          { btn: 'bg-blue-900/60 text-blue-300 border border-blue-700',    text: 'text-blue-300' },
   demand_driver:  { btn: 'bg-purple-900/60 text-purple-300 border border-purple-700', text: 'text-purple-300' },
   core:           { btn: 'bg-amber-900/60 text-amber-300 border border-amber-700',  text: 'text-amber-300' },
