@@ -1,6 +1,7 @@
 import useSWR from 'swr'
 import {
   usePrediction,
+  usePredictHealth,
   useTrends,
   useIndustryChain,
   usePredictAccuracy,
@@ -19,10 +20,12 @@ import {
   IndustryChainSection,
   AccuracyAndValidationsSection,
   DerivativesOverviewSection,
+  PredictHealthHeader,
 } from '../components/predict'
 
 export default function PredictDashboard() {
   const { data, error, isLoading } = usePrediction()
+  const { data: healthData } = usePredictHealth()
   // Fetch all predictions without status filter for the history table
   const { data: allPredictionsData, isLoading: histLoading } = useSWR(
     'predict/predictions/all',
@@ -62,6 +65,17 @@ export default function PredictDashboard() {
 
   return (
     <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
+      {/* Service Health Header */}
+      <SectionErrorBoundary title="Predict Health">
+        <PredictHealthHeader
+          serviceOk={healthData?.status === 'ok'}
+          activeCount={activeList.length}
+          eventCount={events.length}
+          macroScore={macro?.score ?? null}
+          accuracy={accuracyData}
+        />
+      </SectionErrorBoundary>
+
       {/* Macro Score Cards */}
       <SectionErrorBoundary title="Macro Overview">
       <section>
