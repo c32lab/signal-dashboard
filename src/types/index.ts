@@ -93,6 +93,18 @@ export interface AccuracyTrendItem {
   accuracy_pct: number
 }
 
+export interface AccuracyTrendPoint {
+  hour: string
+  symbol: string
+  total: number
+  correct: number
+  accuracy_pct: number
+}
+
+export interface AccuracyTrendResponse {
+  trend: AccuracyTrendPoint[]
+}
+
 export interface SignalQualitySymbol {
   symbol: string
   long: number
