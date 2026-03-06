@@ -12,6 +12,9 @@ import {
 import { useBacktest } from '../hooks/useApi'
 import { formatDateTime, formatDate, formatChartTime } from '../utils/format'
 import type { BacktestResult, SymbolBacktest } from '../types/backtest'
+import SectionErrorBoundary from '../components/SectionErrorBoundary'
+
+const PAGE_SIZE = 20
 
 const CONFIG_COLORS: Record<string, string> = {
   A_current: '#60a5fa',     // blue
@@ -25,7 +28,7 @@ function pct(v: number | undefined | null, decimals = 1): string {
 
 function Skeleton() {
   return (
-    <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6 animate-pulse">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 animate-pulse">
       <div className="h-8 bg-gray-800 rounded w-64" />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[0, 1, 2].map((i) => (
@@ -226,6 +229,9 @@ interface ResultViewProps {
 
 function ResultView({ result }: ResultViewProps) {
   const symbols = Object.keys(result.by_symbol).sort()
+  const [page, setPage] = useState(1)
+  const totalPages = Math.max(1, Math.ceil(symbols.length / PAGE_SIZE))
+  const pageSymbols = symbols.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   return (
     <div className="space-y-6">
@@ -242,33 +248,70 @@ function ResultView({ result }: ResultViewProps) {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {result.summary.map((s) => (
-          <SummaryCard
-            key={s.config}
-            config={s.config}
-            description={result.configs[s.config]?.description ?? ''}
-            win_rate_pct={s.win_rate_pct}
-            total_pnl_pct={s.total_pnl_pct}
-            sharpe={s.sharpe}
-            max_drawdown_pct={s.max_drawdown_pct}
-          />
-        ))}
-      </div>
+      <SectionErrorBoundary title="Summary Cards">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {result.summary.map((s) => (
+            <SummaryCard
+              key={s.config}
+              config={s.config}
+              description={result.configs[s.config]?.description ?? ''}
+              win_rate_pct={s.win_rate_pct}
+              total_pnl_pct={s.total_pnl_pct}
+              sharpe={s.sharpe}
+              max_drawdown_pct={s.max_drawdown_pct}
+            />
+          ))}
+        </div>
+      </SectionErrorBoundary>
 
       {/* PnL curve */}
       {Object.keys(result.pnl_curve).length > 0 && (
-        <PnlChart pnl_curve={result.pnl_curve} />
+        <SectionErrorBoundary title="PnL Chart">
+          <PnlChart pnl_curve={result.pnl_curve} />
+        </SectionErrorBoundary>
       )}
 
       {/* By-symbol table */}
       {symbols.length > 0 && (
-        <div className="space-y-2">
-          <h2 className="text-sm font-semibold text-gray-300">By Symbol</h2>
-          {symbols.map((sym) => (
-            <SymbolRow key={sym} symbol={sym} rows={result.by_symbol[sym]} />
-          ))}
-        </div>
+        <SectionErrorBoundary title="By Symbol">
+          <div className="space-y-2">
+            <h2 className="text-sm font-semibold text-gray-300">
+              By Symbol
+              <span className="ml-2 text-xs text-gray-500 font-normal">
+                ({symbols.length} symbols)
+              </span>
+            </h2>
+            {pageSymbols.map((sym) => (
+              <SymbolRow key={sym} symbol={sym} rows={result.by_symbol[sym]} />
+            ))}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-xs text-gray-500">
+                  {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, symbols.length)} of {symbols.length}
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    disabled={page <= 1}
+                    onClick={() => setPage((p) => p - 1)}
+                    className="px-3 py-1 text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    ← Prev
+                  </button>
+                  <span className="text-xs text-gray-400 leading-7">
+                    {page} / {totalPages}
+                  </span>
+                  <button
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                    className="px-3 py-1 text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next →
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </SectionErrorBoundary>
       )}
     </div>
   )
@@ -281,7 +324,7 @@ export default function BacktestDashboard() {
 
   if (error) {
     return (
-      <div className="p-2 sm:p-4 lg:p-6">
+      <div className="p-4 sm:p-6">
         <div className="bg-red-950 border border-red-800 text-red-300 rounded-xl p-4 text-sm">
           Failed to load backtest data: {error.message}
         </div>
@@ -291,7 +334,7 @@ export default function BacktestDashboard() {
 
   if (!data || data.results.length === 0) {
     return (
-      <div className="p-2 sm:p-4 lg:p-6">
+      <div className="p-4 sm:p-6">
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center text-gray-500 text-sm">
           No backtest data available.
         </div>
@@ -302,7 +345,7 @@ export default function BacktestDashboard() {
   const result = data.results[0]
 
   return (
-    <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       <ResultView result={result} />
     </div>
   )

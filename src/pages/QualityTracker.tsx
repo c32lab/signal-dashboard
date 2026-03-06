@@ -57,7 +57,7 @@ export default function QualityTracker() {
   const accuracyData = accuracyRes.data as AccuracyResponse | undefined
 
   return (
-    <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       <LastUpdated dataVersion={perfRes.data} />
       {/* Accuracy Trend Chart */}
       <SectionErrorBoundary title="Accuracy Trend Chart">

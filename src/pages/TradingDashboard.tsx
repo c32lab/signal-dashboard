@@ -51,7 +51,7 @@ export default function TradingDashboard() {
 
   if (error) {
     return (
-      <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
         <h1 className="text-lg font-bold text-gray-100">交易记录</h1>
         <div className="bg-red-950 border border-red-800 rounded-xl p-4 text-red-400 text-sm">
           加载失败: {error instanceof Error ? error.message : '未知错误'}
@@ -67,7 +67,7 @@ export default function TradingDashboard() {
   )
 
   return (
-    <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       <h1 className="text-lg font-bold text-gray-100">交易记录</h1>
 
       {/* Balance Cards */}

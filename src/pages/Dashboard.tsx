@@ -22,69 +22,47 @@ export default function Dashboard() {
   const accuracyData = accuracyRes.data
 
   return (
-    <div className="flex flex-col gap-4 sm:gap-8 py-2 sm:py-6">
-      <div className="px-2 sm:px-6">
-        <LastUpdated dataVersion={data} />
-      </div>
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+      <LastUpdated dataVersion={data} />
       {healthData && (
-        <div className="px-2 sm:px-6">
-          <AlertsPanel data={healthData} />
-        </div>
+        <AlertsPanel data={healthData} />
       )}
       {accuracyData && (
-        <div className="px-2 sm:px-6">
-          <SectionErrorBoundary title="Signal Accuracy">
-            <AccuracyKPI data={accuracyData} />
-          </SectionErrorBoundary>
-        </div>
-      )}
-      <div className="px-2 sm:px-6">
-        <SectionErrorBoundary title="Accuracy Trend">
-          <AccuracyMiniTrend />
+        <SectionErrorBoundary title="Signal Accuracy">
+          <AccuracyKPI data={accuracyData} />
         </SectionErrorBoundary>
-      </div>
+      )}
+      <SectionErrorBoundary title="Accuracy Trend">
+        <AccuracyMiniTrend />
+      </SectionErrorBoundary>
       {healthData && (
-        <div className="px-2 sm:px-6">
-          <HealthSummary data={healthData} />
-        </div>
+        <HealthSummary data={healthData} />
       )}
       {perfData && (
-        <div className="px-2 sm:px-6">
-          <SectionErrorBoundary title="Performance Overview">
-            <PerformanceOverview data={perfData} />
-          </SectionErrorBoundary>
-        </div>
-      )}
-      <div className="px-2 sm:px-6">
-        <SectionErrorBoundary title="Live Signal Feed">
-          <LiveSignalFeed />
+        <SectionErrorBoundary title="Performance Overview">
+          <PerformanceOverview data={perfData} />
         </SectionErrorBoundary>
-      </div>
+      )}
+      <SectionErrorBoundary title="Live Signal Feed">
+        <LiveSignalFeed />
+      </SectionErrorBoundary>
       <SectionErrorBoundary title="KPI Panel">
         <KPIPanel />
       </SectionErrorBoundary>
-      <div className="px-2 sm:px-6">
-        <SectionErrorBoundary title="Trading Status">
-          <TradingStatus />
-        </SectionErrorBoundary>
-      </div>
-      <div className="px-2 sm:px-6">
-        <SectionErrorBoundary title="Combiner Weights">
-          <CombinerWeights />
-        </SectionErrorBoundary>
-      </div>
+      <SectionErrorBoundary title="Trading Status">
+        <TradingStatus />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary title="Combiner Weights">
+        <CombinerWeights />
+      </SectionErrorBoundary>
       {biasData && (
-        <div className="px-2 sm:px-6">
-          <SectionErrorBoundary title="Source Bias">
-            <SourceBias data={biasData} />
-          </SectionErrorBoundary>
-        </div>
-      )}
-      <div className="px-2 sm:px-6">
-        <SectionErrorBoundary title="Decision Distribution">
-          <DecisionDistribution />
+        <SectionErrorBoundary title="Source Bias">
+          <SourceBias data={biasData} />
         </SectionErrorBoundary>
-      </div>
+      )}
+      <SectionErrorBoundary title="Decision Distribution">
+        <DecisionDistribution />
+      </SectionErrorBoundary>
       <SectionErrorBoundary title="Signal Cards">
         <SignalCards />
       </SectionErrorBoundary>

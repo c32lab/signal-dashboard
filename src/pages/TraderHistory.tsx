@@ -103,7 +103,7 @@ export default function TraderHistory() {
   }, [symbolFilter, actionFilter, directionFilter, typeFilter, fromTs])
 
   return (
-    <div className="p-2 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* A. KPI Cards */}
       <SectionErrorBoundary title="KPI Cards">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
