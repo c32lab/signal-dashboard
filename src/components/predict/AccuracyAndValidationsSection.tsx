@@ -10,6 +10,7 @@ import {
 } from 'recharts'
 import { DirectionBadge } from './badges'
 import type { AccuracyEntry, Validation } from '../../types/predict'
+import { formatDateTime, formatPrice } from '../../utils/format'
 
 const SYMBOL_COLORS: Record<string, string> = {
   BTC: '#60a5fa',
@@ -47,7 +48,7 @@ function ValidationsTable({ validations }: { validations: Validation[] }) {
           {validations.map((v) => (
             <tr key={v.id} className="border-b border-gray-800 hover:bg-gray-800/40 transition-colors">
               <td className="py-2 px-3 text-gray-500 whitespace-nowrap">
-                {new Date(v.validated_at).toLocaleString()}
+                {formatDateTime(v.validated_at)}
               </td>
               <td className="py-2 px-3 font-mono text-blue-300">{v.symbol}</td>
               <td className="py-2 px-3">
@@ -75,7 +76,7 @@ function ValidationsTable({ validations }: { validations: Validation[] }) {
                 )}
               </td>
               <td className="py-2 px-3 font-mono text-gray-300 whitespace-nowrap">
-                ${v.price_at_prediction.toLocaleString()} → ${v.price_at_validation.toLocaleString()}
+                {formatPrice(v.price_at_prediction, v.symbol)} → {formatPrice(v.price_at_validation, v.symbol)}
               </td>
               <td className="py-2 px-3 text-gray-500 max-w-[200px]">
                 <span title={v.trigger_event} className="cursor-help">

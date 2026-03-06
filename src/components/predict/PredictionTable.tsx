@@ -1,4 +1,5 @@
 import { DirectionBadge, StatusBadge } from './badges'
+import { formatDateTime, formatPrice } from '../../utils/format'
 import type { Prediction } from '../../types/predict'
 
 export function PredictionTable({ predictions }: { predictions: Prediction[] }) {
@@ -29,10 +30,10 @@ export function PredictionTable({ predictions }: { predictions: Prediction[] }) 
               {/* expected_impact: already_pct — direct display, no ×100 */}
               <td className="py-2 px-3 text-gray-300">{p.expected_impact != null ? `${p.expected_impact.toFixed(1)}%` : '—'}</td>
               <td className="py-2 px-3 font-mono text-gray-300">
-                {p.price_at_prediction != null ? `$${p.price_at_prediction.toLocaleString()}` : '—'}
+                {p.price_at_prediction != null ? formatPrice(p.price_at_prediction, p.symbol) : '—'}
               </td>
               <td className="py-2 px-3 text-gray-500 whitespace-nowrap">
-                {new Date(p.created_at).toLocaleString()}
+                {formatDateTime(p.created_at)}
               </td>
             </tr>
           ))}
@@ -65,7 +66,7 @@ export function PredictionHistoryTable({ predictions }: { predictions: Predictio
           {sorted.map((p) => (
             <tr key={p.id} className="border-b border-gray-800 hover:bg-gray-800/40 transition-colors">
               <td className="py-2 px-3 text-gray-500 whitespace-nowrap">
-                {new Date(p.created_at ?? p.timestamp).toLocaleString()}
+                {formatDateTime(p.created_at ?? p.timestamp)}
               </td>
               <td className="py-2 px-3 font-mono text-blue-300">{p.symbol}</td>
               <td className="py-2 px-3">
@@ -81,7 +82,7 @@ export function PredictionHistoryTable({ predictions }: { predictions: Predictio
                 {p.expected_impact != null ? `${p.expected_impact.toFixed(1)}%` : '—'}
               </td>
               <td className="py-2 px-3 font-mono text-gray-300">
-                {p.price_at_prediction != null ? `$${p.price_at_prediction.toLocaleString()}` : '—'}
+                {p.price_at_prediction != null ? formatPrice(p.price_at_prediction, p.symbol) : '—'}
               </td>
               <td className="py-2 px-3">
                 <StatusBadge status={p.status} />
