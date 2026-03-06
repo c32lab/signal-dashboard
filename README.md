@@ -1,73 +1,64 @@
-# React + TypeScript + Vite
+# Signal Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Real-time monitoring dashboard for a cryptocurrency signal system — visualizing decisions, predictions, and quality metrics.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** + **TypeScript 5.9** + **Vite 7**
+- **Tailwind CSS v4** (via `@tailwindcss/vite`)
+- **Recharts 3** — charts & visualizations
+- **SWR 2** — data fetching & caching
+- **React Router v7** — client-side routing
 
-## React Compiler
+## Pages
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Route | Page | Description |
+|-------|------|-------------|
+| `/` | Signal Dashboard | Signal overview with confidence, strength, and market indicators |
+| `/predict` | Predict Dashboard | Prediction history and accuracy tracking |
+| `/backtest` | Backtest A/B Test | Side-by-side backtesting comparison |
+| `/trading` | Trading Dashboard | Trading records, balances, and positions |
+| `/history` | Trader History | Event log and decision archive |
+| `/quality` | Quality Tracker | Signal quality metrics and trends |
+| `/advanced/chain` | Industry Chain | Sector correlation graph |
+| `/advanced/system` | System Health | Service status and system diagnostics |
 
-## Expanding the ESLint configuration
+## Quick Start
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
+# → http://localhost:3080
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Production Deployment
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+docker compose up -d --build
 ```
+
+The app is served on port **3080** in both development and production.
+
+## API Proxy
+
+The dev server proxies three backend services:
+
+| Prefix | Target | Service |
+|--------|--------|---------|
+| `/api` | `localhost:18800` | amani-signal (signal engine) |
+| `/predict-api` | `localhost:18801` | amani-predict (prediction engine) |
+| `/data-api` | `localhost:8081` | data-eng (data engineering) |
+
+`/predict-api` and `/data-api` strip their prefix before forwarding.
+
+## Scripts
+
+```bash
+npm run dev      # Start dev server on :3080
+npm run build    # Type-check + production build
+npm run lint     # ESLint
+```
+
+## Development Guidelines
+
+See [CLAUDE.md](./CLAUDE.md) for detailed conventions on commit format, percentage field handling, theming, and architecture decisions.
