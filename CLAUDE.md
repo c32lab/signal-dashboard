@@ -77,7 +77,7 @@ src/
 - 提交前运行 `npx tsc --noEmit` 确保无 TS 错误
 
 ## 禁止
-- 不要修改 proxy 端口配置除非明确指示
+- **绝对不要修改 vite.config.ts 的 proxy 端口** — `/api` → :18800, `/predict-api` → :18801, `/data-api` → :8081。这些端口是固定的。:18810 是被废弃的旧方案，绝不使用
 - 不要对 `price_change` / `avg_impact` / `expected_impact` 做 ×100
 - 不要引入新的 CSS 框架（已有 Tailwind）
 - 不要使用 `sudo npm`
