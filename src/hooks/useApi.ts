@@ -2,6 +2,7 @@ import useSWR from 'swr'
 import { api } from '../api'
 import type { DecisionFilters } from '../types'
 import type { BacktestResponse } from '../types/backtest'
+import type { TradingSummary } from '../types/trading'
 
 const REFRESH_INTERVAL = 30_000
 
@@ -60,6 +61,10 @@ export function useCollectorHealth() {
 
 export function useStatus() {
   return useSWR('status', () => api.status(), { refreshInterval: REFRESH_INTERVAL })
+}
+
+export function useTradingSummary() {
+  return useSWR<TradingSummary>('trading/summary', () => api.tradingSummary(), { refreshInterval: 10_000 })
 }
 
 export function useRecentDecisions(minutes: number) {
