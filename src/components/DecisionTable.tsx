@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { Decision } from '../types'
 import { useDecisions } from '../hooks/useApi'
 import { validatePrice, validateConfidence } from '../utils/dataValidation'
@@ -18,8 +18,11 @@ const TIME_PRESETS: { label: string; value: TimePreset; hours?: number }[] = [
   { label: 'All', value: 'all' },
 ]
 
+// Rounds to the nearest minute to prevent SWR key churn (P0 fix)
 function fromIso(hours: number): string {
-  return new Date(Date.now() - hours * 3600_000).toISOString()
+  const ms = Date.now() - hours * 3600_000
+  const rounded = Math.floor(ms / 60_000) * 60_000
+  return new Date(rounded).toISOString()
 }
 
 function directionBadge(direction: string) {
@@ -118,9 +121,14 @@ export default function DecisionTable() {
   const [timePreset, setTimePreset] = useState<TimePreset>('24h')
   const [page, setPage] = useState(1)
 
-  const fromTime = TIME_PRESETS.find((p) => p.value === timePreset)?.hours
-    ? fromIso(TIME_PRESETS.find((p) => p.value === timePreset)!.hours!)
-    : undefined
+  // Memoize fromTime with minute-level granularity to prevent SWR key churn (P0 fix)
+  const minuteTick = Math.floor(Date.now() / 60_000)
+  const fromTime = useMemo(() => {
+    const preset = TIME_PRESETS.find((p) => p.value === timePreset)
+    if (!preset?.hours) return undefined
+    return fromIso(preset.hours)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timePreset, minuteTick])
 
   const offset = (page - 1) * PAGE_SIZE
   const { data, error, isLoading } = useDecisions({
