@@ -136,8 +136,8 @@ function PnlChart({ pnl_curve }: PnlChartProps) {
             contentStyle={{ backgroundColor: '#111827', border: '1px solid #374151', borderRadius: 8 }}
             labelStyle={{ color: '#9ca3af', fontSize: 11 }}
             itemStyle={{ fontSize: 12 }}
-            labelFormatter={(ts: string) => formatDateTime(ts)}
-            formatter={(value: number, name: string) => [`${value.toFixed(2)}%`, name]}
+            labelFormatter={(ts) => formatDateTime(String(ts))}
+            formatter={(value, name) => [`${Number(value).toFixed(2)}%`, String(name)]}
           />
           <Legend wrapperStyle={{ fontSize: 12, color: '#9ca3af' }} />
           {configNames.map((c) => (
