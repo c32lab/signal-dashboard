@@ -16,9 +16,10 @@ function accColor(pct: number): string {
 
 export function PredictHealthHeader({ serviceOk, activeCount, eventCount, macroScore, accuracy }: Props) {
   const acc1d = accuracy?.accuracy?.['1d']
+  const acc3d = accuracy?.accuracy?.['3d']
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
       {/* Service Status */}
       <div className="bg-gray-900 rounded-xl border border-gray-800 p-3 flex items-center gap-2">
         <span className={`inline-block w-2 h-2 rounded-full ${serviceOk ? 'bg-green-400' : 'bg-red-400'}`} />
@@ -62,6 +63,21 @@ export function PredictHealthHeader({ serviceOk, activeCount, eventCount, macroS
         )}
         {acc1d && (
           <span className="text-xs text-gray-500">{acc1d.correct}/{acc1d.total}</span>
+        )}
+      </div>
+
+      {/* 3d Accuracy */}
+      <div className="bg-gray-900 rounded-xl border border-gray-800 p-3 flex flex-col gap-0.5">
+        <span className="text-xs text-gray-500 uppercase tracking-wide">3d Accuracy</span>
+        {acc3d ? (
+          <span className={`text-lg font-mono font-semibold ${accColor(acc3d.accuracy)}`}>
+            {acc3d.accuracy.toFixed(1)}%
+          </span>
+        ) : (
+          <span className="text-lg font-mono text-gray-600">—</span>
+        )}
+        {acc3d && (
+          <span className="text-xs text-gray-500">{acc3d.correct}/{acc3d.total}</span>
         )}
       </div>
     </div>

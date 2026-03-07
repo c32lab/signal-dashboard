@@ -94,6 +94,7 @@ function ValidationsTable({ validations }: { validations: Validation[] }) {
 }
 
 export function AccuracyAndValidationsSection({
+  accuracy: apiAccuracy,
   validations,
 }: {
   accuracy: Record<string, AccuracyEntry>
@@ -214,6 +215,23 @@ export function AccuracyAndValidationsSection({
                 </span>
                 <span className="text-sm text-gray-400">from validations</span>
               </div>
+            </div>
+          )}
+
+          {/* API Accuracy Reference */}
+          {Object.keys(apiAccuracy).length > 0 && (
+            <div className="flex flex-wrap gap-3">
+              <span className="text-xs text-gray-500 uppercase tracking-wider self-center">API Reference:</span>
+              {Object.entries(apiAccuracy).map(([horizon, entry]) => {
+                const c = entry.accuracy > 50 ? 'text-green-400' : entry.accuracy >= 40 ? 'text-yellow-400' : 'text-red-400'
+                return (
+                  <div key={horizon} className="bg-gray-800/60 rounded-lg border border-gray-700 px-3 py-2 flex flex-col items-center gap-0.5">
+                    <span className="text-xs text-gray-500 uppercase">{horizon}</span>
+                    <span className={`text-lg font-mono font-bold ${c}`}>{entry.accuracy.toFixed(1)}%</span>
+                    <span className="text-xs text-gray-500">{entry.correct}/{entry.total}</span>
+                  </div>
+                )
+              })}
             </div>
           )}
 
