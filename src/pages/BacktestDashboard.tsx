@@ -15,14 +15,10 @@ import { useBacktest } from '../hooks/useApi'
 import { formatDateTime, formatDate, formatChartTime } from '../utils/format'
 import type { BacktestResult, BacktestSummary, SymbolBacktest } from '../types/backtest'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
+import { RegimeFilter, RegimeMiniCard, SummaryCard, CONFIG_COLORS } from '../components/backtest'
+import type { RegimeFilterValue } from '../components/backtest'
 
 const PAGE_SIZE = 20
-
-const CONFIG_COLORS: Record<string, string> = {
-  A_current: '#60a5fa',     // blue
-  B_pre_freeze: '#f97316',  // orange
-  C_balanced: '#a78bfa',    // purple
-}
 
 function pct(v: number | undefined | null, decimals = 1): string {
   return `${(v ?? 0).toFixed(decimals)}%`
@@ -56,59 +52,6 @@ function Skeleton() {
         ))}
       </div>
       <div className="bg-gray-900 border border-gray-800 rounded-xl h-64" />
-    </div>
-  )
-}
-
-interface SummaryCardProps {
-  config: string
-  description: string
-  win_rate_pct: number
-  total_pnl_pct: number
-  sharpe: number
-  max_drawdown_pct: number
-  total_trades: number
-  isBest: boolean
-}
-
-function SummaryCard({ config, description, win_rate_pct, total_pnl_pct, sharpe, max_drawdown_pct, total_trades, isBest }: SummaryCardProps) {
-  const color = CONFIG_COLORS[config] ?? '#9ca3af'
-  return (
-    <div className="bg-gray-900 border border-gray-800 hover:border-gray-700 transition-colors rounded-xl p-4 space-y-3 relative">
-      {isBest && (
-        <span className="absolute top-2 right-2 text-amber-400 text-sm" title="Best PnL">⭐</span>
-      )}
-      <div className="flex items-center gap-2">
-        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-        <span className="font-semibold text-sm text-gray-100">{config}</span>
-      </div>
-      <p className="text-xs text-gray-400">{description}</p>
-      <div className="grid grid-cols-2 gap-2 text-xs">
-        <div>
-          <div className="text-gray-500 mb-0.5">Win Rate</div>
-          <div className={`font-mono font-semibold ${win_rate_pct >= 50 ? 'text-green-400' : 'text-red-400'}`}>
-            {pct(win_rate_pct)}
-          </div>
-        </div>
-        <div>
-          <div className="text-gray-500 mb-0.5">Total PnL</div>
-          <div className={`font-mono font-semibold ${total_pnl_pct >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-            {pct(total_pnl_pct)}
-          </div>
-        </div>
-        <div>
-          <div className="text-gray-500 mb-0.5">Sharpe</div>
-          <div className="font-mono font-semibold text-gray-200">{(sharpe ?? 0).toFixed(2)}</div>
-        </div>
-        <div>
-          <div className="text-gray-500 mb-0.5">Max DD</div>
-          <div className="font-mono font-semibold text-red-400">{pct(max_drawdown_pct)}</div>
-        </div>
-        <div>
-          <div className="text-gray-500 mb-0.5">Trades</div>
-          <div className="font-mono font-semibold text-gray-200">{total_trades}</div>
-        </div>
-      </div>
     </div>
   )
 }
@@ -324,73 +267,12 @@ function SymbolRow({ symbol, rows }: SymbolRowProps) {
   )
 }
 
-const REGIME_OPTIONS = ['all', 'trending', 'ranging', 'volatile'] as const
-type RegimeFilter = typeof REGIME_OPTIONS[number]
-
-const REGIME_ACTIVE_STYLES: Record<RegimeFilter, string> = {
-  all: 'bg-blue-600 text-white',
-  trending: 'bg-green-600 text-white',
-  ranging: 'bg-yellow-600 text-white',
-  volatile: 'bg-red-600 text-white',
-}
-
-const REGIME_LABEL_COLORS: Record<string, string> = {
-  trending: 'text-green-400',
-  ranging: 'text-yellow-400',
-  volatile: 'text-red-400',
-}
-
-interface RegimeMiniCardProps {
-  regime: string
-  summaries: BacktestSummary[]
-}
-
-function RegimeMiniCard({ regime, summaries }: RegimeMiniCardProps) {
-  const totalTrades = summaries.reduce((sum, s) => sum + s.total_trades, 0)
-  const avgWinRate = summaries.length > 0
-    ? summaries.reduce((sum, s) => sum + s.win_rate_pct, 0) / summaries.length
-    : 0
-  const avgPnl = summaries.length > 0
-    ? summaries.reduce((sum, s) => sum + s.total_pnl_pct, 0) / summaries.length
-    : 0
-
-  return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-3 space-y-2">
-      <span className={`text-sm font-semibold uppercase ${REGIME_LABEL_COLORS[regime] ?? 'text-gray-300'}`}>
-        {regime}
-      </span>
-      {totalTrades === 0 ? (
-        <p className="text-xs text-gray-500">No data</p>
-      ) : (
-        <div className="grid grid-cols-3 gap-2 text-xs">
-          <div>
-            <div className="text-gray-500 mb-0.5">Trades</div>
-            <div className="font-mono font-semibold text-gray-200">{totalTrades}</div>
-          </div>
-          <div>
-            <div className="text-gray-500 mb-0.5">Win Rate</div>
-            <div className={`font-mono font-semibold ${avgWinRate >= 50 ? 'text-green-400' : 'text-red-400'}`}>
-              {pct(avgWinRate)}
-            </div>
-          </div>
-          <div>
-            <div className="text-gray-500 mb-0.5">PnL%</div>
-            <div className={`font-mono font-semibold ${avgPnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {pct(avgPnl)}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
-}
-
 interface ResultViewProps {
   result: BacktestResult
 }
 
 function ResultView({ result }: ResultViewProps) {
-  const [selectedRegime, setSelectedRegime] = useState<RegimeFilter>('all')
+  const [selectedRegime, setSelectedRegime] = useState<RegimeFilterValue>('all')
   const [page, setPage] = useState(1)
 
   const filtered = useMemo(() => {
@@ -449,21 +331,10 @@ function ResultView({ result }: ResultViewProps) {
       </div>
 
       {/* Regime filter pills */}
-      <div className="flex gap-2 flex-wrap">
-        {REGIME_OPTIONS.map(r => (
-          <button
-            key={r}
-            onClick={() => { setSelectedRegime(r); setPage(1) }}
-            className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
-              selectedRegime === r
-                ? REGIME_ACTIVE_STYLES[r]
-                : 'bg-gray-800 text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            {r.charAt(0).toUpperCase() + r.slice(1)}
-          </button>
-        ))}
-      </div>
+      <RegimeFilter
+        selectedRegime={selectedRegime}
+        onSelect={(r) => { setSelectedRegime(r); setPage(1) }}
+      />
 
       {/* Summary cards */}
       <SectionErrorBoundary title="Summary Cards">
