@@ -21,7 +21,7 @@ export function PerformanceOverview({ data }: { data: PerformanceResponse }) {
       <h2 className="text-sm font-semibold text-gray-200">Performance Overview</h2>
 
       {/* Overall stats */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="bg-gray-800 rounded-lg p-3 flex flex-col gap-1">
           <span className="text-xs text-gray-500 uppercase tracking-wide">Total Decisions</span>
           <span className="text-lg font-mono font-semibold text-gray-200">{overall.total}</span>
@@ -51,7 +51,7 @@ export function PerformanceOverview({ data }: { data: PerformanceResponse }) {
         <BarChart
           data={sorted}
           layout="vertical"
-          margin={{ top: 4, right: 12, bottom: 4, left: 80 }}
+          margin={{ top: 4, right: 12, bottom: 4, left: 4 }}
         >
           <XAxis
             type="number"

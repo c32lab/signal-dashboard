@@ -172,19 +172,19 @@ function SignalTimeline() {
         {!isLoading && filteredDecisions.length > 0 && (
           <div className="relative">
             {/* Vertical line */}
-            <div className="absolute left-[7rem] md:left-[8.5rem] top-0 bottom-0 w-px bg-gray-700" />
+            <div className="absolute left-[0.75rem] sm:left-[7rem] md:left-[8.5rem] top-0 bottom-0 w-px bg-gray-700" />
 
             <div className="space-y-4">
               {filteredDecisions.map((d) => (
-                <div key={d.id} className="flex gap-4 relative">
+                <div key={d.id} className="flex flex-col sm:flex-row gap-1 sm:gap-4 relative pl-6 sm:pl-0">
                   {/* Time label */}
-                  <div className="w-24 md:w-32 shrink-0 text-right pr-4 pt-3">
+                  <div className="sm:w-24 md:w-32 shrink-0 sm:text-right sm:pr-4 sm:pt-3">
                     <span className="text-xs text-gray-500 whitespace-nowrap">
                       {formatDateTime(d.timestamp)}
                     </span>
                   </div>
                   {/* Dot on the line */}
-                  <div className="absolute left-[6.75rem] md:left-[8.25rem] top-4 w-2 h-2 rounded-full bg-gray-600 border-2 border-gray-950 z-10" />
+                  <div className="absolute left-[0.5rem] sm:left-[6.75rem] md:left-[8.25rem] top-1 sm:top-4 w-2 h-2 rounded-full bg-gray-600 border-2 border-gray-950 z-10" />
                   {/* Card */}
                   <div
                     className={`flex-1 bg-gray-900 border border-gray-800 rounded-lg p-4 border-l-4 ${

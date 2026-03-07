@@ -103,7 +103,7 @@ function DecisionRow({ d }: { d: Decision }) {
       <td className="px-3 py-2 text-xs text-gray-400 text-right">
         {typeof d.combined_score === 'number' ? d.combined_score.toFixed(3) : '—'}
       </td>
-      <td className="px-3 py-2 text-xs text-gray-500 max-w-xs truncate" title={d.reasoning}>
+      <td className="px-3 py-2 text-xs text-gray-500 max-w-[200px] sm:max-w-xs truncate" title={d.reasoning}>
         {d.reasoning}
       </td>
     </tr>

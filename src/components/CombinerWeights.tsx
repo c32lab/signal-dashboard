@@ -79,7 +79,7 @@ export default function CombinerWeights() {
         <BarChart
           data={entries}
           layout="vertical"
-          margin={{ top: 4, right: 64, bottom: 4, left: 80 }}
+          margin={{ top: 4, right: 48, bottom: 4, left: 4 }}
         >
           <XAxis
             type="number"

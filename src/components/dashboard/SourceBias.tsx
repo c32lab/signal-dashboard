@@ -49,7 +49,7 @@ export function SourceBias({ data }: { data: BiasResponse }) {
         <BarChart
           data={entries}
           layout="vertical"
-          margin={{ top: 4, right: 12, bottom: 4, left: 100 }}
+          margin={{ top: 4, right: 12, bottom: 4, left: 4 }}
         >
           <XAxis
             type="number"
