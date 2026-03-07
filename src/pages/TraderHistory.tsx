@@ -1,132 +1,30 @@
-import { useState, useCallback, useMemo } from 'react'
-import { useDecisions, usePerformance, useOverview } from '../hooks/useApi'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
 import {
-  KpiCard,
+  KpiCardGrid,
   FilterBar,
   SymbolSummary,
   DecisionTable,
   Pagination,
-  exportCsv,
   PAGE_SIZE,
-  TIME_PERIODS,
-  accColor,
-  pnlColor,
-  pnlStr,
 } from '../components/history'
+import { useTraderHistory } from '../components/history/useTraderHistory'
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function TraderHistory() {
-  const [symbolFilter, setSymbolFilter] = useState('')
-  const [actionFilter, setActionFilter] = useState('')
-  const [directionFilter, setDirectionFilter] = useState('')
-  const [typeFilter, setTypeFilter] = useState('')
-  const [timePeriod, setTimePeriod] = useState('')
-  const [offset, setOffset] = useState(0)
-  const [exporting, setExporting] = useState(false)
-
-  // Round to the nearest minute for SWR key stability
-  const fromTs = useMemo(() => {
-    if (!timePeriod) return undefined
-    const period = TIME_PERIODS.find(p => p.label === timePeriod)
-    if (!period) return undefined
-    const roundedMs = Math.floor((Date.now() - period.ms) / 60_000) * 60_000
-    return new Date(roundedMs).toISOString()
-  }, [timePeriod])
-
-  // Server-side filters (symbol, action, type are supported by backend)
-  const serverFilters = {
-    limit: PAGE_SIZE,
-    offset,
-    symbol: symbolFilter || undefined,
-    action: actionFilter || undefined,
-    type: typeFilter || undefined,
-    from: fromTs,
-    // NOTE: direction is NOT supported server-side, handled client-side below
-  }
-
-  const { data: decisionsData, isLoading, error } = useDecisions(serverFilters)
-  const { data: perfData } = usePerformance()
-  const { data: overviewData } = useOverview()
-
-  // Client-side direction filter (backend ignores direction param)
-  const rawDecisions = decisionsData?.decisions ?? []
-  const serverTotal = decisionsData?.total ?? 0
-
-  const decisions = directionFilter
-    ? rawDecisions.filter(d => d.direction === directionFilter)
-    : rawDecisions
-  // When direction filter active, total is approximate (server doesn't filter)
-  const total = directionFilter ? decisions.length : serverTotal
-  const isDirectionFiltered = !!directionFilter
-
-  const overall = perfData?.overall
-  const actionDist = overviewData?.action_distribution
-  const activeSignals = actionDist
-    ? (actionDist['LONG'] ?? 0) + (actionDist['SHORT'] ?? 0)
-    : null
-
-  const typeOptions = overviewData?.type_distribution
-    ? Object.keys(overviewData.type_distribution).sort()
-    : []
-
-  const endRecord = isDirectionFiltered
-    ? decisions.length
-    : Math.min(offset + PAGE_SIZE, total)
-  const startRecord = isDirectionFiltered
-    ? (decisions.length > 0 ? 1 : 0)
-    : (total === 0 ? 0 : offset + 1)
-  const currentPage = isDirectionFiltered ? 1 : Math.floor(offset / PAGE_SIZE) + 1
-  const totalPages = isDirectionFiltered ? 1 : Math.max(1, Math.ceil(total / PAGE_SIZE))
-
-  function resetPage() { setOffset(0) }
-
-  function handleSymbol(v: string) { setSymbolFilter(v); resetPage() }
-  function handleAction(v: string) { setActionFilter(v); resetPage() }
-  function handleDirection(v: string) { setDirectionFilter(v); resetPage() }
-  function handleType(v: string) { setTypeFilter(v); resetPage() }
-
-  const handleExport = useCallback(async () => {
-    setExporting(true)
-    try {
-      await exportCsv({
-        symbol: symbolFilter || undefined,
-        action: actionFilter || undefined,
-        direction: directionFilter || undefined,
-        type: typeFilter || undefined,
-        from: fromTs,
-      })
-    } finally {
-      setExporting(false)
-    }
-  }, [symbolFilter, actionFilter, directionFilter, typeFilter, fromTs])
+  const {
+    symbolFilter, actionFilter, directionFilter, typeFilter, timePeriod, exporting,
+    handleSymbol, handleAction, handleDirection, handleType, handleExport, setTimePeriod,
+    decisions, total, isLoading, error,
+    overall, activeSignals, perfData, typeOptions,
+    offset, setOffset, startRecord, endRecord, currentPage, totalPages,
+  } = useTraderHistory()
 
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* A. KPI Cards */}
       <SectionErrorBoundary title="KPI Cards">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
-          <KpiCard
-            label="Total Trades"
-            value={overall ? String(overall.total) : '—'}
-          />
-          <KpiCard
-            label="Win Rate"
-            value={overall ? `${overall.accuracy_pct.toFixed(1)}%` : '—'}
-            color={accColor(overall?.accuracy_pct)}
-          />
-          <KpiCard
-            label="Avg PnL"
-            value={overall ? pnlStr(overall.avg_pnl_pct) : '—'}
-            color={pnlColor(overall?.avg_pnl_pct)}
-          />
-          <KpiCard
-            label="Active Signals"
-            value={activeSignals != null ? String(activeSignals) : '—'}
-            color="text-blue-400"
-          />
-        </div>
+        <KpiCardGrid overall={overall} activeSignals={activeSignals} />
       </SectionErrorBoundary>
 
       {/* B. Filter Bar */}
@@ -143,7 +41,7 @@ export default function TraderHistory() {
         onAction={handleAction}
         onType={handleType}
         onDirection={handleDirection}
-        onTimePeriod={v => { setTimePeriod(v); setOffset(0) }}
+        onTimePeriod={setTimePeriod}
         onExport={handleExport}
       />
 

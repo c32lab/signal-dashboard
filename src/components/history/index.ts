@@ -1,4 +1,5 @@
 export { default as KpiCard } from './KpiCard'
+export { default as KpiCardGrid } from './KpiCardGrid'
 export { default as FilterSelect } from './FilterSelect'
 export { default as SymbolSummary } from './SymbolSummary'
 export { default as DecisionRow } from './DecisionRow'
