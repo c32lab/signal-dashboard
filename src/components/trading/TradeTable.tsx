@@ -1,7 +1,8 @@
 import { useState, useMemo } from 'react'
 import type { TradingTrade } from '../../types/trading'
-import { formatDateTime, formatPrice } from '../../utils/format'
-import { SideBadge, StatusBadge, PnlText } from './TradingBadges'
+import TradeFilters from './TradeFilters'
+import TradeRow from './TradeRow'
+import TradePagination from './TradePagination'
 
 const PAGE_SIZE = 15
 
@@ -35,39 +36,21 @@ export default function TradeTable({ trades, isLoading }: TradeTableProps) {
   const rangeStart = filteredTrades.length === 0 ? 0 : safePage * PAGE_SIZE + 1
   const rangeEnd = Math.min((safePage + 1) * PAGE_SIZE, filteredTrades.length)
 
+  const resetPage = () => setPage(0)
+
   return (
     <div className="space-y-3">
       <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">最近交易</h2>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3">
-        <select
-          value={filterSymbol}
-          onChange={e => { setFilterSymbol(e.target.value); setPage(0) }}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-gray-500"
-        >
-          <option value="ALL">全部 Symbol</option>
-          {symbols.map(s => <option key={s} value={s}>{s}</option>)}
-        </select>
-        <select
-          value={filterSide}
-          onChange={e => { setFilterSide(e.target.value as 'ALL' | 'LONG' | 'SHORT'); setPage(0) }}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-gray-500"
-        >
-          <option value="ALL">全部方向</option>
-          <option value="LONG">LONG</option>
-          <option value="SHORT">SHORT</option>
-        </select>
-        <select
-          value={filterStatus}
-          onChange={e => { setFilterStatus(e.target.value as 'ALL' | 'open' | 'closed'); setPage(0) }}
-          className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-gray-500"
-        >
-          <option value="ALL">全部状态</option>
-          <option value="open">开仓中</option>
-          <option value="closed">已平仓</option>
-        </select>
-      </div>
+      <TradeFilters
+        symbols={symbols}
+        filterSymbol={filterSymbol}
+        onFilterSymbol={(v) => { setFilterSymbol(v); resetPage() }}
+        filterSide={filterSide}
+        onFilterSide={(v) => { setFilterSide(v); resetPage() }}
+        filterStatus={filterStatus}
+        onFilterStatus={(v) => { setFilterStatus(v); resetPage() }}
+      />
 
       <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-x-auto">
         <table className="w-full text-sm min-w-[640px]">
@@ -98,45 +81,23 @@ export default function TradeTable({ trades, isLoading }: TradeTableProps) {
               </tr>
             ) : (
               pagedTrades.map((trade: TradingTrade) => (
-                <tr key={trade.id} className="border-b border-gray-800 last:border-0 hover:bg-gray-800/50">
-                  <td className="px-4 py-3 text-gray-400 whitespace-nowrap">{formatDateTime(trade.timestamp)}</td>
-                  <td className="px-4 py-3 text-gray-200 font-medium">{trade.symbol}</td>
-                  <td className="px-4 py-3"><SideBadge side={trade.side} /></td>
-                  <td className="px-4 py-3 text-right text-gray-200">{formatPrice(trade.entry_price, trade.symbol)}</td>
-                  <td className="px-4 py-3 text-right text-gray-200">
-                    {trade.exit_price !== null ? formatPrice(trade.exit_price, trade.symbol) : '—'}
-                  </td>
-                  <td className="px-4 py-3 text-right"><PnlText value={trade.pnl_usdt} /></td>
-                  <td className="px-4 py-3 text-center"><StatusBadge status={trade.status} /></td>
-                  <td className="px-4 py-3 text-right text-gray-300">{(trade.confidence * 100).toFixed(0)}%</td>
-                </tr>
+                <TradeRow key={trade.id} trade={trade} />
               ))
             )}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination */}
       {filteredTrades.length > PAGE_SIZE && (
-        <div className="flex items-center justify-between text-sm text-gray-400">
-          <span>{rangeStart}-{rangeEnd} of {filteredTrades.length}</span>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setPage(p => Math.max(0, p - 1))}
-              disabled={safePage === 0}
-              className="px-3 py-1 rounded bg-gray-800 border border-gray-700 disabled:opacity-40 hover:bg-gray-700 transition-colors"
-            >
-              上一页
-            </button>
-            <button
-              onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
-              disabled={safePage >= totalPages - 1}
-              className="px-3 py-1 rounded bg-gray-800 border border-gray-700 disabled:opacity-40 hover:bg-gray-700 transition-colors"
-            >
-              下一页
-            </button>
-          </div>
-        </div>
+        <TradePagination
+          rangeStart={rangeStart}
+          rangeEnd={rangeEnd}
+          total={filteredTrades.length}
+          canPrev={safePage > 0}
+          canNext={safePage < totalPages - 1}
+          onPrev={() => setPage(p => Math.max(0, p - 1))}
+          onNext={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+        />
       )}
     </div>
   )
