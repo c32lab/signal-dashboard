@@ -134,6 +134,9 @@ export default function TradingDashboard() {
   const rangeStart = filteredTrades.length === 0 ? 0 : safePage * PAGE_SIZE + 1
   const rangeEnd = Math.min((safePage + 1) * PAGE_SIZE, filteredTrades.length)
 
+  const lastPnl = pnlData[pnlData.length - 1]?.cumPnl ?? 0
+  const pnlColor = lastPnl >= 0 ? '#22c55e' : '#ef4444'
+
   const sideDistData = [
     { name: 'LONG', count: stats.longCount },
     { name: 'SHORT', count: stats.shortCount },
@@ -205,8 +208,8 @@ export default function TradingDashboard() {
               <Area
                 type="monotone"
                 dataKey="cumPnl"
-                stroke="#22c55e"
-                fill="#22c55e"
+                stroke={pnlColor}
+                fill={pnlColor}
                 fillOpacity={0.15}
               />
             </AreaChart>
@@ -235,6 +238,9 @@ export default function TradingDashboard() {
             <p className={`text-xl font-bold ${stats.winRate >= 50 ? 'text-green-400' : 'text-red-400'}`}>
               {stats.winRate.toFixed(1)}%
             </p>
+            {stats.closedTrades.length > 0 && stats.closedTrades.length < 10 && (
+              <p className="text-xs text-yellow-500 mt-1">⚠ 样本少，波动大</p>
+            )}
           </div>
           <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
             <p className="text-gray-500 text-xs">LONG 占比</p>
