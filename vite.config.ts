@@ -11,6 +11,19 @@ export default defineConfig({
     globals: true,
     setupFiles: './vitest.setup.ts',
     exclude: ['**/e2e/**', '**/node_modules/**', '**/dist/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'text-summary'],
+      exclude: [
+        'node_modules/**',
+        'dist/**',
+        'e2e/**',
+        '**/*.test.{ts,tsx}',
+        '**/*.spec.{ts,tsx}',
+        '**/*.config.{ts,js,mjs}',
+        '**/*.d.ts',
+      ],
+    },
   },
   build: {
     rollupOptions: {
