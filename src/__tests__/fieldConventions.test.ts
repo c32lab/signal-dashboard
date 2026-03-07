@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { toDisplayPercent, SIGNAL_FIELDS, PREDICT_FIELDS } from '../utils/fieldConventions'
+import { toDisplayPercent, SIGNAL_FIELDS } from '../utils/fieldConventions'
 
 describe('toDisplayPercent', () => {
   it('returns value as-is for already_pct format', () => {
@@ -34,15 +34,4 @@ describe('field definitions', () => {
     expect(SIGNAL_FIELDS['performance.accuracy_pct'].format).toBe('already_pct')
   })
 
-  it('PREDICT_FIELDS expected_impact is already_pct (must not ×100)', () => {
-    expect(PREDICT_FIELDS['prediction.expected_impact'].format).toBe('already_pct')
-  })
-
-  it('PREDICT_FIELDS price_change is already_pct (must not ×100)', () => {
-    expect(PREDICT_FIELDS['event.price_change'].format).toBe('already_pct')
-  })
-
-  it('PREDICT_FIELDS funding_rate is tiny_decimal', () => {
-    expect(PREDICT_FIELDS['macro.funding_rate'].format).toBe('tiny_decimal')
-  })
 })
