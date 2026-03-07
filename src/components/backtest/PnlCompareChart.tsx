@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
   LineChart,
   Line,
@@ -13,6 +12,8 @@ import {
 import { formatDateTime, formatChartTime } from '../../utils/format'
 import type { PnlCurvePoint, BacktestConfig } from '../../types/backtest'
 import { CONFIG_COLORS } from './configColors'
+import PnlChartLegend from './PnlChartLegend'
+import { usePnlChartData } from './usePnlChartData'
 
 interface PnlCompareChartProps {
   pnlCurve: Record<string, PnlCurvePoint[]>
@@ -20,69 +21,16 @@ interface PnlCompareChartProps {
 }
 
 export default function PnlCompareChart({ pnlCurve, configs }: PnlCompareChartProps) {
-  const configNames = Object.keys(pnlCurve)
-  const [visible, setVisible] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(configNames.map((c) => [c, true]))
-  )
-
-  const toggle = (name: string) =>
-    setVisible((prev) => ({ ...prev, [name]: !prev[name] }))
-
-  // Merge all timestamps across configs
-  const allTimestamps = Array.from(
-    new Set(configNames.flatMap((c) => pnlCurve[c].map((p) => p.timestamp)))
-  ).sort()
-
-  // Build lookup per config
-  const lookups: Record<string, Record<string, number>> = {}
-  for (const c of configNames) {
-    lookups[c] = {}
-    for (const pt of pnlCurve[c]) {
-      lookups[c][pt.timestamp] = pt.cumulative_pnl_pct
-    }
-  }
-
-  const chartData = allTimestamps.map((ts) => {
-    const row: Record<string, string | number> = { timestamp: ts }
-    for (const c of configNames) {
-      if (visible[c] && lookups[c][ts] !== undefined) {
-        row[c] = lookups[c][ts]
-      }
-    }
-    return row
-  })
-
-  const visibleConfigs = configNames.filter((c) => visible[c])
+  const { configNames, visible, toggle, chartData, visibleConfigs } = usePnlChartData(pnlCurve)
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-        <h2 className="text-sm font-semibold text-gray-300">Cumulative PnL%</h2>
-        <div className="flex gap-2 flex-wrap">
-          {configNames.map((c) => {
-            const color = CONFIG_COLORS[c] ?? '#9ca3af'
-            const desc = configs[c]?.description
-            return (
-              <button
-                key={c}
-                onClick={() => toggle(c)}
-                className={`flex items-center gap-1.5 px-2 py-1 rounded text-xs transition-colors ${
-                  visible[c]
-                    ? 'bg-gray-800 text-gray-200'
-                    : 'bg-gray-950 text-gray-600'
-                }`}
-                title={desc}
-              >
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: visible[c] ? color : '#4b5563' }}
-                />
-                {c}
-              </button>
-            )
-          })}
-        </div>
-      </div>
+      <PnlChartLegend
+        configNames={configNames}
+        visible={visible}
+        onToggle={toggle}
+        configs={configs}
+      />
 
       <ResponsiveContainer width="100%" height={260}>
         <LineChart data={chartData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
