@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useTradingSummary } from '../hooks/useApi'
 import { BalanceCards, PnlCurve, TradeStats, PositionsList, TradeTable } from '../components/trading'
+import SectionErrorBoundary from '../components/SectionErrorBoundary'
 
 export default function TradingDashboard() {
   const { data, error, isLoading } = useTradingSummary()
@@ -50,18 +51,28 @@ export default function TradingDashboard() {
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       <h1 className="text-lg font-bold text-gray-100">交易记录</h1>
 
-      <BalanceCards balance={balance} isLoading={isLoading} />
-      <PnlCurve data={pnlData} />
-      <TradeStats
-        totalCount={trades.length}
-        openCount={stats.openTrades.length}
-        closedCount={stats.closedTrades.length}
-        winRate={stats.winRate}
-        longCount={stats.longCount}
-        shortCount={stats.shortCount}
-      />
-      <PositionsList positions={positions} isLoading={isLoading} />
-      <TradeTable trades={trades} isLoading={isLoading} />
+      <SectionErrorBoundary title="Balance Cards">
+        <BalanceCards balance={balance} isLoading={isLoading} />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary title="PnL Curve">
+        <PnlCurve data={pnlData} />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary title="Trade Stats">
+        <TradeStats
+          totalCount={trades.length}
+          openCount={stats.openTrades.length}
+          closedCount={stats.closedTrades.length}
+          winRate={stats.winRate}
+          longCount={stats.longCount}
+          shortCount={stats.shortCount}
+        />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary title="Open Positions">
+        <PositionsList positions={positions} isLoading={isLoading} />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary title="Trade Table">
+        <TradeTable trades={trades} isLoading={isLoading} />
+      </SectionErrorBoundary>
     </div>
   )
 }
