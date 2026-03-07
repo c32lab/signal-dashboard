@@ -59,4 +59,38 @@ describe('EventTable', () => {
     render(<EventTable events={[makeEvent({ price_change: 1.25 })]} />)
     expect(screen.getByText('+1.25%')).toBeInTheDocument()
   })
+
+  it('renders empty table when events array is empty', () => {
+    render(<EventTable events={[]} />)
+    // Headers should still render
+    expect(screen.getByText('Date')).toBeInTheDocument()
+    expect(screen.getByText('Symbol')).toBeInTheDocument()
+    // No data rows
+    const rows = screen.getAllByRole('row')
+    // Only the header row
+    expect(rows).toHaveLength(1)
+  })
+
+  it('renders dash when source is missing and no url', () => {
+    render(<EventTable events={[makeEvent({ url: '', source: '' })]} />)
+    expect(screen.getByText('—')).toBeInTheDocument()
+  })
+
+  it('truncates long event text', () => {
+    const longEvent = 'A'.repeat(80)
+    render(<EventTable events={[makeEvent({ event: longEvent })]} />)
+    // Should show truncated text (60 chars + …)
+    expect(screen.getByText('A'.repeat(60) + '…')).toBeInTheDocument()
+  })
+
+  it('sorts events by date descending', () => {
+    const events = [
+      makeEvent({ id: 1, date: '2026-03-01', symbol: 'OLD' }),
+      makeEvent({ id: 2, date: '2026-03-05', symbol: 'NEW' }),
+    ]
+    render(<EventTable events={events} />)
+    const cells = screen.getAllByRole('row')
+    // First data row should be the newer date
+    expect(cells[1]).toHaveTextContent('NEW')
+  })
 })
