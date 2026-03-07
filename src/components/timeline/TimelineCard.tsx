@@ -32,9 +32,9 @@ export default function TimelineCard({ decision: d }: { decision: Decision }) {
           <span className="text-xs text-gray-500">{d.action}</span>
         </div>
         <div className="flex gap-4 text-xs text-gray-400 flex-wrap">
-          <span>置信度 <span className="text-gray-200">{(d.confidence * 100).toFixed(1)}%</span></span>
-          <span>综合分 <span className="text-gray-200">{d.combined_score.toFixed(2)}</span></span>
-          <span>价格 <span className="text-gray-200">{formatPrice(d.price_at_decision, d.symbol)}</span></span>
+          <span>Confidence <span className="text-gray-200">{(d.confidence * 100).toFixed(1)}%</span></span>
+          <span>Score <span className="text-gray-200">{d.combined_score.toFixed(2)}</span></span>
+          <span>Price <span className="text-gray-200">{formatPrice(d.price_at_decision, d.symbol)}</span></span>
         </div>
         {d.reasoning && <ReasoningText text={d.reasoning} />}
       </div>

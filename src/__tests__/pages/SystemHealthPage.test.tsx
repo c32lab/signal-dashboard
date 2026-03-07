@@ -25,7 +25,7 @@ describe('SystemHealthPage', () => {
     mockUseHealth.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useHealth>)
     mockUseCollectorHealth.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useCollectorHealth>)
     render(<SystemHealthPage />)
-    expect(screen.getByText('系统健康')).toBeInTheDocument()
+    expect(screen.getByText('System Health')).toBeInTheDocument()
   })
 
   it('renders health summary when data is available', () => {

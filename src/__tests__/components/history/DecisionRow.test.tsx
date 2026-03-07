@@ -70,9 +70,9 @@ describe('DecisionRow', () => {
   })
 
   it('shows confidence warning when validateConfidence returns invalid', () => {
-    vi.mocked(validateConfidence).mockReturnValue({ valid: false, warning: 'Confidence 1.5 超出 0-1 范围' })
+    vi.mocked(validateConfidence).mockReturnValue({ valid: false, warning: 'Confidence 1.5 out of 0-1 range' })
     renderRow({ confidence: 1.5 })
-    expect(screen.getByTestId('data-warning')).toHaveTextContent('Confidence 1.5 超出 0-1 范围')
+    expect(screen.getByTestId('data-warning')).toHaveTextContent('Confidence 1.5 out of 0-1 range')
     vi.mocked(validateConfidence).mockReturnValue({ valid: true })
   })
 
@@ -80,6 +80,6 @@ describe('DecisionRow', () => {
     vi.mocked(validateConfidence).mockReturnValue({ valid: true })
     renderRow({ confidence: 0, action: 'LONG' })
     expect(screen.getByText('0%')).toBeInTheDocument()
-    expect(screen.getByTestId('data-warning')).toHaveTextContent('Confidence=0 但 action=LONG')
+    expect(screen.getByTestId('data-warning')).toHaveTextContent('Confidence=0 but action=LONG')
   })
 })

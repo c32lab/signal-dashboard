@@ -26,9 +26,9 @@ describe('BalanceCards', () => {
 
   it('renders labels', () => {
     render(<BalanceCards balance={balance} isLoading={false} />)
-    expect(screen.getByText('总余额 (USDT)')).toBeInTheDocument()
-    expect(screen.getByText('未实现盈亏')).toBeInTheDocument()
-    expect(screen.getByText('可用余额 (USDT)')).toBeInTheDocument()
+    expect(screen.getByText('Total Balance (USDT)')).toBeInTheDocument()
+    expect(screen.getByText('Unrealized PnL')).toBeInTheDocument()
+    expect(screen.getByText('Available (USDT)')).toBeInTheDocument()
   })
 
   it('shows green for positive unrealized PnL', () => {

@@ -44,7 +44,7 @@ function SignalTimeline() {
   return (
     <SectionErrorBoundary title="Signal Timeline">
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        <h1 className="text-xl font-bold text-gray-100">信号时间轴</h1>
+        <h1 className="text-xl font-bold text-gray-100">Signal Timeline</h1>
 
         {/* Filters */}
         <TimelineFilterBar
@@ -62,7 +62,7 @@ function SignalTimeline() {
         {/* Error state */}
         {error && (
           <div className="bg-red-900/20 border border-red-800 rounded-lg p-3 text-sm text-red-400">
-            加载失败：{error.message ?? '未知错误'}
+            Failed to load: {error.message ?? 'Unknown error'}
           </div>
         )}
 
@@ -71,7 +71,7 @@ function SignalTimeline() {
 
         {/* Timeline */}
         {!isLoading && !error && filteredDecisions.length === 0 && (
-          <p className="text-sm text-gray-500 text-center py-8">暂无数据</p>
+          <p className="text-sm text-gray-500 text-center py-8">No data</p>
         )}
 
         {!isLoading && filteredDecisions.length > 0 && (
@@ -95,7 +95,7 @@ function SignalTimeline() {
               onClick={() => setPage((p) => p - 1)}
               className="px-4 py-1.5 text-sm bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              上一页
+              Prev
             </button>
             <span className="text-xs text-gray-500">
               {page + 1} / {totalPages}
@@ -105,7 +105,7 @@ function SignalTimeline() {
               onClick={() => setPage((p) => p + 1)}
               className="px-4 py-1.5 text-sm bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              下一页
+              Next
             </button>
           </div>
         )}

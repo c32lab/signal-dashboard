@@ -11,7 +11,7 @@ describe('BacktestHeader', () => {
 
   it('displays total trades count', () => {
     render(<BacktestHeader generatedAt="2026-03-01T00:00:00Z" totalTrades={180} />)
-    expect(screen.getByText('180 笔交易')).toBeInTheDocument()
+    expect(screen.getByText('180 trades')).toBeInTheDocument()
   })
 
   it('displays data range when provided', () => {

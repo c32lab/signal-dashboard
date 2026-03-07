@@ -22,11 +22,11 @@ export default function BacktestHeader({ generatedAt, dataRange, totalTrades }: 
               Data: {formatDate(dataRange.start)} – {formatDate(dataRange.end)}
             </span>
             <span>·</span>
-            <span>{days} 天</span>
+            <span>{days} days</span>
           </>
         )}
         <span>·</span>
-        <span>{totalTrades} 笔交易</span>
+        <span>{totalTrades} trades</span>
       </div>
     </div>
   )

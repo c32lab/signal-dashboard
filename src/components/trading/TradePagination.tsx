@@ -26,14 +26,14 @@ export default function TradePagination({
           disabled={!canPrev}
           className="px-3 py-1 rounded bg-gray-800 border border-gray-700 disabled:opacity-40 hover:bg-gray-700 transition-colors"
         >
-          上一页
+          Prev
         </button>
         <button
           onClick={onNext}
           disabled={!canNext}
           className="px-3 py-1 rounded bg-gray-800 border border-gray-700 disabled:opacity-40 hover:bg-gray-700 transition-colors"
         >
-          下一页
+          Next
         </button>
       </div>
     </div>

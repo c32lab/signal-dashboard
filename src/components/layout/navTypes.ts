@@ -16,16 +16,16 @@ export function isGroup(entry: NavEntry): entry is NavGroup {
 }
 
 export const NAV_ENTRIES: NavEntry[] = [
-  { to: '/', label: '信号概览', end: true },
-  { to: '/backtest', label: '回测对比' },
-  { to: '/trading', label: '交易记录' },
-  { to: '/history', label: '事件库' },
-  { to: '/timeline', label: '信号时间轴' },
+  { to: '/', label: 'Overview', end: true }, // zh: xinhao-gailan (Signal Overview)
+  { to: '/backtest', label: 'Backtest' }, // zh: huice-duibi (Backtest Comparison)
+  { to: '/trading', label: 'Trading' }, // zh: jiaoyi-jilu (Trade Records)
+  { to: '/history', label: 'History' }, // zh: shijian-ku (Event Library)
+  { to: '/timeline', label: 'Timeline' }, // zh: xinhao-shijianzhou (Signal Timeline)
   {
-    label: '高级分析',
+    label: 'Advanced', // zh: gaoji-fenxi (Advanced Analysis)
     items: [
-      { to: '/quality', label: '信号质量' },
-      { to: '/advanced/system', label: '系统健康' },
+      { to: '/quality', label: 'Quality' }, // zh: xinhao-zhiliang (Signal Quality)
+      { to: '/advanced/system', label: 'System Health' }, // zh: xitong-jiankang (System Health)
     ],
   },
 ]

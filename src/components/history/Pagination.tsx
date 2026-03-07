@@ -22,7 +22,7 @@ export default function Pagination({
   return (
     <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500">
       <span>
-        第 {startRecord}–{endRecord} 条 / 共 {total} 条
+        {startRecord}–{endRecord} of {total}
       </span>
       <div className="flex items-center gap-1">
         <button
@@ -30,7 +30,7 @@ export default function Pagination({
           disabled={offset === 0}
           className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
         >
-          ‹ 上一页
+          ‹ Prev
         </button>
         <span className="px-3">
           {currentPage} / {totalPages}
@@ -40,7 +40,7 @@ export default function Pagination({
           disabled={endRecord >= total}
           className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
         >
-          下一页 ›
+          Next ›
         </button>
       </div>
     </div>

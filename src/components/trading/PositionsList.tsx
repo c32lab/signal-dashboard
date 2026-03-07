@@ -35,7 +35,7 @@ interface PositionsListProps {
 export default function PositionsList({ positions, isLoading }: PositionsListProps) {
   return (
     <div className="space-y-3">
-      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">持仓</h2>
+      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Positions</h2>
       {isLoading ? (
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
           <div className="h-4 bg-gray-800 rounded animate-pulse w-48" />

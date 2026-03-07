@@ -40,7 +40,7 @@ export default function TradeTable({ trades, isLoading }: TradeTableProps) {
 
   return (
     <div className="space-y-3">
-      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">最近交易</h2>
+      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Recent Trades</h2>
 
       <TradeFilters
         symbols={symbols}
@@ -56,27 +56,27 @@ export default function TradeTable({ trades, isLoading }: TradeTableProps) {
         <table className="w-full text-sm min-w-[640px]">
           <thead>
             <tr className="border-b border-gray-800 text-gray-500 text-xs">
-              <th className="text-left px-4 py-3 font-medium">时间</th>
+              <th className="text-left px-4 py-3 font-medium">Time</th>
               <th className="text-left px-4 py-3 font-medium">Symbol</th>
-              <th className="text-left px-4 py-3 font-medium">方向</th>
-              <th className="text-right px-4 py-3 font-medium">开仓价</th>
-              <th className="text-right px-4 py-3 font-medium">平仓价</th>
+              <th className="text-left px-4 py-3 font-medium">Side</th>
+              <th className="text-right px-4 py-3 font-medium">Entry Price</th>
+              <th className="text-right px-4 py-3 font-medium">Close Price</th>
               <th className="text-right px-4 py-3 font-medium">PnL (USDT)</th>
-              <th className="text-center px-4 py-3 font-medium">状态</th>
-              <th className="text-right px-4 py-3 font-medium">置信度</th>
+              <th className="text-center px-4 py-3 font-medium">Status</th>
+              <th className="text-right px-4 py-3 font-medium">Confidence</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
                 <td colSpan={8} className="px-4 py-6 text-center text-gray-600 text-xs">
-                  加载中…
+                  Loading…
                 </td>
               </tr>
             ) : pagedTrades.length === 0 ? (
               <tr>
                 <td colSpan={8} className="px-4 py-6 text-center text-gray-600 text-xs">
-                  暂无交易记录
+                  No trades
                 </td>
               </tr>
             ) : (

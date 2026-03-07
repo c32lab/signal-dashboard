@@ -11,7 +11,7 @@ describe('CodeQuality', () => {
 
   it('renders placeholder message', () => {
     render(<CodeQuality />)
-    expect(screen.getByText(/Code Quality 数据对接中/)).toBeInTheDocument()
+    expect(screen.getByText(/Code Quality data integration in progress/)).toBeInTheDocument()
   })
 
   it('renders gear icon', () => {

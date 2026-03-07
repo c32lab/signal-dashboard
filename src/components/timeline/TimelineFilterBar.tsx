@@ -30,7 +30,7 @@ export default function TimelineFilterBar({
         onChange={(e) => onSymbolChange(e.target.value)}
         className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-200 focus:outline-none focus:border-blue-500"
       >
-        <option value="">全部币种</option>
+        <option value="">All Symbols</option>
         {symbols.map((s) => (
           <option key={s} value={s}>{stripUsdt(s)}</option>
         ))}
@@ -64,7 +64,7 @@ export default function TimelineFilterBar({
 
       {total > 0 && (
         <span className="text-xs text-gray-500 ml-auto">
-          {direction ? `${filteredCount} / ` : ''}共 {total} 条
+          {direction ? `${filteredCount} / ` : ''}{total} total
         </span>
       )}
     </div>

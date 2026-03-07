@@ -22,12 +22,12 @@ const makeTrade = (overrides: Partial<TradingTrade> = {}): TradingTrade => ({
 describe('TradeTable', () => {
   it('shows loading state', () => {
     render(<TradeTable trades={[]} isLoading={true} />)
-    expect(screen.getByText('加载中…')).toBeInTheDocument()
+    expect(screen.getByText('Loading…')).toBeInTheDocument()
   })
 
   it('shows empty state when no trades', () => {
     render(<TradeTable trades={[]} isLoading={false} />)
-    expect(screen.getByText('暂无交易记录')).toBeInTheDocument()
+    expect(screen.getByText('No trades')).toBeInTheDocument()
   })
 
   it('renders trade rows', () => {
@@ -49,9 +49,9 @@ describe('TradeTable', () => {
   it('renders table headers', () => {
     render(<TradeTable trades={[makeTrade()]} isLoading={false} />)
     expect(screen.getByText('Symbol')).toBeInTheDocument()
-    expect(screen.getByText('方向')).toBeInTheDocument()
+    expect(screen.getByText('Side')).toBeInTheDocument()
     expect(screen.getByText('PnL (USDT)')).toBeInTheDocument()
-    expect(screen.getByText('状态')).toBeInTheDocument()
+    expect(screen.getByText('Status')).toBeInTheDocument()
   })
 
   it('filters by symbol', async () => {
@@ -105,8 +105,8 @@ describe('TradeTable', () => {
       makeTrade({ id: String(i), symbol: `SYM${i}` })
     )
     render(<TradeTable trades={trades} isLoading={false} />)
-    expect(screen.getByText('上一页')).toBeInTheDocument()
-    expect(screen.getByText('下一页')).toBeInTheDocument()
+    expect(screen.getByText('Prev')).toBeInTheDocument()
+    expect(screen.getByText('Next')).toBeInTheDocument()
     expect(screen.getByText('1-15 of 20')).toBeInTheDocument()
   })
 
@@ -117,16 +117,16 @@ describe('TradeTable', () => {
     )
     render(<TradeTable trades={trades} isLoading={false} />)
 
-    await user.click(screen.getByText('下一页'))
+    await user.click(screen.getByText('Next'))
     expect(screen.getByText('16-20 of 20')).toBeInTheDocument()
 
-    await user.click(screen.getByText('上一页'))
+    await user.click(screen.getByText('Prev'))
     expect(screen.getByText('1-15 of 20')).toBeInTheDocument()
   })
 
   it('hides pagination when trades fit in one page', () => {
     const trades = [makeTrade()]
     render(<TradeTable trades={trades} isLoading={false} />)
-    expect(screen.queryByText('上一页')).not.toBeInTheDocument()
+    expect(screen.queryByText('Prev')).not.toBeInTheDocument()
   })
 })

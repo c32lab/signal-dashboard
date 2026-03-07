@@ -24,7 +24,7 @@ describe('TradePagination', () => {
         onPrev={() => {}} onNext={() => {}}
       />
     )
-    expect(screen.getByText('上一页')).toBeDisabled()
+    expect(screen.getByText('Prev')).toBeDisabled()
   })
 
   it('disables next button when canNext is false', () => {
@@ -35,7 +35,7 @@ describe('TradePagination', () => {
         onPrev={() => {}} onNext={() => {}}
       />
     )
-    expect(screen.getByText('下一页')).toBeDisabled()
+    expect(screen.getByText('Next')).toBeDisabled()
   })
 
   it('calls onNext when clicking next', async () => {
@@ -48,7 +48,7 @@ describe('TradePagination', () => {
       />
     )
     const user = userEvent.setup()
-    await user.click(screen.getByText('下一页'))
+    await user.click(screen.getByText('Next'))
     expect(onNext).toHaveBeenCalledOnce()
   })
 
@@ -62,7 +62,7 @@ describe('TradePagination', () => {
       />
     )
     const user = userEvent.setup()
-    await user.click(screen.getByText('上一页'))
+    await user.click(screen.getByText('Prev'))
     expect(onPrev).toHaveBeenCalledOnce()
   })
 })

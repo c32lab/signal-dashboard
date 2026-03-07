@@ -28,7 +28,7 @@ describe('NavBar', () => {
     const btn = screen.getByRole('button', { name: 'Toggle navigation menu' })
     fireEvent.click(btn)
     // MobileMenu renders nav links (some may duplicate desktop links)
-    const items = screen.getAllByText('信号概览')
+    const items = screen.getAllByText('Overview')
     expect(items.length).toBeGreaterThanOrEqual(2) // desktop + mobile
   })
 
@@ -46,7 +46,7 @@ describe('NavBar', () => {
   it('renders desktop nav links', () => {
     renderNavBar()
     // Desktop links are in hidden md:flex container
-    const links = screen.getAllByText('回测对比')
+    const links = screen.getAllByText('Backtest')
     expect(links.length).toBeGreaterThanOrEqual(1)
   })
 })

@@ -24,7 +24,7 @@ export default function TradeFilters({
         onChange={e => onFilterSymbol(e.target.value)}
         className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-gray-500"
       >
-        <option value="ALL">全部 Symbol</option>
+        <option value="ALL">All Symbols</option>
         {symbols.map(s => <option key={s} value={s}>{s}</option>)}
       </select>
       <select
@@ -32,7 +32,7 @@ export default function TradeFilters({
         onChange={e => onFilterSide(e.target.value as 'ALL' | 'LONG' | 'SHORT')}
         className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-gray-500"
       >
-        <option value="ALL">全部方向</option>
+        <option value="ALL">All Sides</option>
         <option value="LONG">LONG</option>
         <option value="SHORT">SHORT</option>
       </select>
@@ -41,9 +41,9 @@ export default function TradeFilters({
         onChange={e => onFilterStatus(e.target.value as 'ALL' | 'open' | 'closed')}
         className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-sm text-gray-300 focus:outline-none focus:border-gray-500"
       >
-        <option value="ALL">全部状态</option>
-        <option value="open">开仓中</option>
-        <option value="closed">已平仓</option>
+        <option value="ALL">All Statuses</option>
+        <option value="open">Open</option>
+        <option value="closed">Closed</option>
       </select>
     </div>
   )

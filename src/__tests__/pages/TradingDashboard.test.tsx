@@ -41,7 +41,7 @@ describe('TradingDashboard', () => {
       isLoading: false, error: undefined,
     } as unknown as ReturnType<typeof useTradingSummary>)
     render(<TradingDashboard />)
-    expect(screen.getByText('交易记录')).toBeInTheDocument()
+    expect(screen.getByText('Trading')).toBeInTheDocument()
   })
 
   it('renders error state', () => {
@@ -70,7 +70,7 @@ describe('TradingDashboard', () => {
       isLoading: false, error: undefined,
     } as unknown as ReturnType<typeof useTradingSummary>)
     render(<TradingDashboard />)
-    expect(screen.getByText('交易记录')).toBeInTheDocument()
+    expect(screen.getByText('Trading')).toBeInTheDocument()
   })
 
   it('renders with empty trading data', () => {
@@ -79,6 +79,6 @@ describe('TradingDashboard', () => {
       isLoading: false, error: undefined,
     } as unknown as ReturnType<typeof useTradingSummary>)
     render(<TradingDashboard />)
-    expect(screen.getByText('交易记录')).toBeInTheDocument()
+    expect(screen.getByText('Trading')).toBeInTheDocument()
   })
 })

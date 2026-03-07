@@ -12,7 +12,7 @@ export default function SystemHealthPage() {
 
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-      <h1 className="text-xl font-bold text-gray-100">系统健康</h1>
+      <h1 className="text-xl font-bold text-gray-100">System Health</h1>
       {healthData && (
         <SectionErrorBoundary title="System Health">
           <HealthSummary data={healthData} />
