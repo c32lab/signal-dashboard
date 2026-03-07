@@ -2,20 +2,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 
-const mockUsePerformance = vi.fn(() => ({ data: undefined, isLoading: true, error: undefined }))
-const mockUseAccuracyTrend = vi.fn(() => ({ data: undefined, isLoading: true, error: undefined }))
-const mockUseSignalQuality = vi.fn(() => ({ data: undefined, isLoading: true, error: undefined }))
-const mockUseAccuracy = vi.fn(() => ({ data: undefined, isLoading: true, error: undefined }))
-const mockUseConfidence = vi.fn(() => ({ data: undefined, isLoading: false, error: undefined }))
-const mockUseCombinerWeights = vi.fn(() => ({ data: undefined, isLoading: false, error: undefined }))
+type HookResult = { data: unknown; isLoading: boolean; error: Error | undefined }
+const mockUsePerformance = vi.fn((): HookResult => ({ data: undefined, isLoading: true, error: undefined }))
+const mockUseAccuracyTrend = vi.fn((): HookResult => ({ data: undefined, isLoading: true, error: undefined }))
+const mockUseSignalQuality = vi.fn((): HookResult => ({ data: undefined, isLoading: true, error: undefined }))
+const mockUseAccuracy = vi.fn((): HookResult => ({ data: undefined, isLoading: true, error: undefined }))
+const mockUseConfidence = vi.fn((): HookResult => ({ data: undefined, isLoading: false, error: undefined }))
+const mockUseCombinerWeights = vi.fn((): HookResult => ({ data: undefined, isLoading: false, error: undefined }))
 
 vi.mock('../../hooks/useApi', () => ({
-  usePerformance: (...args: unknown[]) => mockUsePerformance(...args),
-  useAccuracyTrend: (...args: unknown[]) => mockUseAccuracyTrend(...args),
-  useSignalQuality: (...args: unknown[]) => mockUseSignalQuality(...args),
-  useAccuracy: (...args: unknown[]) => mockUseAccuracy(...args),
-  useConfidence: (...args: unknown[]) => mockUseConfidence(...args),
-  useCombinerWeights: (...args: unknown[]) => mockUseCombinerWeights(...args),
+  usePerformance: () => mockUsePerformance(),
+  useAccuracyTrend: () => mockUseAccuracyTrend(),
+  useSignalQuality: () => mockUseSignalQuality(),
+  useAccuracy: () => mockUseAccuracy(),
+  useConfidence: () => mockUseConfidence(),
+  useCombinerWeights: () => mockUseCombinerWeights(),
 }))
 
 vi.mock('recharts', () => ({
