@@ -1,6 +1,6 @@
 /// <reference types="@testing-library/jest-dom/vitest" />
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 
 vi.mock('../../components/history/useTraderHistory', () => ({
   useTraderHistory: vi.fn(),
@@ -72,5 +72,42 @@ describe('TraderHistory', () => {
     render(<TraderHistory />)
     // Pagination should not appear
     expect(screen.queryByText(/of/)).toBeNull()
+  })
+
+  it('renders pagination and handles prev/next clicks', () => {
+    const mockSetOffset = vi.fn()
+    mockReturnValues({
+      total: 150,
+      offset: 50,
+      startRecord: 51,
+      endRecord: 100,
+      currentPage: 2,
+      totalPages: 3,
+      setOffset: mockSetOffset,
+    })
+    render(<TraderHistory />)
+
+    // Both buttons should be enabled on middle page
+    const prevButton = screen.getByText(/‹ Prev/)
+    fireEvent.click(prevButton)
+    expect(mockSetOffset).toHaveBeenCalledTimes(1)
+
+    const nextButton = screen.getByText(/Next ›/)
+    fireEvent.click(nextButton)
+    expect(mockSetOffset).toHaveBeenCalledTimes(2)
+  })
+
+  it('shows SymbolSummary when symbolFilter and perfData are set', () => {
+    mockReturnValues({
+      symbolFilter: 'BTC/USDT',
+      perfData: {
+        by_symbol: [
+          { symbol: 'BTC/USDT', total: 10, correct: 6, accuracy_pct: 60, avg_pnl_pct: 2.3 },
+        ],
+      },
+    })
+    render(<TraderHistory />)
+    // SymbolSummary shows "BTC Performance" via stripUsdt
+    expect(screen.getByText(/BTC Performance/)).toBeInTheDocument()
   })
 })
