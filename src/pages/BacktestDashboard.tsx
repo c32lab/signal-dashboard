@@ -1,7 +1,5 @@
 import { useState, useMemo } from 'react'
 import {
-  LineChart,
-  Line,
   BarChart,
   Bar,
   XAxis,
@@ -12,10 +10,10 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { useBacktest } from '../hooks/useApi'
-import { formatDateTime, formatDate, formatChartTime } from '../utils/format'
+import { formatDateTime, formatDate } from '../utils/format'
 import type { BacktestResult, BacktestSummary, SymbolBacktest } from '../types/backtest'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
-import { RegimeFilter, RegimeMiniCard, SummaryCard, CONFIG_COLORS } from '../components/backtest'
+import { RegimeFilter, RegimeMiniCard, SummaryCard, CONFIG_COLORS, PnlCompareChart, WinRateCompareChart } from '../components/backtest'
 import type { RegimeFilterValue } from '../components/backtest'
 
 const PAGE_SIZE = 20
@@ -52,78 +50,6 @@ function Skeleton() {
         ))}
       </div>
       <div className="bg-gray-900 border border-gray-800 rounded-xl h-64" />
-    </div>
-  )
-}
-
-interface PnlChartProps {
-  pnl_curve: BacktestResult['pnl_curve']
-}
-
-function PnlChart({ pnl_curve }: PnlChartProps) {
-  // Merge all timestamps across configs into a unified sorted list
-  const configNames = Object.keys(pnl_curve)
-  const allTimestamps = Array.from(
-    new Set(configNames.flatMap((c) => pnl_curve[c].map((p) => p.timestamp)))
-  ).sort()
-
-  // Build a lookup map per config for fast access
-  const lookups: Record<string, Record<string, number>> = {}
-  for (const c of configNames) {
-    lookups[c] = {}
-    for (const pt of pnl_curve[c]) {
-      lookups[c][pt.timestamp] = pt.cumulative_pnl_pct
-    }
-  }
-
-  const chartData = allTimestamps.map((ts) => {
-    const row: Record<string, string | number> = { timestamp: ts }
-    for (const c of configNames) {
-      if (lookups[c][ts] !== undefined) {
-        row[c] = lookups[c][ts]
-      }
-    }
-    return row
-  })
-
-  return (
-    <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-      <h2 className="text-sm font-semibold text-gray-300 mb-4">Cumulative PnL%</h2>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={chartData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-          <XAxis
-            dataKey="timestamp"
-            tickFormatter={(ts: string) => formatChartTime(ts)}
-            tick={{ fill: '#6b7280', fontSize: 11 }}
-            minTickGap={60}
-          />
-          <YAxis
-            tickFormatter={(v: number) => `${v.toFixed(1)}%`}
-            tick={{ fill: '#6b7280', fontSize: 11 }}
-            width={52}
-          />
-          <Tooltip
-            contentStyle={{ backgroundColor: '#111827', border: '1px solid #374151', borderRadius: 8 }}
-            labelStyle={{ color: '#9ca3af', fontSize: 11 }}
-            itemStyle={{ fontSize: 12 }}
-            labelFormatter={(ts: unknown) => formatDateTime(String(ts ?? ''))}
-            formatter={(value: unknown, name: unknown) => [`${Number(value ?? 0).toFixed(2)}%`, String(name ?? '')]}
-          />
-          <Legend wrapperStyle={{ fontSize: 12, color: '#9ca3af' }} />
-          {configNames.map((c) => (
-            <Line
-              key={c}
-              type="monotone"
-              dataKey={c}
-              stroke={CONFIG_COLORS[c] ?? '#9ca3af'}
-              dot={false}
-              strokeWidth={2}
-              connectNulls
-            />
-          ))}
-        </LineChart>
-      </ResponsiveContainer>
     </div>
   )
 }
@@ -376,7 +302,7 @@ function ResultView({ result }: ResultViewProps) {
       {/* PnL curve */}
       {filtered.pnl_curve && Object.keys(filtered.pnl_curve).length > 0 && (
         <SectionErrorBoundary title="PnL Chart">
-          <PnlChart pnl_curve={filtered.pnl_curve} />
+          <PnlCompareChart pnlCurve={filtered.pnl_curve} configs={result.configs} />
         </SectionErrorBoundary>
       )}
 
@@ -384,6 +310,13 @@ function ResultView({ result }: ResultViewProps) {
       {filtered.summary.length > 1 && (
         <SectionErrorBoundary title="Trade Distribution">
           <TradeDistributionChart summary={filtered.summary} />
+        </SectionErrorBoundary>
+      )}
+
+      {/* Win Rate by Symbol */}
+      {Object.keys(filtered.by_symbol).length > 0 && (
+        <SectionErrorBoundary title="Win Rate Compare">
+          <WinRateCompareChart bySymbol={filtered.by_symbol} configs={result.configs} />
         </SectionErrorBoundary>
       )}
 
