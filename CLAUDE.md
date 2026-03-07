@@ -102,6 +102,16 @@ labelFormatter={(ts) => formatDateTime(String(ts))}
 formatter={(value, name) => [`${Number(value).toFixed(2)}%`, String(name)]}
 ```
 
+## E2E Tests (Playwright)
+```bash
+npm run test:e2e      # Run all E2E tests (headless chromium)
+npm run test:e2e:ui   # Run with Playwright UI mode
+```
+- Config: `playwright.config.ts` — chromium only, baseURL `http://localhost:3080`
+- Test dir: `e2e/` — one spec file per page/feature
+- Tests are resilient to backend being unavailable (verify rendering, navigation, no crashes)
+- `webServer` config auto-starts `npm run dev` if not already running
+
 ## 禁止
 - **一个 repo 同时只能有一个 CC 操作** — 多 CC 并行同一 repo 会导致冲突、互相覆盖文件、端口被改。串行执行，不并行
 - **绝对不要修改 vite.config.ts 的 proxy 端口** — `/api` → :18800, `/predict-api` → :18801, `/data-api` → :8081。这些端口是固定的。:18810 是被废弃的旧方案，绝不使用
