@@ -6,12 +6,10 @@ import { fetchDynamicPriceRanges } from './utils/dataValidation'
 import { SymbolsProvider } from './hooks/useSymbols'
 
 const Dashboard = lazy(() => import('./pages/Dashboard'))
-const PredictDashboard = lazy(() => import('./pages/PredictDashboard'))
 const QualityTracker = lazy(() => import('./pages/QualityTracker'))
 const TraderHistory = lazy(() => import('./pages/TraderHistory'))
 const CodeQuality = lazy(() => import('./pages/CodeQuality'))
 const BacktestDashboard = lazy(() => import('./pages/BacktestDashboard'))
-const IndustryChainPage = lazy(() => import('./pages/IndustryChainPage'))
 const SystemHealthPage = lazy(() => import('./pages/SystemHealthPage'))
 const TradingDashboard = lazy(() => import('./pages/TradingDashboard'))
 const SignalTimeline = lazy(() => import('./pages/SignalTimeline'))
@@ -35,7 +33,6 @@ function isGroup(entry: NavEntry): entry is NavGroup {
 
 const NAV_ENTRIES: NavEntry[] = [
   { to: '/', label: '信号概览', end: true },
-  { to: '/predict', label: '预测历史' },
   { to: '/backtest', label: '回测对比' },
   { to: '/trading', label: '交易记录' },
   { to: '/history', label: '事件库' },
@@ -44,7 +41,6 @@ const NAV_ENTRIES: NavEntry[] = [
     label: '高级分析',
     items: [
       { to: '/quality', label: '信号质量' },
-      { to: '/advanced/chain', label: '产业链图谱' },
       { to: '/advanced/system', label: '系统健康' },
     ],
   },
@@ -235,12 +231,10 @@ function App() {
           }>
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/predict" element={<PredictDashboard />} />
               <Route path="/quality" element={<QualityTracker />} />
               <Route path="/history" element={<TraderHistory />} />
               <Route path="/backtest" element={<BacktestDashboard />} />
               <Route path="/code-quality" element={<CodeQuality />} />
-              <Route path="/advanced/chain" element={<IndustryChainPage />} />
               <Route path="/advanced/system" element={<SystemHealthPage />} />
               <Route path="/trading" element={<TradingDashboard />} />
               <Route path="/timeline" element={<SignalTimeline />} />
