@@ -7,12 +7,13 @@ vi.mock('../../../utils/format', () => ({
   formatDateTime: (v: string) => v,
 }))
 
-const mockValidatePrice = vi.fn(() => ({ valid: true }))
-const mockValidateConfidence = vi.fn(() => ({ valid: true }))
+type ValidationResult = { valid: boolean; warning?: string }
+const mockValidatePrice = vi.fn((): ValidationResult => ({ valid: true }))
+const mockValidateConfidence = vi.fn((): ValidationResult => ({ valid: true }))
 
 vi.mock('../../../utils/dataValidation', () => ({
-  validatePrice: (...args: unknown[]) => mockValidatePrice(...args),
-  validateConfidence: (...args: unknown[]) => mockValidateConfidence(...args),
+  validatePrice: () => mockValidatePrice(),
+  validateConfidence: () => mockValidateConfidence(),
 }))
 
 vi.mock('../../../components/DataWarning', () => ({

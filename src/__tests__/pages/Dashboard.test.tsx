@@ -2,25 +2,26 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 
-const mockUseOverview = vi.fn(() => ({ data: undefined, isLoading: false, error: undefined }))
-const mockUseBias = vi.fn(() => ({ data: undefined, isLoading: false, error: undefined }))
-const mockUseHealth = vi.fn(() => ({ data: undefined, isLoading: false, error: undefined }))
-const mockUsePerformance = vi.fn(() => ({ data: undefined, isLoading: false, error: undefined }))
-const mockUseAccuracy = vi.fn(() => ({ data: undefined, isLoading: false, error: undefined }))
+type HookResult = { data: unknown; isLoading: boolean; error: Error | undefined }
+const mockUseOverview = vi.fn((): HookResult => ({ data: undefined, isLoading: false, error: undefined }))
+const mockUseBias = vi.fn((): HookResult => ({ data: undefined, isLoading: false, error: undefined }))
+const mockUseHealth = vi.fn((): HookResult => ({ data: undefined, isLoading: false, error: undefined }))
+const mockUsePerformance = vi.fn((): HookResult => ({ data: undefined, isLoading: false, error: undefined }))
+const mockUseAccuracy = vi.fn((): HookResult => ({ data: undefined, isLoading: false, error: undefined }))
 
 vi.mock('../../hooks/useApi', () => ({
-  useHealth: (...a: unknown[]) => mockUseHealth(...a),
-  useOverview: (...a: unknown[]) => mockUseOverview(...a),
+  useHealth: () => mockUseHealth(),
+  useOverview: () => mockUseOverview(),
   useDecisions: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
   useSignalsLatest: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
-  usePerformance: (...a: unknown[]) => mockUsePerformance(...a),
+  usePerformance: () => mockUsePerformance(),
   useConfidence: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
   useSignalQuality: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
   useAccuracyTrend: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
-  useAccuracy: (...a: unknown[]) => mockUseAccuracy(...a),
+  useAccuracy: () => mockUseAccuracy(),
   useBacktest: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
   useCombinerWeights: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
-  useBias: (...a: unknown[]) => mockUseBias(...a),
+  useBias: () => mockUseBias(),
   useCollectorHealth: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
   useStatus: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
   useTradingSummary: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
