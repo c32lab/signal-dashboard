@@ -1,3 +1,5 @@
+export { default as ConfigWeightsDetail } from './ConfigWeightsDetail'
+export { default as ParamCompareTable } from './ParamCompareTable'
 export { default as RegimeFilter } from './RegimeFilter'
 export { default as RegimeMiniCard } from './RegimeMiniCard'
 export { default as SummaryCard, CONFIG_COLORS } from './SummaryCard'

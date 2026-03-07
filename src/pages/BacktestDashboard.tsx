@@ -15,7 +15,7 @@ import { useBacktest } from '../hooks/useApi'
 import { formatDateTime, formatDate, formatChartTime } from '../utils/format'
 import type { BacktestResult, BacktestSummary, SymbolBacktest } from '../types/backtest'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
-import { RegimeFilter, RegimeMiniCard, SummaryCard, CONFIG_COLORS } from '../components/backtest'
+import { ConfigWeightsDetail, ParamCompareTable, RegimeFilter, RegimeMiniCard, SummaryCard, CONFIG_COLORS } from '../components/backtest'
 import type { RegimeFilterValue } from '../components/backtest'
 
 const PAGE_SIZE = 20
@@ -352,6 +352,17 @@ function ResultView({ result }: ResultViewProps) {
               isBest={s.config === best}
             />
           ))}
+        </div>
+      </SectionErrorBoundary>
+
+      {/* Parameter Comparison */}
+      <SectionErrorBoundary title="Parameter Comparison">
+        <div>
+          <h2 className="text-sm font-semibold text-gray-300 mb-3">Parameter Comparison</h2>
+          <ParamCompareTable configs={result.configs} summary={filtered.summary} />
+          <div className="mt-4">
+            <ConfigWeightsDetail configs={result.configs} />
+          </div>
         </div>
       </SectionErrorBoundary>
 
