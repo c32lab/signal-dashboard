@@ -217,6 +217,23 @@ export interface RawSignal {
   reasoning: string
 }
 
+export interface RegimeIndicators {
+  adx: number
+  slope_20: number
+  vol_ratio: number
+  vol_percentile: number
+  atr_change: number
+  price_range_pct: number
+}
+
+export interface RegimeInfo {
+  regime: string
+  regime_confidence: number
+  regime_advice: string
+  regime_reasoning: string
+  regime_indicators: RegimeIndicators
+}
+
 export interface RawDecisionJson {
   combined?: {
     signals?: RawSignal[]

@@ -7,7 +7,7 @@ import LastUpdated from '../components/LastUpdated'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
 import TradingStatus from '../components/TradingStatus'
 import { useOverview, useBias, useHealth, usePerformance, useAccuracy } from '../hooks/useApi'
-import { HealthSummary, AlertsPanel, DecisionDistribution, SourceBias, PerformanceOverview, AccuracyKPI, AccuracyMiniTrend } from '../components/dashboard'
+import { HealthSummary, AlertsPanel, DecisionDistribution, SourceBias, PerformanceOverview, AccuracyKPI, AccuracyMiniTrend, RegimeStatus } from '../components/dashboard'
 
 export default function Dashboard() {
   const { data } = useOverview()
@@ -24,6 +24,9 @@ export default function Dashboard() {
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       <LastUpdated dataVersion={data} />
+      <SectionErrorBoundary title="Market Regime">
+        <RegimeStatus />
+      </SectionErrorBoundary>
       {healthData && (
         <AlertsPanel data={healthData} />
       )}
