@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import type { BacktestResult, SymbolBacktest } from '../../types/backtest'
 import { formatDateTime, formatDate } from '../../utils/format'
 import SectionErrorBoundary from '../SectionErrorBoundary'
-import { ConfigWeightsDetail, ParamCompareTable, RegimeFilter, RegimeMiniCard, SummaryCard, PnlCompareChart, WinRateCompareChart } from './'
+import { ConfigWeightsDetail, ParamCompareTable, RegimeFilter, RegimeMiniCard, SummaryCard, PnlCompareChart, WinRateCompareChart, WeightHeatmap, PerformanceScatter, DirectionBreakdown } from './'
 import type { RegimeFilterValue } from './'
 import TradeDistributionChart from './TradeDistributionChart'
 import SymbolRow from './SymbolRow'
@@ -109,6 +109,11 @@ export default function BacktestResultView({ result }: BacktestResultViewProps) 
         </div>
       </SectionErrorBoundary>
 
+      {/* Weight Heatmap */}
+      <SectionErrorBoundary title="Weight Heatmap">
+        <WeightHeatmap configs={result.configs} />
+      </SectionErrorBoundary>
+
       {/* Performance by Regime */}
       {result.by_regime && Object.keys(result.by_regime).length > 0 && (
         <SectionErrorBoundary title="Performance by Regime">
@@ -133,6 +138,16 @@ export default function BacktestResultView({ result }: BacktestResultViewProps) 
           <PnlCompareChart pnlCurve={filtered.pnl_curve} configs={result.configs} />
         </SectionErrorBoundary>
       )}
+
+      {/* Performance Scatter */}
+      <SectionErrorBoundary title="Performance Scatter">
+        <PerformanceScatter summary={filtered.summary} configs={result.configs} />
+      </SectionErrorBoundary>
+
+      {/* Direction Breakdown */}
+      <SectionErrorBoundary title="Direction Breakdown">
+        <DirectionBreakdown summary={filtered.summary} />
+      </SectionErrorBoundary>
 
       {/* Trade Distribution chart */}
       {filtered.summary.length > 1 && (
