@@ -4,17 +4,22 @@ import { render } from '@testing-library/react'
 
 // Mock all API hooks
 vi.mock('../../hooks/useApi', () => ({
-  useOverview: vi.fn(() => ({ data: undefined })),
-  useBias: vi.fn(() => ({ data: undefined })),
-  useHealth: vi.fn(() => ({ data: undefined })),
-  usePerformance: vi.fn(() => ({ data: undefined })),
-  useAccuracy: vi.fn(() => ({ data: undefined })),
-  useSignalsLatest: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
-  useTradingSummary: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
-  useCombinerWeights: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  useHealth: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  useOverview: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
   useDecisions: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  useSignalsLatest: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  usePerformance: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  useConfidence: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  useSignalQuality: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  useAccuracyTrend: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  useAccuracy: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  useBacktest: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  useCombinerWeights: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  useBias: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  useCollectorHealth: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  useStatus: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
+  useTradingSummary: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
   useRecentDecisions: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
-  useStatus: vi.fn(() => ({ data: undefined })),
 }))
 
 vi.mock('../../hooks/useSymbols', () => ({
