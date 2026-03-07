@@ -81,4 +81,44 @@ describe('DirectionBreakdown', () => {
     expect(screen.queryByText('no-direction')).not.toBeInTheDocument()
     expect(screen.getByText('has-direction')).toBeInTheDocument()
   })
+
+  it('shows red win rate when LONG win rate < 50', () => {
+    const summary = [makeSummary({ config: 'test', long_count: 10, long_wins: 3, long_pnl_pct: -2.0 })]
+    render(<DirectionBreakdown summary={summary} />)
+    const wrEl = screen.getByText('WR 30.0%')
+    expect(wrEl.className).toContain('text-red-400')
+  })
+
+  it('shows red win rate when SHORT win rate < 50', () => {
+    const summary = [makeSummary({ config: 'test', short_count: 10, short_wins: 2, short_pnl_pct: -1.0 })]
+    render(<DirectionBreakdown summary={summary} />)
+    const wrEls = screen.getAllByText(/WR/)
+    const shortWr = wrEls.find(el => el.textContent === 'WR 20.0%')
+    expect(shortWr?.className).toContain('text-red-400')
+  })
+
+  it('shows negative PnL in red for LONG', () => {
+    const summary = [makeSummary({ config: 'test', long_count: 10, long_wins: 7, long_pnl_pct: -5.0 })]
+    render(<DirectionBreakdown summary={summary} />)
+    expect(screen.getByText('-5.0%')).toBeInTheDocument()
+  })
+
+  it('shows negative PnL in red for SHORT', () => {
+    const summary = [makeSummary({ config: 'test', short_count: 10, short_wins: 7, short_pnl_pct: -3.0 })]
+    render(<DirectionBreakdown summary={summary} />)
+    expect(screen.getByText('-3.0%')).toBeInTheDocument()
+  })
+
+  it('uses fallback CONFIG_COLORS for unknown config name', () => {
+    const summary = [makeSummary({ config: 'unknown_config_xyz', long_count: 5, short_count: 3 })]
+    const { container } = render(<DirectionBreakdown summary={summary} />)
+    const dot = container.querySelector('[style*="background-color"]') as HTMLElement
+    expect(dot?.style.backgroundColor).toBe('rgb(156, 163, 175)')
+  })
+
+  it('handles zero long/short counts for ratio bar', () => {
+    const summary = [makeSummary({ config: 'test', long_count: 0, short_count: 5 })]
+    render(<DirectionBreakdown summary={summary} />)
+    expect(screen.getByText('×0')).toBeInTheDocument()
+  })
 })

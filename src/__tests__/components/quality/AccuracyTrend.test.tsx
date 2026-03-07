@@ -56,4 +56,52 @@ describe('AccuracyTrend', () => {
     render(<AccuracyTrend data={[]} hours={24} onHoursChange={vi.fn()} />)
     expect(screen.getByText('No trend data')).toBeInTheDocument()
   })
+
+  it('computes accuracy from total/correct when accuracy_pct is null', () => {
+    const data: AccuracyTrendItem[] = [
+      { hour: '2026-03-07T01:00:00Z', symbol: 'BTC/USDT', total: 10, correct: 6, accuracy_pct: null as unknown as number },
+    ]
+    render(<AccuracyTrend data={data} hours={24} onHoursChange={vi.fn()} />)
+    // Should still render a chart (computed 60% accuracy)
+    expect(screen.getByTestId('responsive-container')).toBeInTheDocument()
+  })
+
+  it('handles NaN accuracy_pct by computing from total/correct', () => {
+    const data: AccuracyTrendItem[] = [
+      { hour: '2026-03-07T01:00:00Z', symbol: 'BTC/USDT', total: 10, correct: 6, accuracy_pct: NaN },
+    ]
+    render(<AccuracyTrend data={data} hours={24} onHoursChange={vi.fn()} />)
+    expect(screen.getByTestId('responsive-container')).toBeInTheDocument()
+  })
+
+  it('handles entry when total is 0 and accuracy_pct is null', () => {
+    const data: AccuracyTrendItem[] = [
+      { hour: '2026-03-07T01:00:00Z', symbol: 'BTC/USDT', total: 0, correct: 0, accuracy_pct: null as unknown as number },
+    ]
+    render(<AccuracyTrend data={data} hours={24} onHoursChange={vi.fn()} />)
+    // Pivoted map still gets an hour entry (no symbol data), chart renders
+    expect(screen.getByTestId('responsive-container')).toBeInTheDocument()
+  })
+
+  it('applies inactive style to non-selected hour buttons', () => {
+    render(<AccuracyTrend data={sampleData} hours={24} onHoursChange={vi.fn()} />)
+    const btn6 = screen.getByText('6h')
+    expect(btn6.className).toContain('bg-gray-800')
+    expect(btn6.className).not.toContain('bg-blue-600')
+  })
+
+  it('handles unknown symbol not in SYMBOL_COLORS', () => {
+    const data: AccuracyTrendItem[] = [
+      { hour: '2026-03-07T01:00:00Z', symbol: 'DOGE/USDT', total: 10, correct: 5, accuracy_pct: 50 },
+    ]
+    render(<AccuracyTrend data={data} hours={24} onHoursChange={vi.fn()} />)
+    expect(screen.getByTestId('line-chart')).toBeInTheDocument()
+  })
+
+  it('calls onHoursChange with 12 when 12h clicked', () => {
+    const handler = vi.fn()
+    render(<AccuracyTrend data={sampleData} hours={24} onHoursChange={handler} />)
+    fireEvent.click(screen.getByText('12h'))
+    expect(handler).toHaveBeenCalledWith(12)
+  })
 })

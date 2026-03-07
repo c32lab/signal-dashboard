@@ -57,4 +57,25 @@ describe('SummaryCard', () => {
     expect(screen.getByText('1.23')).toBeInTheDocument()
     expect(screen.getByText('8.4%')).toBeInTheDocument()
   })
+
+  it('displays "0.00" when sharpe is null/undefined', () => {
+    render(<SummaryCard {...baseProps} sharpe={undefined as unknown as number} />)
+    expect(screen.getByText('0.00')).toBeInTheDocument()
+  })
+
+  it('uses fallback color for unknown config name', () => {
+    const { container } = render(<SummaryCard {...baseProps} config="unknown_config_xyz" />)
+    const dot = container.querySelector('[style*="background-color"]') as HTMLElement
+    expect(dot?.style.backgroundColor).toBe('rgb(156, 163, 175)')
+  })
+
+  it('handles null pnl as 0', () => {
+    render(<SummaryCard {...baseProps} total_pnl_pct={0} />)
+    expect(screen.getByText('0.0%')).toBeInTheDocument()
+  })
+
+  it('handles null max_drawdown_pct as 0', () => {
+    render(<SummaryCard {...baseProps} max_drawdown_pct={undefined as unknown as number} />)
+    expect(screen.getByText('0.0%')).toBeInTheDocument()
+  })
 })

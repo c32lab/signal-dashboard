@@ -85,4 +85,28 @@ describe('TimelineCard', () => {
     const card = container.querySelector('.border-l-4')
     expect(card?.className).toContain('border-l-red-500')
   })
+
+  it('renders HOLD with gray border class', () => {
+    const { container } = render(<TimelineCard decision={makeDecision({ direction: 'HOLD' })} />)
+    const card = container.querySelector('.border-l-4')
+    expect(card?.className).toContain('border-l-gray-500')
+  })
+
+  it('renders unknown direction with fallback gray border', () => {
+    const { container } = render(<TimelineCard decision={makeDecision({ direction: 'UNKNOWN' })} />)
+    const card = container.querySelector('.border-l-4')
+    expect(card?.className).toContain('border-l-gray-600')
+  })
+
+  it('renders HOLD direction badge with gray styling', () => {
+    render(<TimelineCard decision={makeDecision({ direction: 'HOLD' })} />)
+    const badge = screen.getByText('HOLD')
+    expect(badge.className).toContain('bg-gray-700')
+  })
+
+  it('renders unknown direction badge with fallback styling', () => {
+    render(<TimelineCard decision={makeDecision({ direction: 'UNKNOWN' })} />)
+    const badge = screen.getByText('UNKNOWN')
+    expect(badge.className).toContain('bg-gray-700')
+  })
 })

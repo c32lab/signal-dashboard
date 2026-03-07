@@ -103,4 +103,35 @@ describe('TradingStatus', () => {
     render(<TradingStatus />)
     expect(screen.getByText('TESTNET')).toBeInTheDocument()
   })
+
+  it('renders "Balance unavailable" when balance is null', () => {
+    mockUseTradingSummary.mockReturnValue({
+      data: { ...baseSummary, balance: null },
+      isLoading: false,
+      error: undefined,
+    } as unknown as ReturnType<typeof useTradingSummary>)
+    render(<TradingStatus />)
+    expect(screen.getByText(/Balance unavailable/)).toBeInTheDocument()
+  })
+
+  it('renders "No data" error when data is null', () => {
+    mockUseTradingSummary.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: undefined,
+    } as unknown as ReturnType<typeof useTradingSummary>)
+    render(<TradingStatus />)
+    expect(screen.getByText(/No data/)).toBeInTheDocument()
+  })
+
+  it('renders negative unrealized PnL in red', () => {
+    mockUseTradingSummary.mockReturnValue({
+      data: { ...baseSummary, balance: { total_usdt: 10000, unrealized_pnl: -150, available: 8000 } },
+      isLoading: false,
+      error: undefined,
+    } as unknown as ReturnType<typeof useTradingSummary>)
+    render(<TradingStatus />)
+    const pnlEl = screen.getByText('$-150.00')
+    expect(pnlEl.className).toContain('text-red-400')
+  })
 })

@@ -71,4 +71,36 @@ describe('SourceBias', () => {
     const el = screen.getByText('+0.010')
     expect(el.style.color).toBe('rgb(107, 114, 128)') // gray
   })
+
+  it('renders negative bias score without plus sign', () => {
+    render(<SourceBias data={makeData({ overall: { long_pct: 20, short_pct: 70, neutral_pct: 10, bias_score: -0.123 } })} />)
+    const el = screen.getByText('-0.123')
+    expect(el).toBeInTheDocument()
+  })
+
+  it('handles empty collectors with computed overall total=0', () => {
+    const data: BiasResponse = {
+      timestamp: '2026-03-07T00:00:00Z',
+      window_hours: 6,
+      collectors: {},
+    }
+    render(<SourceBias data={data} />)
+    const el = screen.getByText('+0.000')
+    expect(el.style.color).toBe('rgb(107, 114, 128)')
+  })
+
+  it('handles undefined collectors with fallback', () => {
+    const data = {
+      timestamp: '2026-03-07T00:00:00Z',
+      window_hours: 6,
+      collectors: undefined as unknown as Record<string, { total_signals: number; long_count: number; short_count: number; neutral_count: number; bias_score: number }>,
+    } as BiasResponse
+    render(<SourceBias data={data} />)
+    expect(screen.getByText('Source Bias')).toBeInTheDocument()
+  })
+
+  it('renders percentage breakdown', () => {
+    render(<SourceBias data={makeData()} />)
+    expect(screen.getByText(/42\.9% L/)).toBeInTheDocument()
+  })
 })

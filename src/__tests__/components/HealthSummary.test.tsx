@@ -70,4 +70,34 @@ describe('HealthSummary', () => {
     const { container } = render(<HealthSummary data={makeHealth({ bias_alerts: [] })} />)
     expect(container.querySelector('.border-yellow-700')).toBeNull()
   })
+
+  it('renders duplicate ratio with red color when > 60%', () => {
+    render(<HealthSummary data={makeHealth({ duplicate_ratio: 0.7 })} />)
+    const el = screen.getByText('70.0%')
+    expect(el.className).toContain('text-red-400')
+  })
+
+  it('renders duplicate ratio with yellow color when 40-60%', () => {
+    render(<HealthSummary data={makeHealth({ duplicate_ratio: 0.5 })} />)
+    const el = screen.getByText('50.0%')
+    expect(el.className).toContain('text-yellow-400')
+  })
+
+  it('renders duplicate ratio with green color when <= 40%', () => {
+    render(<HealthSummary data={makeHealth({ duplicate_ratio: 0.2 })} />)
+    const el = screen.getByText('20.0%')
+    expect(el.className).toContain('text-green-400')
+  })
+
+  it('renders symbol color red when disabled symbols exist', () => {
+    render(<HealthSummary data={makeHealth({ active_symbols: ['BTC'], disabled_symbols: ['ETH'] })} />)
+    const el = screen.getByText('1 / 1 disabled')
+    expect(el.className).toContain('text-red-400')
+  })
+
+  it('renders symbol color green when no disabled symbols', () => {
+    render(<HealthSummary data={makeHealth({ active_symbols: ['BTC'], disabled_symbols: [] })} />)
+    const el = screen.getByText('1 / 0 disabled')
+    expect(el.className).toContain('text-green-400')
+  })
 })
