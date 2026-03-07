@@ -64,6 +64,9 @@ export function PredictHealthHeader({ serviceOk, activeCount, eventCount, macroS
         {acc1d && (
           <span className="text-xs text-gray-500">{acc1d.correct}/{acc1d.total}</span>
         )}
+        {acc1d && acc1d.total < 10 && (
+          <span className="text-xs text-yellow-500 font-medium">⚠ Low sample</span>
+        )}
       </div>
 
       {/* 3d Accuracy */}
@@ -78,6 +81,9 @@ export function PredictHealthHeader({ serviceOk, activeCount, eventCount, macroS
         )}
         {acc3d && (
           <span className="text-xs text-gray-500">{acc3d.correct}/{acc3d.total}</span>
+        )}
+        {acc3d && acc3d.total < 10 && (
+          <span className="text-xs text-yellow-500 font-medium">⚠ Low sample</span>
         )}
       </div>
     </div>

@@ -229,6 +229,9 @@ export function AccuracyAndValidationsSection({
                     <span className="text-xs text-gray-500 uppercase">{horizon}</span>
                     <span className={`text-lg font-mono font-bold ${c}`}>{entry.accuracy.toFixed(1)}%</span>
                     <span className="text-xs text-gray-500">{entry.correct}/{entry.total}</span>
+                    {entry.total < 10 && (
+                      <span className="text-xs text-yellow-500 font-medium">⚠ Low sample</span>
+                    )}
                   </div>
                 )
               })}
