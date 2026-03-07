@@ -50,4 +50,29 @@ describe('ConfigWeightsDetail', () => {
     const { container } = render(<ConfigWeightsDetail configs={{}} />)
     expect(container.innerHTML).toBe('')
   })
+
+  it('renders "—" for missing weight values', () => {
+    const partialConfigs: Record<string, BacktestConfig> = {
+      A: { weights: { momentum: 0.4, rsi: 0.3 }, description: 'A' },
+      B: { weights: { momentum: 0.5 }, description: 'B' },
+    }
+    render(<ConfigWeightsDetail configs={partialConfigs} />)
+    fireEvent.click(screen.getByText('Config Weights Detail'))
+    // B doesn't have rsi, should show "—"
+    const dashes = screen.getAllByText('—')
+    expect(dashes.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('does not highlight when all values are the same', () => {
+    const sameConfigs: Record<string, BacktestConfig> = {
+      A: { weights: { momentum: 0.5 }, description: 'A' },
+      B: { weights: { momentum: 0.5 }, description: 'B' },
+    }
+    render(<ConfigWeightsDetail configs={sameConfigs} />)
+    fireEvent.click(screen.getByText('Config Weights Detail'))
+    const cells = screen.getAllByText('0.5')
+    cells.forEach(cell => {
+      expect(cell.className).not.toContain('text-amber-400')
+    })
+  })
 })

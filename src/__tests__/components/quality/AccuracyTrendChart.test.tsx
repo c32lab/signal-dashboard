@@ -69,4 +69,58 @@ describe('AccuracyTrendChart', () => {
     render(<AccuracyTrendChart />)
     expect(screen.getByTestId('line-chart')).toBeInTheDocument()
   })
+
+  it('computes accuracy from total/correct when accuracy_pct is null', () => {
+    mockUseAccuracyTrend.mockReturnValue({
+      data: [
+        { hour: '2026-03-07T10:00:00Z', symbol: 'BTC/USDT', total: 10, correct: 6, accuracy_pct: null },
+      ],
+      isLoading: false, error: undefined,
+    } as unknown as ReturnType<typeof useAccuracyTrend>)
+    render(<AccuracyTrendChart />)
+    expect(screen.getByTestId('line-chart')).toBeInTheDocument()
+  })
+
+  it('handles multiple symbols', () => {
+    mockUseAccuracyTrend.mockReturnValue({
+      data: [
+        { hour: '2026-03-07T10:00:00Z', symbol: 'BTC/USDT', total: 5, correct: 3, accuracy_pct: 60 },
+        { hour: '2026-03-07T10:00:00Z', symbol: 'ETH/USDT', total: 5, correct: 4, accuracy_pct: 80 },
+      ],
+      isLoading: false, error: undefined,
+    } as unknown as ReturnType<typeof useAccuracyTrend>)
+    render(<AccuracyTrendChart />)
+    expect(screen.getByTestId('line-chart')).toBeInTheDocument()
+  })
+
+  it('handles NaN accuracy_pct by computing from correct/total', () => {
+    mockUseAccuracyTrend.mockReturnValue({
+      data: [
+        { hour: '2026-03-07T10:00:00Z', symbol: 'BTC/USDT', total: 10, correct: 7, accuracy_pct: NaN },
+      ],
+      isLoading: false, error: undefined,
+    } as unknown as ReturnType<typeof useAccuracyTrend>)
+    render(<AccuracyTrendChart />)
+    expect(screen.getByTestId('line-chart')).toBeInTheDocument()
+  })
+
+  it('handles total=0 and accuracy_pct null (hour row exists but no symbol data)', () => {
+    mockUseAccuracyTrend.mockReturnValue({
+      data: [
+        { hour: '2026-03-07T10:00:00Z', symbol: 'BTC/USDT', total: 0, correct: 0, accuracy_pct: null },
+      ],
+      isLoading: false, error: undefined,
+    } as unknown as ReturnType<typeof useAccuracyTrend>)
+    render(<AccuracyTrendChart />)
+    // Pivoted map still gets the hour entry, so the chart renders
+    expect(screen.getByText('Accuracy Trend (by hour)')).toBeInTheDocument()
+  })
+
+  it('handles undefined trend data', () => {
+    mockUseAccuracyTrend.mockReturnValue({
+      data: undefined, isLoading: false, error: undefined,
+    } as unknown as ReturnType<typeof useAccuracyTrend>)
+    render(<AccuracyTrendChart />)
+    expect(screen.getByText('No trend data')).toBeInTheDocument()
+  })
 })

@@ -82,4 +82,39 @@ describe('DecisionRow', () => {
     expect(screen.getByText('0%')).toBeInTheDocument()
     expect(screen.getByTestId('data-warning')).toHaveTextContent('Confidence=0 but action=LONG')
   })
+
+  it('renders dash when direction is empty', () => {
+    renderRow({ direction: '' })
+    const dashes = screen.getAllByText('—')
+    expect(dashes.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders dash when decision_type is empty', () => {
+    renderRow({ decision_type: '' })
+    const dashes = screen.getAllByText('—')
+    expect(dashes.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders dash when confidence is not a number', () => {
+    renderRow({ confidence: undefined as unknown as number })
+    const dashes = screen.getAllByText('—')
+    expect(dashes.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders dash when combined_score is not a number', () => {
+    renderRow({ combined_score: undefined as unknown as number })
+    const dashes = screen.getAllByText('—')
+    expect(dashes.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders dash when price_at_decision is not a number', () => {
+    renderRow({ price_at_decision: undefined as unknown as number })
+    const dashes = screen.getAllByText('—')
+    expect(dashes.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders SHORT action and direction', () => {
+    renderRow({ action: 'SHORT', direction: 'SHORT' })
+    expect(screen.getAllByText('SHORT')).toHaveLength(2)
+  })
 })

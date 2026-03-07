@@ -53,4 +53,37 @@ describe('RegimeMiniCard', () => {
     )
     expect(screen.getByText('30.0%').className).toContain('text-red-400')
   })
+
+  it('applies correct color class for volatile regime', () => {
+    render(<RegimeMiniCard regime="volatile" summaries={[makeSummary()]} />)
+    const label = screen.getByText('volatile')
+    expect(label.className).toContain('text-red-400')
+  })
+
+  it('applies correct color class for ranging regime', () => {
+    render(<RegimeMiniCard regime="ranging" summaries={[makeSummary()]} />)
+    const label = screen.getByText('ranging')
+    expect(label.className).toContain('text-yellow-400')
+  })
+
+  it('applies fallback color for unknown regime', () => {
+    render(<RegimeMiniCard regime="unknown_regime" summaries={[makeSummary()]} />)
+    const label = screen.getByText('unknown_regime')
+    expect(label.className).toContain('text-gray-300')
+  })
+
+  it('shows red for negative average PnL', () => {
+    render(<RegimeMiniCard regime="trending" summaries={[makeSummary({ total_pnl_pct: -5 })]} />)
+    expect(screen.getByText('-5.0%').className).toContain('text-red-400')
+  })
+
+  it('shows green for positive average PnL', () => {
+    render(<RegimeMiniCard regime="trending" summaries={[makeSummary({ total_pnl_pct: 5 })]} />)
+    expect(screen.getByText('5.0%').className).toContain('text-green-400')
+  })
+
+  it('handles empty summaries array', () => {
+    render(<RegimeMiniCard regime="trending" summaries={[]} />)
+    expect(screen.getByText('No data')).toBeInTheDocument()
+  })
 })

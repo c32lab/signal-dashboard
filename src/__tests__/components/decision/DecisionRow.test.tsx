@@ -1,5 +1,5 @@
 /// <reference types="@testing-library/jest-dom/vitest" />
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 
 vi.mock('../../../utils/format', () => ({
@@ -7,9 +7,16 @@ vi.mock('../../../utils/format', () => ({
   formatDateTime: (v: string) => v,
 }))
 
+const mockValidatePrice = vi.fn(() => ({ valid: true }))
+const mockValidateConfidence = vi.fn(() => ({ valid: true }))
+
 vi.mock('../../../utils/dataValidation', () => ({
-  validatePrice: () => ({ valid: true }),
-  validateConfidence: () => ({ valid: true }),
+  validatePrice: (...args: unknown[]) => mockValidatePrice(...args),
+  validateConfidence: (...args: unknown[]) => mockValidateConfidence(...args),
+}))
+
+vi.mock('../../../components/DataWarning', () => ({
+  default: ({ message }: { message: string }) => <span data-testid="data-warning">{message}</span>,
 }))
 
 import { DecisionRow } from '../../../components/decision'
@@ -29,6 +36,11 @@ const baseDecision: Decision = {
 }
 
 describe('DecisionRow', () => {
+  beforeEach(() => {
+    mockValidatePrice.mockReturnValue({ valid: true })
+    mockValidateConfidence.mockReturnValue({ valid: true })
+  })
+
   it('renders symbol without /USDT', () => {
     const { container } = render(
       <table><tbody><DecisionRow d={baseDecision} /></tbody></table>
@@ -78,5 +90,59 @@ describe('DecisionRow', () => {
   it('renders FAST type badge', () => {
     render(<table><tbody><DecisionRow d={baseDecision} /></tbody></table>)
     expect(screen.getByText('FAST')).toBeInTheDocument()
+  })
+
+  it('renders dash when decision_type is missing', () => {
+    render(<table><tbody><DecisionRow d={{ ...baseDecision, decision_type: '' }} /></tbody></table>)
+    const dashes = screen.getAllByText('—')
+    expect(dashes.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders dash when price_at_decision is not a number', () => {
+    render(<table><tbody><DecisionRow d={{ ...baseDecision, price_at_decision: undefined as unknown as number }} /></tbody></table>)
+    const dashes = screen.getAllByText('—')
+    expect(dashes.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders SHORT direction badge', () => {
+    render(<table><tbody><DecisionRow d={{ ...baseDecision, direction: 'SHORT' }} /></tbody></table>)
+    expect(screen.getByText('SHORT')).toBeInTheDocument()
+  })
+
+  it('renders HOLD direction badge', () => {
+    render(<table><tbody><DecisionRow d={{ ...baseDecision, direction: 'HOLD', action: 'HOLD' }} /></tbody></table>)
+    expect(screen.getAllByText('HOLD').length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('renders with zero confidence for non-HOLD action', () => {
+    render(<table><tbody><DecisionRow d={{ ...baseDecision, confidence: 0, action: 'LONG' }} /></tbody></table>)
+    expect(screen.getByText(/0%/)).toBeInTheDocument()
+  })
+
+  it('shows DataWarning when validatePrice returns invalid', () => {
+    mockValidatePrice.mockReturnValue({ valid: false, warning: 'Price out of range' })
+    render(<table><tbody><DecisionRow d={baseDecision} /></tbody></table>)
+    expect(screen.getByText('Price out of range')).toBeInTheDocument()
+  })
+
+  it('shows DataWarning when validateConfidence returns invalid', () => {
+    mockValidateConfidence.mockReturnValue({ valid: false, warning: 'Confidence out of 0-1 range' })
+    render(<table><tbody><DecisionRow d={baseDecision} /></tbody></table>)
+    expect(screen.getByText('Confidence out of 0-1 range')).toBeInTheDocument()
+  })
+
+  it('shows zero confidence warning for non-HOLD action', () => {
+    render(<table><tbody><DecisionRow d={{ ...baseDecision, confidence: 0, action: 'LONG' }} /></tbody></table>)
+    expect(screen.getByText('Confidence=0 but action=LONG')).toBeInTheDocument()
+  })
+
+  it('does not show zero confidence warning for HOLD action', () => {
+    render(<table><tbody><DecisionRow d={{ ...baseDecision, confidence: 0, action: 'HOLD' }} /></tbody></table>)
+    expect(screen.queryByText(/Confidence=0/)).not.toBeInTheDocument()
+  })
+
+  it('renders SLOW type badge', () => {
+    render(<table><tbody><DecisionRow d={{ ...baseDecision, decision_type: 'SLOW' }} /></tbody></table>)
+    expect(screen.getByText('SLOW')).toBeInTheDocument()
   })
 })

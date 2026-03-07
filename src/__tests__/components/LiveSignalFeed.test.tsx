@@ -76,4 +76,13 @@ describe('LiveSignalFeed', () => {
     render(<LiveSignalFeed />)
     expect(screen.getByText('1 signal in last 1h')).toBeInTheDocument()
   })
+
+  it('shows "showing latest 50" when more than 50 signals', () => {
+    mockUseRecentDecisions.mockReturnValue({
+      data: { decisions: makeDecisions(55), total: 55, limit: 60, offset: 0 },
+      isLoading: false, error: undefined,
+    } as unknown as ReturnType<typeof useRecentDecisions>)
+    render(<LiveSignalFeed />)
+    expect(screen.getByText('showing latest 50')).toBeInTheDocument()
+  })
 })
