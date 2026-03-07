@@ -8,7 +8,7 @@ export interface ValidationResult {
 // Percent fields validation (0-100 range)
 export function validatePercent(value: number, fieldName: string): ValidationResult {
   if (value < 0 || value > 100) {
-    return { valid: false, warning: `${fieldName}: ${value}% 超出 0-100 范围` }
+    return { valid: false, warning: `${fieldName}: ${value}% out of 0-100 range` }
   }
   return { valid: true }
 }
@@ -58,7 +58,7 @@ export function validatePrice(price: number, symbol: string): ValidationResult {
     if (price < lower || price > upper) {
       return {
         valid: false,
-        warning: `${symbol} 价格 ${price} 超出历史范围 [${lower.toFixed(2)}, ${upper.toFixed(2)}]`,
+        warning: `${symbol} price ${price} out of historical range [${lower.toFixed(2)}, ${upper.toFixed(2)}]`,
       }
     }
     return { valid: true }
@@ -69,7 +69,7 @@ export function validatePrice(price: number, symbol: string): ValidationResult {
   if (price < range[0] || price > range[1]) {
     return {
       valid: false,
-      warning: `${symbol} 价格 ${price} 超出合理范围 [${range[0]}, ${range[1]}]`,
+      warning: `${symbol} price ${price} out of reasonable range [${range[0]}, ${range[1]}]`,
     }
   }
   return { valid: true }
@@ -83,7 +83,7 @@ export async function validatePriceAsync(price: number, symbol: string): Promise
     if (!res.ok) return validatePrice(price, symbol) // fallback
     const data: { valid: boolean; reason?: string } = await res.json()
     if (!data.valid) {
-      return { valid: false, warning: `${symbol} 价格 ${price}: ${data.reason}` }
+      return { valid: false, warning: `${symbol} price ${price}: ${data.reason}` }
     }
     return { valid: true }
   } catch {
@@ -94,7 +94,7 @@ export async function validatePriceAsync(price: number, symbol: string): Promise
 // PnL percent validation (single trade -50% ~ +50% is reasonable)
 export function validatePnL(pnl: number): ValidationResult {
   if (Math.abs(pnl) > 50) {
-    return { valid: false, warning: `PnL ${pnl}% 超出合理范围` }
+    return { valid: false, warning: `PnL ${pnl}% out of reasonable range` }
   }
   return { valid: true }
 }
@@ -102,7 +102,7 @@ export function validatePnL(pnl: number): ValidationResult {
 // Confidence validation (0-1 range)
 export function validateConfidence(conf: number): ValidationResult {
   if (conf < 0 || conf > 1) {
-    return { valid: false, warning: `Confidence ${conf} 超出 0-1 范围` }
+    return { valid: false, warning: `Confidence ${conf} out of 0-1 range` }
   }
   return { valid: true }
 }

@@ -15,7 +15,7 @@ export default function PnlCurve({ data }: PnlCurveProps) {
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-2">
-      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">累计 PnL 曲线</h2>
+      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Cumulative PnL Curve</h2>
       <ResponsiveContainer width="100%" height={200}>
         <AreaChart data={data} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" />

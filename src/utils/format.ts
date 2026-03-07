@@ -1,16 +1,16 @@
 /**
- * 时间格式化 — 统一 UTC+8（Asia/Shanghai）
- * TEAM.md 强制规范：禁止依赖浏览器本地时区
+ * Time formatting — always UTC+8 (Asia/Shanghai)
+ * TEAM.md mandate: never rely on browser local timezone
  */
 
 const UTC8_OFFSET = 8 * 60 * 60 * 1000
 
 function toUTC8(date: Date): Date {
-  // 先获取 UTC 时间戳，再加 8 小时偏移
+  // Get UTC timestamp, then add 8-hour offset
   return new Date(date.getTime() + UTC8_OFFSET)
 }
 
-/** 完整日期时间: "03-06 17:09 UTC+8" */
+/** Full date-time: "03-06 17:09 UTC+8" */
 export function formatDateTime(ts: string | number): string {
   const d = toUTC8(new Date(ts))
   const mm = String(d.getUTCMonth() + 1).padStart(2, "0")
@@ -20,7 +20,7 @@ export function formatDateTime(ts: string | number): string {
   return `${mm}-${dd} ${hh}:${mi} UTC+8`
 }
 
-/** 仅时间: "17:09:23" (UTC+8, 用于 LiveFeed 等紧凑场景) */
+/** Time only: "17:09:23" (UTC+8, for compact views like LiveFeed) */
 export function formatTime(ts: string | number): string {
   const d = toUTC8(new Date(ts))
   const hh = String(d.getUTCHours()).padStart(2, "0")
@@ -29,7 +29,7 @@ export function formatTime(ts: string | number): string {
   return `${hh}:${mi}:${ss}`
 }
 
-/** 仅日期: "2026-03-06" */
+/** Date only: "2026-03-06" */
 export function formatDate(ts: string | number): string {
   const d = toUTC8(new Date(ts))
   const y = d.getUTCFullYear()
@@ -38,7 +38,7 @@ export function formatDate(ts: string | number): string {
   return `${y}-${mm}-${dd}`
 }
 
-/** 图表 X 轴: "17:09" */
+/** Chart X-axis: "17:09" */
 export function formatChartTime(ts: string | number): string {
   const d = toUTC8(new Date(ts))
   const hh = String(d.getUTCHours()).padStart(2, "0")
@@ -46,7 +46,7 @@ export function formatChartTime(ts: string | number): string {
   return `${hh}:${mi}`
 }
 
-/** 价格格式化 — BTC/ETH 2 位，小币种自动 */
+/** Price formatting — BTC/ETH 2 decimals, altcoins auto */
 export function formatPrice(value: number, symbol?: string): string {
   const isMajor = symbol && (symbol.startsWith("BTC") || symbol.startsWith("ETH"))
   if (isMajor || value >= 1) {

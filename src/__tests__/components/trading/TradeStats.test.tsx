@@ -27,25 +27,25 @@ const defaultProps = {
 describe('TradeStats', () => {
   it('renders the heading', () => {
     render(<TradeStats {...defaultProps} />)
-    expect(screen.getByText('交易统计')).toBeInTheDocument()
+    expect(screen.getByText('Trade Stats')).toBeInTheDocument()
   })
 
   it('renders total count', () => {
     render(<TradeStats {...defaultProps} />)
     expect(screen.getByText('100')).toBeInTheDocument()
-    expect(screen.getByText('总交易数')).toBeInTheDocument()
+    expect(screen.getByText('Total Trades')).toBeInTheDocument()
   })
 
   it('renders open count', () => {
     render(<TradeStats {...defaultProps} />)
     expect(screen.getByText('30')).toBeInTheDocument()
-    expect(screen.getByText('开仓中')).toBeInTheDocument()
+    expect(screen.getByText('Open')).toBeInTheDocument()
   })
 
   it('renders closed count', () => {
     render(<TradeStats {...defaultProps} />)
     expect(screen.getByText('70')).toBeInTheDocument()
-    expect(screen.getByText('已平仓')).toBeInTheDocument()
+    expect(screen.getByText('Closed')).toBeInTheDocument()
   })
 
   it('renders win rate', () => {
@@ -67,34 +67,34 @@ describe('TradeStats', () => {
 
   it('shows small sample warning when closedCount < 10 and > 0', () => {
     render(<TradeStats {...defaultProps} closedCount={5} />)
-    expect(screen.getByText(/样本少/)).toBeInTheDocument()
+    expect(screen.getByText(/Small sample/)).toBeInTheDocument()
   })
 
   it('does not show small sample warning when closedCount >= 10', () => {
     render(<TradeStats {...defaultProps} closedCount={50} />)
-    expect(screen.queryByText(/样本少/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Small sample/)).not.toBeInTheDocument()
   })
 
   it('does not show small sample warning when closedCount is 0', () => {
     render(<TradeStats {...defaultProps} closedCount={0} />)
-    expect(screen.queryByText(/样本少/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Small sample/)).not.toBeInTheDocument()
   })
 
   it('renders LONG percentage', () => {
     render(<TradeStats {...defaultProps} />)
     expect(screen.getByText('60.0%')).toBeInTheDocument()
-    expect(screen.getByText('LONG 占比')).toBeInTheDocument()
+    expect(screen.getByText('LONG %')).toBeInTheDocument()
   })
 
   it('renders SHORT percentage', () => {
     render(<TradeStats {...defaultProps} />)
     expect(screen.getByText('40.0%')).toBeInTheDocument()
-    expect(screen.getByText('SHORT 占比')).toBeInTheDocument()
+    expect(screen.getByText('SHORT %')).toBeInTheDocument()
   })
 
   it('handles zero totalCount without division error', () => {
     render(<TradeStats {...defaultProps} totalCount={0} longCount={0} shortCount={0} winRate={0} />)
-    // LONG 占比 and SHORT 占比 both show 0.0%
+    // LONG % and SHORT % both show 0.0%
     const zeroPercents = screen.getAllByText('0.0%')
     expect(zeroPercents.length).toBeGreaterThanOrEqual(2)
   })

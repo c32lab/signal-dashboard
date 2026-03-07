@@ -14,7 +14,7 @@ describe('ReasoningText', () => {
     const longText = 'A'.repeat(150)
     render(<ReasoningText text={longText} />)
     expect(screen.getByText(longText)).toBeInTheDocument()
-    expect(screen.getByText('展开')).toBeInTheDocument()
+    expect(screen.getByText('Expand')).toBeInTheDocument()
   })
 
   it('applies line-clamp-2 to long text when collapsed', () => {
@@ -28,13 +28,13 @@ describe('ReasoningText', () => {
     const longText = 'C'.repeat(150)
     render(<ReasoningText text={longText} />)
 
-    const btn = screen.getByText('展开')
+    const btn = screen.getByText('Expand')
     fireEvent.click(btn)
-    expect(screen.getByText('收起')).toBeInTheDocument()
+    expect(screen.getByText('Collapse')).toBeInTheDocument()
     expect(screen.getByText(longText).className).not.toContain('line-clamp-2')
 
-    fireEvent.click(screen.getByText('收起'))
-    expect(screen.getByText('展开')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('Collapse'))
+    expect(screen.getByText('Expand')).toBeInTheDocument()
     expect(screen.getByText(longText).className).toContain('line-clamp-2')
   })
 

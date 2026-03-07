@@ -5,7 +5,7 @@ export default function CodeQuality() {
         <div className="text-4xl">🔧</div>
         <h2 className="text-lg font-semibold text-gray-200">Code Quality</h2>
         <p className="text-sm text-gray-500 max-w-md mx-auto">
-          Code Quality 数据对接中，暂无实时数据。待 QA 审计 API 上线后自动展示。
+          Code Quality data integration in progress. Live data will appear once the QA audit API is online.
         </p>
       </div>
     </div>

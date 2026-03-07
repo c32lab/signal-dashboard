@@ -27,7 +27,7 @@ describe('PositionsList', () => {
 
   it('renders section heading', () => {
     render(<PositionsList positions={[]} isLoading={false} />)
-    expect(screen.getByText('持仓')).toBeInTheDocument()
+    expect(screen.getByText('Positions')).toBeInTheDocument()
   })
 
   it('renders position card with details', () => {

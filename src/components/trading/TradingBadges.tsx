@@ -15,7 +15,7 @@ export function StatusBadge({ status }: { status: 'open' | 'closed' }) {
     <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
       status === 'open' ? 'bg-blue-900 text-blue-300' : 'bg-gray-700 text-gray-400'
     }`}>
-      {status === 'open' ? '开仓中' : '已平仓'}
+      {status === 'open' ? 'Open' : 'Closed'}
     </span>
   )
 }

@@ -14,7 +14,7 @@ export default function ReasoningText({ text }: { text: string }) {
           onClick={() => setExpanded((e) => !e)}
           className="text-xs text-blue-400 hover:text-blue-300 mt-1"
         >
-          {expanded ? '收起' : '展开'}
+          {expanded ? 'Collapse' : 'Expand'}
         </button>
       )}
     </div>

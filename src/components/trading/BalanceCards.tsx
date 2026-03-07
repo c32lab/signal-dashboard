@@ -10,7 +10,7 @@ export default function BalanceCards({ balance, isLoading }: BalanceCardsProps) 
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {/* Total Balance */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-1">
-        <p className="text-gray-500 text-xs">总余额 (USDT)</p>
+        <p className="text-gray-500 text-xs">Total Balance (USDT)</p>
         {isLoading ? (
           <div className="h-7 bg-gray-800 rounded animate-pulse w-32" />
         ) : (
@@ -22,7 +22,7 @@ export default function BalanceCards({ balance, isLoading }: BalanceCardsProps) 
 
       {/* Unrealized PnL */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-1">
-        <p className="text-gray-500 text-xs">未实现盈亏</p>
+        <p className="text-gray-500 text-xs">Unrealized PnL</p>
         {isLoading ? (
           <div className="h-7 bg-gray-800 rounded animate-pulse w-24" />
         ) : (
@@ -35,7 +35,7 @@ export default function BalanceCards({ balance, isLoading }: BalanceCardsProps) 
 
       {/* Available */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-1">
-        <p className="text-gray-500 text-xs">可用余额 (USDT)</p>
+        <p className="text-gray-500 text-xs">Available (USDT)</p>
         {isLoading ? (
           <div className="h-7 bg-gray-800 rounded animate-pulse w-32" />
         ) : (

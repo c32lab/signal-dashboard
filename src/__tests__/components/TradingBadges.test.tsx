@@ -22,14 +22,14 @@ describe('SideBadge', () => {
 describe('StatusBadge', () => {
   it('renders open status', () => {
     render(<StatusBadge status="open" />)
-    const badge = screen.getByText('开仓中')
+    const badge = screen.getByText('Open')
     expect(badge).toBeInTheDocument()
     expect(badge.className).toContain('bg-blue-900')
   })
 
   it('renders closed status', () => {
     render(<StatusBadge status="closed" />)
-    const badge = screen.getByText('已平仓')
+    const badge = screen.getByText('Closed')
     expect(badge).toBeInTheDocument()
     expect(badge.className).toContain('bg-gray-700')
   })

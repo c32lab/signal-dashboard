@@ -74,6 +74,6 @@ describe('TimelineFilterBar', () => {
 
   it('hides count when total is 0', () => {
     render(<TimelineFilterBar {...defaultProps} total={0} />)
-    expect(screen.queryByText(/共/)).toBeNull()
+    expect(screen.queryByText(/total/)).toBeNull()
   })
 })

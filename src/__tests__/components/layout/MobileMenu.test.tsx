@@ -18,38 +18,38 @@ function renderMenu(onClose = vi.fn()) {
 describe('MobileMenu', () => {
   it('renders top-level nav items', () => {
     renderMenu()
-    expect(screen.getByText('信号概览')).toBeInTheDocument()
-    expect(screen.getByText('回测对比')).toBeInTheDocument()
-    expect(screen.getByText('交易记录')).toBeInTheDocument()
+    expect(screen.getByText('Overview')).toBeInTheDocument()
+    expect(screen.getByText('Backtest')).toBeInTheDocument()
+    expect(screen.getByText('Trading')).toBeInTheDocument()
   })
 
   it('renders group label button for advanced section', () => {
     renderMenu()
-    expect(screen.getByText('高级分析')).toBeInTheDocument()
+    expect(screen.getByText('Advanced')).toBeInTheDocument()
   })
 
   it('does not show group items initially', () => {
     renderMenu()
-    expect(screen.queryByText('信号质量')).toBeNull()
+    expect(screen.queryByText('Quality')).toBeNull()
   })
 
   it('expands group items on button click', () => {
     renderMenu()
-    fireEvent.click(screen.getByText('高级分析'))
-    expect(screen.getByText('信号质量')).toBeInTheDocument()
-    expect(screen.getByText('系统健康')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('Advanced'))
+    expect(screen.getByText('Quality')).toBeInTheDocument()
+    expect(screen.getByText('System Health')).toBeInTheDocument()
   })
 
   it('calls onClose when a top-level item is clicked', () => {
     const { onClose } = renderMenu()
-    fireEvent.click(screen.getByText('回测对比'))
+    fireEvent.click(screen.getByText('Backtest'))
     expect(onClose).toHaveBeenCalled()
   })
 
   it('calls onClose when a group item is clicked', () => {
     const { onClose } = renderMenu()
-    fireEvent.click(screen.getByText('高级分析'))
-    fireEvent.click(screen.getByText('信号质量'))
+    fireEvent.click(screen.getByText('Advanced'))
+    fireEvent.click(screen.getByText('Quality'))
     expect(onClose).toHaveBeenCalled()
   })
 })

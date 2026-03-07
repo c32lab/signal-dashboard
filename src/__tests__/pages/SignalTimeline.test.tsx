@@ -25,7 +25,7 @@ describe('SignalTimeline', () => {
       isLoading: false, error: undefined,
     })
     render(<SignalTimeline />)
-    expect(screen.getByText('信号时间轴')).toBeInTheDocument()
+    expect(screen.getByText('Signal Timeline')).toBeInTheDocument()
   })
 
   it('renders loading state', () => {
@@ -54,7 +54,7 @@ describe('SignalTimeline', () => {
       isLoading: false, error: undefined,
     })
     render(<SignalTimeline />)
-    expect(screen.getByText('暂无数据')).toBeInTheDocument()
+    expect(screen.getByText('No data')).toBeInTheDocument()
   })
 
   it('renders timeline cards with decisions', () => {

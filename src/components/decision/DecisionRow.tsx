@@ -41,7 +41,7 @@ export default function DecisionRow({ d }: { d: Decision }) {
           const warn = !confV.valid
             ? confV.warning!
             : zeroConf
-            ? `Confidence=0 但 action=${d.action}`
+            ? `Confidence=0 but action=${d.action}`
             : undefined
           return (
             <>
