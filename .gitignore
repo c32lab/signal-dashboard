@@ -25,3 +25,7 @@ dist-ssr
 
 # Lighthouse reports
 lighthouse/
+
+# Playwright
+playwright-report/
+test-results/
