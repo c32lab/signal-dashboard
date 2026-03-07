@@ -77,6 +77,31 @@ function convertFormatB(raw: any): BacktestResult {
     }
   }
 
+  // by_regime from by_regime_1h
+  const byRegime: Record<string, BacktestSummary[]> = {}
+  for (const [configName, configData] of Object.entries(raw.configs ?? {})) {
+    const cd = configData as any
+    const regimeData: Record<string, any> = cd?.by_regime_1h ?? {}
+    for (const [regimeName, r] of Object.entries(regimeData)) {
+      if (!byRegime[regimeName]) byRegime[regimeName] = []
+      const count = Number(r?.count ?? 0)
+      const winRate = Number(r?.win_rate ?? 0)
+      const winCount = Math.round(count * winRate / 100)
+      byRegime[regimeName].push({
+        config: configName,
+        total_trades: count,
+        win_rate_pct: winRate,
+        total_pnl_pct: Number(r?.total_pnl ?? 0),
+        sharpe: Number(r?.sharpe ?? 0),
+        max_drawdown_pct: Number(r?.max_drawdown ?? 0),
+        signal_count: count,
+        win_count: winCount,
+        loss_count: count - winCount,
+        regime: regimeName,
+      })
+    }
+  }
+
   return {
     generated_at: String(meta.generated_at ?? ''),
     data_range: {
@@ -87,6 +112,7 @@ function convertFormatB(raw: any): BacktestResult {
     summary,
     by_symbol: bySymbol,
     pnl_curve: {},
+    ...(Object.keys(byRegime).length > 0 ? { by_regime: byRegime } : {}),
   }
 }
 
