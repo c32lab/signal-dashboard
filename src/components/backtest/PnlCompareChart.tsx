@@ -12,7 +12,7 @@ import {
 } from 'recharts'
 import { formatDateTime, formatChartTime } from '../../utils/format'
 import type { PnlCurvePoint, BacktestConfig } from '../../types/backtest'
-import { CONFIG_COLORS } from './SummaryCard'
+import { CONFIG_COLORS } from './configColors'
 
 interface PnlCompareChartProps {
   pnlCurve: Record<string, PnlCurvePoint[]>

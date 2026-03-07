@@ -11,7 +11,7 @@ import {
   ZAxis,
 } from 'recharts'
 import type { BacktestSummary } from '../../types/backtest'
-import { CONFIG_COLORS } from './SummaryCard'
+import { CONFIG_COLORS } from './configColors'
 
 interface PerformanceScatterProps {
   summary: BacktestSummary[]

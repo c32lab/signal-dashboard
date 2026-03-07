@@ -1,4 +1,4 @@
-import { CONFIG_COLORS } from './SummaryCard'
+import { CONFIG_COLORS } from './configColors'
 import type { BacktestSummary } from '../../types/backtest'
 
 interface DirectionBreakdownProps {

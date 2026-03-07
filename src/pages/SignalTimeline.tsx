@@ -27,14 +27,14 @@ function SignalTimeline() {
     offset,
   })
 
-  const decisions = data?.decisions ?? []
   const total = data?.total ?? 0
 
   // Client-side direction filter (backend does not support direction param)
   const filteredDecisions = useMemo(() => {
-    if (!direction) return decisions
-    return decisions.filter(d => d.direction === direction)
-  }, [decisions, direction])
+    const list = data?.decisions ?? []
+    if (!direction) return list
+    return list.filter(d => d.direction === direction)
+  }, [data?.decisions, direction])
 
   // Full symbol list from health endpoint
   const symbols = useSymbols()

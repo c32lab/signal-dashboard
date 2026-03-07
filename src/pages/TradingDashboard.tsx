@@ -5,33 +5,23 @@ import { BalanceCards, PnlCurve, TradeStats, PositionsList, TradeTable } from '.
 export default function TradingDashboard() {
   const { data, error, isLoading } = useTradingSummary()
 
-  if (error) {
-    return (
-      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-        <h1 className="text-lg font-bold text-gray-100">交易记录</h1>
-        <div className="bg-red-950 border border-red-800 rounded-xl p-4 text-red-400 text-sm">
-          加载失败: {error instanceof Error ? error.message : '未知错误'}
-        </div>
-      </div>
-    )
-  }
-
   const balance = data?.balance
   const positions = data?.positions ?? []
-  const trades = [...(data?.recent_trades ?? [])].sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-  )
+  const trades = useMemo(() =>
+    [...(data?.recent_trades ?? [])].sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    ), [data?.recent_trades])
 
   // ── PnL curve data ──
   const pnlData = useMemo(() => {
     const closed = trades
       .filter(t => t.status === 'closed' && t.pnl_usdt !== null)
       .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-    let cum = 0
-    return closed.map(t => {
-      cum += t.pnl_usdt ?? 0
-      return { time: t.timestamp, cumPnl: cum }
-    })
+    return closed.reduce<Array<{ time: string; cumPnl: number }>>((acc, t) => {
+      const prev = acc.length > 0 ? acc[acc.length - 1].cumPnl : 0
+      acc.push({ time: t.timestamp, cumPnl: prev + (t.pnl_usdt ?? 0) })
+      return acc
+    }, [])
   }, [trades])
 
   // ── Trade statistics ──
@@ -44,6 +34,17 @@ export default function TradingDashboard() {
     const shortCount = trades.filter(t => t.side === 'SHORT').length
     return { closedTrades, openTrades, winTrades, winRate, longCount, shortCount }
   }, [trades])
+
+  if (error) {
+    return (
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <h1 className="text-lg font-bold text-gray-100">交易记录</h1>
+        <div className="bg-red-950 border border-red-800 rounded-xl p-4 text-red-400 text-sm">
+          加载失败: {error instanceof Error ? error.message : '未知错误'}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">

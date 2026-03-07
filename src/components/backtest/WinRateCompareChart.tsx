@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import type { SymbolBacktest, BacktestConfig } from '../../types/backtest'
-import { CONFIG_COLORS } from './SummaryCard'
+import { CONFIG_COLORS } from './configColors'
 
 interface WinRateCompareChartProps {
   bySymbol: Record<string, SymbolBacktest[]>

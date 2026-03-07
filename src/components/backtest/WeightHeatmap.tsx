@@ -1,4 +1,4 @@
-import { CONFIG_COLORS } from './SummaryCard'
+import { CONFIG_COLORS } from './configColors'
 
 interface WeightHeatmapProps {
   configs: Record<string, { weights: Record<string, number>; description: string }>
