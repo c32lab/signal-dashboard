@@ -130,7 +130,7 @@ export default function TradingStatus() {
 
       {/* Balance Cards */}
       {balance ? (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="bg-gray-950 rounded-lg p-4 border border-gray-800">
             <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Total Balance</p>
             <p className="text-xl font-bold text-white">{formatPrice(balance.total_usdt)}</p>

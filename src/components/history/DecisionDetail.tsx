@@ -41,7 +41,7 @@ function SignalRow({ sig }: { sig: RawSignal }) {
       <td className="px-2 py-1 text-gray-500 whitespace-nowrap">
         {sig.timeframe || '—'}
       </td>
-      <td className="px-2 py-1 text-gray-400 max-w-xs truncate" title={sig.reasoning}>
+      <td className="px-2 py-1 text-gray-400 max-w-[200px] sm:max-w-xs truncate" title={sig.reasoning}>
         {sig.reasoning || '—'}
       </td>
     </tr>

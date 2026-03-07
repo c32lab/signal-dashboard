@@ -190,7 +190,7 @@ export default function TradingDashboard() {
       {pnlData.length > 0 && (
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-2">
           <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide">累计 PnL 曲线</h2>
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={pnlData} margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
               <XAxis
@@ -328,7 +328,7 @@ export default function TradingDashboard() {
         </div>
 
         <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="border-b border-gray-800 text-gray-500 text-xs">
                 <th className="text-left px-4 py-3 font-medium">时间</th>

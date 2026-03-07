@@ -264,7 +264,7 @@ function ResultView({ result }: ResultViewProps) {
 
       {/* Summary cards */}
       <SectionErrorBoundary title="Summary Cards">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {filtered.summary.map((s) => (
             <SummaryCard
               key={s.config}
@@ -297,7 +297,7 @@ function ResultView({ result }: ResultViewProps) {
         <SectionErrorBoundary title="Performance by Regime">
           <div>
             <h2 className="text-sm font-semibold text-gray-300 mb-3">Performance by Regime</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {['trending', 'ranging', 'volatile'].map(regime => (
                 <RegimeMiniCard
                   key={regime}

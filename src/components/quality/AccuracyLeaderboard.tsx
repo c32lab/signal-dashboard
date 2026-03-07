@@ -29,7 +29,7 @@ export default function AccuracyLeaderboard({ data }: { data: PerformanceSymbol[
         <BarChart
           data={sorted}
           layout="vertical"
-          margin={{ top: 4, right: 56, bottom: 4, left: 56 }}
+          margin={{ top: 4, right: 16, bottom: 4, left: 4 }}
         >
           <XAxis
             type="number"

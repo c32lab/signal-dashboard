@@ -46,8 +46,8 @@ function ConfidenceBar({ value }: { value: number }) {
 
 function FeedRow({ d }: { d: Decision }) {
   return (
-    <div className="flex items-center gap-2 py-1.5 border-t border-gray-800 hover:bg-gray-800/30 px-3 transition-colors text-xs">
-      <span className="text-gray-500 font-mono w-16 shrink-0">{formatTimeFeed(d.timestamp)}</span>
+    <div className="flex items-center gap-2 py-1.5 border-t border-gray-800 hover:bg-gray-800/30 px-3 transition-colors text-xs overflow-x-auto">
+      <span className="text-gray-500 font-mono w-12 sm:w-16 shrink-0">{formatTimeFeed(d.timestamp)}</span>
       <span className="font-semibold text-gray-200 w-10 shrink-0">{d.symbol.replace('/USDT', '')}</span>
       <span className={`px-1.5 py-0.5 rounded-full font-semibold shrink-0 ${actionBadgeClass(d.action)}`}>
         {d.action}
@@ -56,10 +56,10 @@ function FeedRow({ d }: { d: Decision }) {
         {d.direction}
       </span>
       <ConfidenceBar value={d.confidence} />
-      <span className="text-gray-400 font-mono shrink-0 w-14 text-right">
+      <span className="text-gray-400 font-mono shrink-0 w-14 text-right hidden sm:inline">
         {typeof d.combined_score === 'number' ? d.combined_score.toFixed(3) : '—'}
       </span>
-      <span className={`px-1.5 py-0.5 rounded-full shrink-0 ${typePillClass(d.decision_type)}`}>
+      <span className={`px-1.5 py-0.5 rounded-full shrink-0 hidden sm:inline ${typePillClass(d.decision_type)}`}>
         {d.decision_type || '—'}
       </span>
     </div>
