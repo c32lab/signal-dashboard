@@ -238,6 +238,38 @@ export function AccuracyAndValidationsSection({
             </div>
           )}
 
+          {/* Direction breakdown */}
+          {(() => {
+            const longVals = filtered.filter((v) => v.direction === 'LONG')
+            const shortVals = filtered.filter((v) => v.direction === 'SHORT')
+            if (longVals.length === 0 && shortVals.length === 0) return null
+            const longCorrect = longVals.filter((v) => v.is_correct === 1).length
+            const shortCorrect = shortVals.filter((v) => v.is_correct === 1).length
+            const longAcc = longVals.length > 0 ? (longCorrect / longVals.length) * 100 : 0
+            const shortAcc = shortVals.length > 0 ? (shortCorrect / shortVals.length) * 100 : 0
+            return (
+              <div>
+                <h3 className="text-xs text-gray-500 uppercase tracking-wider mb-2">By Direction</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {longVals.length > 0 && (
+                    <div className="bg-gray-800/60 rounded-lg border border-green-900/40 px-4 py-3 flex flex-col items-center gap-1">
+                      <span className="text-xs font-medium text-green-400 uppercase tracking-wider">LONG</span>
+                      <span className="text-2xl font-bold font-mono text-green-400">{longAcc.toFixed(1)}%</span>
+                      <span className="text-xs text-gray-500">{longCorrect}/{longVals.length} correct</span>
+                    </div>
+                  )}
+                  {shortVals.length > 0 && (
+                    <div className="bg-gray-800/60 rounded-lg border border-red-900/40 px-4 py-3 flex flex-col items-center gap-1">
+                      <span className="text-xs font-medium text-red-400 uppercase tracking-wider">SHORT</span>
+                      <span className="text-2xl font-bold font-mono text-red-400">{shortAcc.toFixed(1)}%</span>
+                      <span className="text-xs text-gray-500">{shortCorrect}/{shortVals.length} correct</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )
+          })()}
+
           {/* Accuracy trend chart */}
           {trendData.length > 0 && (
             <div>
