@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { SymbolBacktest } from '../../types/backtest'
-import { CONFIG_COLORS } from './SummaryCard'
+import { CONFIG_COLORS } from './configColors'
 import { pct } from './backtestUtils'
 
 interface SymbolRowProps {
