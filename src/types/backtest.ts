@@ -13,6 +13,12 @@ export interface BacktestSummary {
   total_pnl_pct: number      // already_pct
   sharpe: number
   max_drawdown_pct: number   // already_pct
+  long_count?: number
+  long_wins?: number
+  long_pnl_pct?: number
+  short_count?: number
+  short_wins?: number
+  short_pnl_pct?: number
   regime?: string
 }
 
