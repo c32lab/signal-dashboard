@@ -15,7 +15,7 @@ import type {
   CollectorHealthResponse,
   StatusResponse,
 } from '../types'
-import type { BacktestResponse } from '../types/backtest'
+import { normalizeBacktestResults } from '../utils/backtestNormalizer'
 import type { TradingSummary } from '../types/trading'
 
 const BASE_URL = ''
@@ -71,7 +71,9 @@ export const api = {
     fetcher<AccuracyResponse>(`${BASE_URL}/api/accuracy`),
 
   backtest: () =>
-    fetcher<BacktestResponse>(`${BASE_URL}/api/backtest`),
+    fetcher<{ results: unknown[] }>(`${BASE_URL}/api/backtest`).then(raw => ({
+      results: normalizeBacktestResults(raw.results ?? []),
+    })),
 
   combinerWeights: () =>
     fetcher<CombinerWeightsResponse>(`${BASE_URL}/api/combiner_weights`),
