@@ -35,6 +35,27 @@ export const SIGNAL_FIELDS = {
   'raw.suggested_take_profit': { format: 'usd_price',   display: '直接显示', example: '69800.0' },
 } as const
 
+// ─── Predict API (:18801) ────────────────────────────────────────────────────
+
+export const PREDICT_FIELDS = {
+  // /api/prediction → macro
+  'macro.funding_rate':        { format: 'tiny_decimal', display: '×100 → %', example: '-5.39e-05 → "-0.005%"' },
+  'macro.funding_rate_avg':    { format: 'tiny_decimal', display: '×100 → %', example: '-3.81e-06 → "-0.000%"' },
+  'macro.fear_greed':          { format: 'index_0_100',  display: '直接显示（恐惧贪婪指数）', example: '10' },
+  'macro.volume_ratio':        { format: 'ratio',        display: '直接显示', example: '0.199' },
+  'macro.etf_flow_1d':         { format: 'usd_amount',   display: '÷1e6 → $XM', example: '-50000000 → "-$50M"' },
+
+  // /api/prediction → predictions
+  'prediction.confidence':     { format: 'decimal_0_1',  display: '×100 → %', example: '0.573 → 57.3%' },
+  'prediction.expected_impact':{ format: 'already_pct',  display: '直接加 %', example: '7.02 → "7.02%"' },
+
+  // /api/prediction → event_kb.events
+  'event.price_change':        { format: 'already_pct',  display: '直接加 %', example: '6.13 → "6.13%"' },
+
+  // /api/prediction → event_kb.patterns
+  'pattern.avg_impact':        { format: 'already_pct',  display: '直接加 %', example: '-10.0 → "-10.0%"' },
+} as const
+
 // ─── Data-Eng API (:8081) ────────────────────────────────────────────────────
 
 export const DATAENG_FIELDS = {
