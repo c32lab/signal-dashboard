@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useBacktest } from '../hooks/useApi'
 import { formatDateTime, formatDate } from '../utils/format'
 import { BacktestResultView, BacktestSkeleton } from '../components/backtest'
+import SectionErrorBoundary from '../components/SectionErrorBoundary'
 
 export default function BacktestDashboard() {
   const { data, error, isLoading } = useBacktest()
@@ -58,23 +59,27 @@ export default function BacktestDashboard() {
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Multi-result tabs */}
       {data.results.length > 1 && (
-        <div className="flex gap-1 border-b border-gray-800 overflow-x-auto">
-          {data.results.map((_r, idx) => (
-            <button
-              key={idx}
-              onClick={() => setActiveIdx(idx)}
-              className={`px-4 py-2 text-sm whitespace-nowrap transition-colors border-b-2 ${
-                idx === safeIdx
-                  ? 'text-blue-400 border-blue-400 font-semibold'
-                  : 'text-gray-500 border-transparent hover:text-gray-300'
-              }`}
-            >
-              {tabLabels[idx]}
-            </button>
-          ))}
-        </div>
+        <SectionErrorBoundary title="Result Tabs">
+          <div className="flex gap-1 border-b border-gray-800 overflow-x-auto">
+            {data.results.map((_r, idx) => (
+              <button
+                key={idx}
+                onClick={() => setActiveIdx(idx)}
+                className={`px-4 py-2 text-sm whitespace-nowrap transition-colors border-b-2 ${
+                  idx === safeIdx
+                    ? 'text-blue-400 border-blue-400 font-semibold'
+                    : 'text-gray-500 border-transparent hover:text-gray-300'
+                }`}
+              >
+                {tabLabels[idx]}
+              </button>
+            ))}
+          </div>
+        </SectionErrorBoundary>
       )}
-      <BacktestResultView result={result} />
+      <SectionErrorBoundary title="Backtest Result">
+        <BacktestResultView result={result} />
+      </SectionErrorBoundary>
     </div>
   )
 }
