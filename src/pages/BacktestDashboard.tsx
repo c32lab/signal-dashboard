@@ -335,7 +335,9 @@ function ResultView({ result }: ResultViewProps) {
   const pageSymbols = symbols.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
   const best = bestConfigName(result.summary)
   const totalTrades = result.summary.reduce((sum, s) => sum + s.total_trades, 0)
-  const days = daysBetween(result.data_range.start, result.data_range.end)
+  const days = result.data_range
+    ? daysBetween(result.data_range.start, result.data_range.end)
+    : 0
 
   return (
     <div className="space-y-6">
@@ -344,12 +346,16 @@ function ResultView({ result }: ResultViewProps) {
         <h1 className="text-xl font-bold text-gray-100">Backtest A/B Test</h1>
         <div className="mt-1 text-xs text-gray-500 space-x-3 flex flex-wrap gap-y-1">
           <span>Generated: {formatDateTime(result.generated_at)}</span>
-          <span>·</span>
-          <span>
-            Data: {formatDate(result.data_range.start)} – {formatDate(result.data_range.end)}
-          </span>
-          <span>·</span>
-          <span>{days} 天</span>
+          {result.data_range && (
+            <>
+              <span>·</span>
+              <span>
+                Data: {formatDate(result.data_range.start)} – {formatDate(result.data_range.end)}
+              </span>
+              <span>·</span>
+              <span>{days} 天</span>
+            </>
+          )}
           <span>·</span>
           <span>{totalTrades} 笔交易</span>
         </div>
@@ -375,7 +381,7 @@ function ResultView({ result }: ResultViewProps) {
       </SectionErrorBoundary>
 
       {/* PnL curve */}
-      {Object.keys(result.pnl_curve).length > 0 && (
+      {result.pnl_curve && Object.keys(result.pnl_curve).length > 0 && (
         <SectionErrorBoundary title="PnL Chart">
           <PnlChart pnl_curve={result.pnl_curve} />
         </SectionErrorBoundary>
@@ -438,6 +444,27 @@ export default function BacktestDashboard() {
   const { data, error, isLoading } = useBacktest()
   const [activeIdx, setActiveIdx] = useState(0)
 
+  // Detect duplicate tab labels to add index prefix — must be before early returns (hooks rule)
+  const tabLabels = useMemo(() => {
+    if (!data || data.results.length === 0) return []
+    const raw = data.results.map(r =>
+      r.data_range
+        ? `${formatDate(r.data_range.start)} – ${formatDate(r.data_range.end)}`
+        : formatDateTime(r.generated_at) || 'Backtest'
+    )
+    const counts = new Map<string, number>()
+    raw.forEach(l => counts.set(l, (counts.get(l) ?? 0) + 1))
+    const seen = new Map<string, number>()
+    return raw.map(l => {
+      if ((counts.get(l) ?? 0) > 1) {
+        const idx = (seen.get(l) ?? 0) + 1
+        seen.set(l, idx)
+        return `#${idx} ${l}`
+      }
+      return l
+    })
+  }, [data])
+
   if (isLoading) return <Skeleton />
 
   if (error) {
@@ -463,22 +490,6 @@ export default function BacktestDashboard() {
   // Clamp activeIdx to avoid out-of-bounds after data reload
   const safeIdx = Math.min(activeIdx, data.results.length - 1)
   const result = data.results[safeIdx] ?? data.results[0]
-
-  // Detect duplicate tab labels to add index prefix
-  const tabLabels = useMemo(() => {
-    const raw = data.results.map(r => `${formatDate(r.data_range.start)} – ${formatDate(r.data_range.end)}`)
-    const counts = new Map<string, number>()
-    raw.forEach(l => counts.set(l, (counts.get(l) ?? 0) + 1))
-    const seen = new Map<string, number>()
-    return raw.map(l => {
-      if ((counts.get(l) ?? 0) > 1) {
-        const idx = (seen.get(l) ?? 0) + 1
-        seen.set(l, idx)
-        return `#${idx} ${l}`
-      }
-      return l
-    })
-  }, [data.results])
 
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
