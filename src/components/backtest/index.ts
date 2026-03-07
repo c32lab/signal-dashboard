@@ -1,4 +1,5 @@
 export { default as ConfigWeightsDetail } from './ConfigWeightsDetail'
+export { default as DirectionBreakdown } from './DirectionBreakdown'
 export { default as ParamCompareTable } from './ParamCompareTable'
 export { default as RegimeFilter } from './RegimeFilter'
 export { default as RegimeMiniCard } from './RegimeMiniCard'
