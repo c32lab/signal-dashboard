@@ -13,11 +13,13 @@ export interface BacktestSummary {
   total_pnl_pct: number      // already_pct
   sharpe: number
   max_drawdown_pct: number   // already_pct
+  regime?: string
 }
 
 export interface PnlCurvePoint {
   timestamp: string          // UTC ISO 8601
   cumulative_pnl_pct: number // already_pct
+  regime?: string
 }
 
 export interface SymbolBacktest {
@@ -31,6 +33,7 @@ export interface SymbolBacktest {
   long_pnl_pct?: number
   short_count?: number
   short_pnl_pct?: number
+  regime?: string
 }
 
 export interface BacktestResult {
@@ -43,6 +46,7 @@ export interface BacktestResult {
   summary: BacktestSummary[]
   by_symbol: Record<string, SymbolBacktest[]>
   pnl_curve: Record<string, PnlCurvePoint[]>
+  by_regime?: Record<string, BacktestSummary[]>
 }
 
 export interface BacktestResponse {

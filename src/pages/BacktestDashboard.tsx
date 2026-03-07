@@ -324,17 +324,104 @@ function SymbolRow({ symbol, rows }: SymbolRowProps) {
   )
 }
 
+const REGIME_OPTIONS = ['all', 'trending', 'ranging', 'volatile'] as const
+type RegimeFilter = typeof REGIME_OPTIONS[number]
+
+const REGIME_ACTIVE_STYLES: Record<RegimeFilter, string> = {
+  all: 'bg-blue-600 text-white',
+  trending: 'bg-green-600 text-white',
+  ranging: 'bg-yellow-600 text-white',
+  volatile: 'bg-red-600 text-white',
+}
+
+const REGIME_LABEL_COLORS: Record<string, string> = {
+  trending: 'text-green-400',
+  ranging: 'text-yellow-400',
+  volatile: 'text-red-400',
+}
+
+interface RegimeMiniCardProps {
+  regime: string
+  summaries: BacktestSummary[]
+}
+
+function RegimeMiniCard({ regime, summaries }: RegimeMiniCardProps) {
+  const totalTrades = summaries.reduce((sum, s) => sum + s.total_trades, 0)
+  const avgWinRate = summaries.length > 0
+    ? summaries.reduce((sum, s) => sum + s.win_rate_pct, 0) / summaries.length
+    : 0
+  const avgPnl = summaries.length > 0
+    ? summaries.reduce((sum, s) => sum + s.total_pnl_pct, 0) / summaries.length
+    : 0
+
+  return (
+    <div className="bg-gray-900 border border-gray-800 rounded-xl p-3 space-y-2">
+      <span className={`text-sm font-semibold uppercase ${REGIME_LABEL_COLORS[regime] ?? 'text-gray-300'}`}>
+        {regime}
+      </span>
+      {totalTrades === 0 ? (
+        <p className="text-xs text-gray-500">No data</p>
+      ) : (
+        <div className="grid grid-cols-3 gap-2 text-xs">
+          <div>
+            <div className="text-gray-500 mb-0.5">Trades</div>
+            <div className="font-mono font-semibold text-gray-200">{totalTrades}</div>
+          </div>
+          <div>
+            <div className="text-gray-500 mb-0.5">Win Rate</div>
+            <div className={`font-mono font-semibold ${avgWinRate >= 50 ? 'text-green-400' : 'text-red-400'}`}>
+              {pct(avgWinRate)}
+            </div>
+          </div>
+          <div>
+            <div className="text-gray-500 mb-0.5">PnL%</div>
+            <div className={`font-mono font-semibold ${avgPnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {pct(avgPnl)}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 interface ResultViewProps {
   result: BacktestResult
 }
 
 function ResultView({ result }: ResultViewProps) {
-  const symbols = Object.keys(result.by_symbol).sort()
+  const [selectedRegime, setSelectedRegime] = useState<RegimeFilter>('all')
   const [page, setPage] = useState(1)
+
+  const filtered = useMemo(() => {
+    if (selectedRegime === 'all') return result
+
+    // If by_regime exists and has data for this regime, use it for summary
+    const regimeSummary = result.by_regime?.[selectedRegime]
+    const summary = regimeSummary ?? result.summary.filter(s => s.regime === selectedRegime)
+
+    // Filter by_symbol rows
+    const bySymbol: Record<string, SymbolBacktest[]> = {}
+    for (const [sym, rows] of Object.entries(result.by_symbol)) {
+      const filtered = rows.filter(r => r.regime === selectedRegime)
+      if (filtered.length > 0) bySymbol[sym] = filtered
+    }
+
+    // Filter pnl_curve
+    const pnlCurve: Record<string, typeof result.pnl_curve[string]> = {}
+    for (const [config, points] of Object.entries(result.pnl_curve)) {
+      const filtered = points.filter(p => p.regime === selectedRegime)
+      if (filtered.length > 0) pnlCurve[config] = filtered
+    }
+
+    return { ...result, summary, by_symbol: bySymbol, pnl_curve: pnlCurve }
+  }, [result, selectedRegime])
+
+  const symbols = Object.keys(filtered.by_symbol).sort()
   const totalPages = Math.max(1, Math.ceil(symbols.length / PAGE_SIZE))
   const pageSymbols = symbols.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
-  const best = bestConfigName(result.summary)
-  const totalTrades = result.summary.reduce((sum, s) => sum + s.total_trades, 0)
+  const best = bestConfigName(filtered.summary)
+  const totalTrades = filtered.summary.reduce((sum, s) => sum + s.total_trades, 0)
   const days = result.data_range
     ? daysBetween(result.data_range.start, result.data_range.end)
     : 0
@@ -361,10 +448,27 @@ function ResultView({ result }: ResultViewProps) {
         </div>
       </div>
 
+      {/* Regime filter pills */}
+      <div className="flex gap-2 flex-wrap">
+        {REGIME_OPTIONS.map(r => (
+          <button
+            key={r}
+            onClick={() => { setSelectedRegime(r); setPage(1) }}
+            className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${
+              selectedRegime === r
+                ? REGIME_ACTIVE_STYLES[r]
+                : 'bg-gray-800 text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            {r.charAt(0).toUpperCase() + r.slice(1)}
+          </button>
+        ))}
+      </div>
+
       {/* Summary cards */}
       <SectionErrorBoundary title="Summary Cards">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {result.summary.map((s) => (
+          {filtered.summary.map((s) => (
             <SummaryCard
               key={s.config}
               config={s.config}
@@ -380,17 +484,35 @@ function ResultView({ result }: ResultViewProps) {
         </div>
       </SectionErrorBoundary>
 
+      {/* Performance by Regime */}
+      {result.by_regime && Object.keys(result.by_regime).length > 0 && (
+        <SectionErrorBoundary title="Performance by Regime">
+          <div>
+            <h2 className="text-sm font-semibold text-gray-300 mb-3">Performance by Regime</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {['trending', 'ranging', 'volatile'].map(regime => (
+                <RegimeMiniCard
+                  key={regime}
+                  regime={regime}
+                  summaries={result.by_regime![regime] ?? []}
+                />
+              ))}
+            </div>
+          </div>
+        </SectionErrorBoundary>
+      )}
+
       {/* PnL curve */}
-      {result.pnl_curve && Object.keys(result.pnl_curve).length > 0 && (
+      {filtered.pnl_curve && Object.keys(filtered.pnl_curve).length > 0 && (
         <SectionErrorBoundary title="PnL Chart">
-          <PnlChart pnl_curve={result.pnl_curve} />
+          <PnlChart pnl_curve={filtered.pnl_curve} />
         </SectionErrorBoundary>
       )}
 
       {/* Trade Distribution chart */}
-      {result.summary.length > 1 && (
+      {filtered.summary.length > 1 && (
         <SectionErrorBoundary title="Trade Distribution">
-          <TradeDistributionChart summary={result.summary} />
+          <TradeDistributionChart summary={filtered.summary} />
         </SectionErrorBoundary>
       )}
 
@@ -405,7 +527,7 @@ function ResultView({ result }: ResultViewProps) {
               </span>
             </h2>
             {pageSymbols.map((sym) => (
-              <SymbolRow key={sym} symbol={sym} rows={result.by_symbol[sym]} />
+              <SymbolRow key={sym} symbol={sym} rows={filtered.by_symbol[sym]} />
             ))}
             {totalPages > 1 && (
               <div className="flex items-center justify-between pt-2">
