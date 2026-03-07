@@ -16,7 +16,7 @@ test.describe('Navigation', () => {
     { path: '/advanced/system', heading: /system|health/i },
   ]
 
-  for (const { path, heading } of routes) {
+  for (const { path } of routes) {
     test(`page ${path} loads without crashing`, async ({ page }) => {
       await page.goto(path)
       // Should not show React error boundary
