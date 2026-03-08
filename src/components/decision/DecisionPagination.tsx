@@ -25,7 +25,7 @@ export default function DecisionPagination({
         <button
           onClick={onPrev}
           disabled={safePage === 1}
-          className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="px-3 py-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
         >
           ‹
         </button>
@@ -35,7 +35,7 @@ export default function DecisionPagination({
         <button
           onClick={onNext}
           disabled={safePage === totalPages}
-          className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
+          className="px-3 py-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
         >
           ›
         </button>

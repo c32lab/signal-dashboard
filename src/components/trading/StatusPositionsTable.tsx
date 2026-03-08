@@ -15,7 +15,8 @@ export default function StatusPositionsTable({ positions }: { positions: Trading
     return <p className="text-xs text-gray-500 italic py-2">No open positions</p>
   }
   return (
-    <table className="w-full text-xs">
+    <div className="overflow-x-auto">
+    <table className="w-full text-xs min-w-[500px]">
       <thead>
         <tr className="text-gray-500 border-b border-gray-800">
           <th className="text-left py-1.5 pr-3 font-medium">Symbol</th>
@@ -41,5 +42,6 @@ export default function StatusPositionsTable({ positions }: { positions: Trading
         ))}
       </tbody>
     </table>
+    </div>
   )
 }
