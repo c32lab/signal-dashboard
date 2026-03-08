@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { AccuracyResponse } from '../../types'
+import { formatDateTime } from '../../utils/format'
 
 function accuracyColor(pct: number): string {
   if (pct >= 55) return 'text-green-400'
@@ -7,6 +8,7 @@ function accuracyColor(pct: number): string {
   return 'text-red-400'
 }
 
+const ACCURACY_THRESHOLD = 45
 const WINDOWS = ['6h', '12h', '24h'] as const
 
 export function AccuracyKPI({ data }: { data: AccuracyResponse }) {
@@ -14,9 +16,31 @@ export function AccuracyKPI({ data }: { data: AccuracyResponse }) {
 
   const toggle = (w: string) => setExpanded((prev) => ({ ...prev, [w]: !prev[w] }))
 
+  const belowThreshold = (['6h', '24h'] as const).some(
+    (w) => data.windows[w].accuracy['4h_pct'] < ACCURACY_THRESHOLD
+  )
+
   return (
     <section className="bg-gray-900 rounded-xl border border-gray-800 p-4 flex flex-col gap-3">
-      <h2 className="text-sm font-semibold text-gray-200">Signal Accuracy</h2>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-gray-200">Signal Accuracy</h2>
+          {belowThreshold && (
+            <span
+              className="relative flex h-2.5 w-2.5"
+              title="Accuracy below threshold"
+            >
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
+            </span>
+          )}
+        </div>
+        {data.timestamp && (
+          <span className="text-xs text-gray-500">
+            Updated {formatDateTime(data.timestamp)}
+          </span>
+        )}
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {WINDOWS.map((w) => {
           const win = data.windows[w]
