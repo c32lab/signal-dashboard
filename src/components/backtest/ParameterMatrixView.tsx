@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useRef, useEffect } from 'react'
 import type { ParamMatrixEntry } from '../../types/paramMatrix'
 import { useParamMatrix } from '../../hooks/useParamMatrix'
 
@@ -27,12 +27,50 @@ function cellColor(value: number, min: number, max: number): string {
   return `rgba(${r},${g},${b},0.6)`
 }
 
+function CellPopover({ entry, effectiveX, effectiveY, x, y, onClose }: {
+  entry: ParamMatrixEntry
+  effectiveX: string
+  effectiveY: string
+  x: number
+  y: number
+  onClose: () => void
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose()
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [onClose])
+
+  return (
+    <div ref={ref} className="absolute z-50 bg-gray-800 border border-gray-600 rounded-lg p-3 shadow-xl text-xs text-gray-200 min-w-[200px]" role="dialog" aria-label="Cell details">
+      <div className="font-semibold text-gray-100 mb-2">Cell Details</div>
+      <div className="space-y-1">
+        <div><span className="text-gray-400">{effectiveX}:</span> {x}</div>
+        <div><span className="text-gray-400">{effectiveY}:</span> {y}</div>
+        <hr className="border-gray-700 my-1" />
+        <div><span className="text-gray-400">Sharpe:</span> <span className="font-mono">{entry.sharpe.toFixed(2)}</span></div>
+        <div><span className="text-gray-400">Win Rate:</span> <span className="font-mono">{entry.win_rate.toFixed(1)}%</span></div>
+        <div><span className="text-gray-400">PnL:</span> <span className="font-mono">{entry.pnl.toFixed(2)}</span></div>
+        <div><span className="text-gray-400">Return:</span> <span className="font-mono">{(entry.return_pct * 100).toFixed(1)}%</span></div>
+        <div><span className="text-gray-400">Trades:</span> <span className="font-mono">{entry.trades}</span></div>
+        <div><span className="text-gray-400">Wins:</span> <span className="font-mono">{entry.wins}</span></div>
+      </div>
+      <button onClick={onClose} className="mt-2 text-gray-500 hover:text-gray-300 text-[10px]">Close</button>
+    </div>
+  )
+}
+
 export default function ParameterMatrixView() {
   const { data, isLoading } = useParamMatrix()
   const [selectedMetric, setSelectedMetric] = useState<MetricKey>('sharpe')
   const [selectedSymbol, setSelectedSymbol] = useState<string>('')
   const [xAxis, setXAxis] = useState<string>('')
   const [yAxis, setYAxis] = useState<string>('')
+  const [popoverCell, setPopoverCell] = useState<string | null>(null)
 
   const symbols = data ? Object.keys(data.symbols) : []
   const activeSymbol = selectedSymbol || symbols[0] || ''
@@ -84,9 +122,14 @@ export default function ParameterMatrixView() {
     return { grid, xValues, yValues, minVal, maxVal, bestCell: bestKey }
   }, [symbolData, effectiveX, effectiveY, selectedMetric, paramNames])
 
+  const bestEntry = useMemo(() => {
+    if (!symbolData) return null
+    return [...symbolData.results].sort((a, b) => b.sharpe - a.sharpe)[0] ?? null
+  }, [symbolData])
+
   const topConfigs = useMemo(() => {
     if (!symbolData) return []
-    return [...symbolData.results].sort((a, b) => b.sharpe - a.sharpe).slice(0, 10)
+    return [...symbolData.results].sort((a, b) => b.sharpe - a.sharpe).slice(0, 5)
   }, [symbolData])
 
   if (isLoading) {
@@ -98,6 +141,22 @@ export default function ParameterMatrixView() {
   return (
     <div>
       <h2 className="text-sm font-semibold text-gray-300 mb-3">Parameter Matrix Heatmap</h2>
+
+      {/* Best Parameters summary card */}
+      {bestEntry && (
+        <div className="mb-4 bg-gray-800 border border-yellow-500/30 rounded-lg p-3" data-testid="best-params-card">
+          <div className="text-xs font-semibold text-yellow-400 mb-1">Best Parameters</div>
+          <div className="flex flex-wrap gap-4 text-xs text-gray-200">
+            <span className="font-mono">
+              {Object.entries(bestEntry.params).map(([k, v]) => `${k}=${v}`).join(', ')}
+            </span>
+            <span>Sharpe: <span className="font-mono text-green-400">{bestEntry.sharpe.toFixed(2)}</span></span>
+            <span>Win Rate: <span className="font-mono">{bestEntry.win_rate.toFixed(1)}%</span></span>
+            <span>PnL: <span className="font-mono">{bestEntry.pnl.toFixed(2)}</span></span>
+            <span>Trades: <span className="font-mono">{bestEntry.trades}</span></span>
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-3 mb-4">
         <label className="text-xs text-gray-400">
@@ -158,44 +217,70 @@ export default function ParameterMatrixView() {
       </div>
 
       {paramNames.length >= 2 && (
-        <div className="overflow-x-auto">
-          <table className="border-collapse text-xs">
-            <thead>
-              <tr>
-                <th className="px-2 py-1 text-gray-400 text-left">{effectiveY} \ {effectiveX}</th>
-                {xValues.map(x => (
-                  <th key={x} className="px-3 py-1 text-gray-300 text-center">{x}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {yValues.map(y => (
-                <tr key={y}>
-                  <td className="px-2 py-1 text-gray-300 font-medium">{y}</td>
-                  {xValues.map(x => {
-                    const key = `${x}|${y}`
-                    const entry = grid.get(key)
-                    if (!entry) {
-                      return <td key={x} className="px-3 py-2 text-center text-gray-600">-</td>
-                    }
-                    const val = entry[selectedMetric]
-                    const isBest = key === bestCell
-                    return (
-                      <td
-                        key={x}
-                        className={`px-3 py-2 text-center font-mono ${isBest ? 'ring-2 ring-yellow-400 font-bold' : ''}`}
-                        style={{ backgroundColor: cellColor(val, minVal, maxVal) }}
-                        title={`${effectiveX}=${x}, ${effectiveY}=${y}\nSharpe: ${entry.sharpe.toFixed(2)}\nWin Rate: ${entry.win_rate.toFixed(1)}%\nPnL: ${entry.pnl.toFixed(2)}\nTrades: ${entry.trades}`}
-                      >
-                        {metricValue(val, selectedMetric)}
-                      </td>
-                    )
-                  })}
+        <>
+          <div className="overflow-x-auto">
+            <table className="border-collapse text-xs">
+              <thead>
+                <tr>
+                  <th className="px-2 py-1 text-gray-400 text-left">{effectiveY} \ {effectiveX}</th>
+                  {xValues.map(x => (
+                    <th key={x} className="px-3 py-1 text-gray-300 text-center">{x}</th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {yValues.map(y => (
+                  <tr key={y}>
+                    <td className="px-2 py-1 text-gray-300 font-medium">{y}</td>
+                    {xValues.map(x => {
+                      const key = `${x}|${y}`
+                      const entry = grid.get(key)
+                      if (!entry) {
+                        return <td key={x} className="px-3 py-2 text-center text-gray-600">-</td>
+                      }
+                      const val = entry[selectedMetric]
+                      const isBest = key === bestCell
+                      return (
+                        <td
+                          key={x}
+                          className={`px-3 py-2 text-center font-mono cursor-pointer hover:ring-1 hover:ring-blue-400 relative ${isBest ? 'ring-2 ring-yellow-400 font-bold' : ''}`}
+                          style={{ backgroundColor: cellColor(val, minVal, maxVal) }}
+                          onClick={() => setPopoverCell(popoverCell === key ? null : key)}
+                        >
+                          {metricValue(val, selectedMetric)}
+                          {popoverCell === key && (
+                            <CellPopover
+                              entry={entry}
+                              effectiveX={effectiveX}
+                              effectiveY={effectiveY}
+                              x={x}
+                              y={y}
+                              onClose={() => setPopoverCell(null)}
+                            />
+                          )}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Color scale legend */}
+          <div className="flex items-center gap-2 mt-2" data-testid="color-legend">
+            <span className="text-[10px] text-gray-500">Low</span>
+            <div className="flex h-3 rounded overflow-hidden" style={{ width: 120 }}>
+              {Array.from({ length: 10 }, (_, i) => {
+                const t = i / 9
+                const fakeVal = minVal + t * (maxVal - minVal)
+                return <div key={i} className="flex-1" style={{ backgroundColor: cellColor(fakeVal, minVal, maxVal) }} />
+              })}
+            </div>
+            <span className="text-[10px] text-gray-500">High</span>
+            <span className="text-[10px] text-gray-500 ml-1">({METRIC_LABELS[selectedMetric]})</span>
+          </div>
+        </>
       )}
 
       {bestCell && (
@@ -208,7 +293,7 @@ export default function ParameterMatrixView() {
 
       {topConfigs.length > 0 && (
         <div className="mt-4">
-          <h3 className="text-xs font-semibold text-gray-400 mb-2">Top Configs by Sharpe</h3>
+          <h3 className="text-xs font-semibold text-gray-400 mb-2">Top 5 Configurations</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-xs border-collapse">
               <thead>

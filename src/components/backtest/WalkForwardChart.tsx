@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react'
 import {
   ResponsiveContainer,
-  ComposedChart,
   Bar,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -23,6 +21,28 @@ interface ChartRow {
 interface DegradationRow {
   label: string
   degradation: number
+}
+
+interface SummaryStats {
+  avgIsSharpe: number
+  avgOosSharpe: number
+  avgDegradation: number
+  stabilityScore: number
+}
+
+function computeSummary(windows: ChartRow[], degradations: DegradationRow[]): SummaryStats {
+  if (windows.length === 0) return { avgIsSharpe: 0, avgOosSharpe: 0, avgDegradation: 0, stabilityScore: 0 }
+
+  const avgIsSharpe = windows.reduce((s, w) => s + w.is_sharpe, 0) / windows.length
+  const avgOosSharpe = windows.reduce((s, w) => s + w.oos_sharpe, 0) / windows.length
+  const avgDegradation = degradations.reduce((s, d) => s + d.degradation, 0) / degradations.length
+
+  // Stability score = std dev of OOS Sharpe across windows
+  const mean = avgOosSharpe
+  const variance = windows.reduce((s, w) => s + (w.oos_sharpe - mean) ** 2, 0) / windows.length
+  const stabilityScore = Math.sqrt(variance)
+
+  return { avgIsSharpe, avgOosSharpe, avgDegradation, stabilityScore }
 }
 
 export default function WalkForwardChart() {
@@ -50,6 +70,8 @@ export default function WalkForwardChart() {
       degradation: w.configs[0]?.degradation ?? 0,
     }))
   }, [symbolData])
+
+  const summary = useMemo(() => computeSummary(chartData, degradationData), [chartData, degradationData])
 
   if (isLoading) {
     return <div className="animate-pulse h-48 bg-gray-800 rounded" />
@@ -82,9 +104,33 @@ export default function WalkForwardChart() {
             {symbolData.data_period} &middot; {symbolData.total_bars} bars &middot; {symbolData.num_windows} windows
           </p>
 
-          {/* IS vs OOS Sharpe dual line chart */}
+          {/* Summary stats card */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4" data-testid="wf-summary-stats">
+            <div className="bg-gray-800 rounded-lg p-2">
+              <div className="text-[10px] text-gray-500">Avg IS Sharpe</div>
+              <div className="text-sm font-mono text-blue-400">{summary.avgIsSharpe.toFixed(2)}</div>
+            </div>
+            <div className="bg-gray-800 rounded-lg p-2">
+              <div className="text-[10px] text-gray-500">Avg OOS Sharpe</div>
+              <div className="text-sm font-mono text-green-400">{summary.avgOosSharpe.toFixed(2)}</div>
+            </div>
+            <div className="bg-gray-800 rounded-lg p-2">
+              <div className="text-[10px] text-gray-500">Avg Degradation</div>
+              <div className={`text-sm font-mono ${summary.avgDegradation < 0 ? 'text-red-400' : 'text-green-400'}`}>
+                {(summary.avgDegradation * 100).toFixed(1)}%
+              </div>
+            </div>
+            <div className="bg-gray-800 rounded-lg p-2">
+              <div className="text-[10px] text-gray-500">Stability Score</div>
+              <div className={`text-sm font-mono ${summary.stabilityScore > 1 ? 'text-red-400' : summary.stabilityScore > 0.5 ? 'text-yellow-400' : 'text-green-400'}`}>
+                {summary.stabilityScore.toFixed(2)}
+              </div>
+            </div>
+          </div>
+
+          {/* IS vs OOS Sharpe side-by-side bar chart */}
           <ResponsiveContainer width="100%" height={280}>
-            <ComposedChart data={chartData}>
+            <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
               <XAxis dataKey="label" tick={{ fill: '#9ca3af', fontSize: 12 }} />
               <YAxis tick={{ fill: '#9ca3af', fontSize: 12 }} />
@@ -102,12 +148,12 @@ export default function WalkForwardChart() {
                   value === 'is_sharpe' ? 'In-Sample Sharpe' : 'OOS Sharpe'
                 }
               />
-              <Line type="monotone" dataKey="is_sharpe" stroke="#60a5fa" strokeWidth={2} dot={{ fill: '#60a5fa', r: 4 }} />
-              <Line type="monotone" dataKey="oos_sharpe" stroke="#34d399" strokeWidth={2} dot={{ fill: '#34d399', r: 4 }} />
-            </ComposedChart>
+              <Bar dataKey="is_sharpe" fill="#60a5fa" barSize={20} />
+              <Bar dataKey="oos_sharpe" fill="#34d399" barSize={20} />
+            </BarChart>
           </ResponsiveContainer>
 
-          {/* Degradation bar chart */}
+          {/* Degradation indicator bar chart */}
           <h3 className="text-xs font-semibold text-gray-400 mt-4 mb-2">Degradation per Window</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={degradationData}>
@@ -128,7 +174,7 @@ export default function WalkForwardChart() {
             </BarChart>
           </ResponsiveContainer>
 
-          {/* Rolling window config table */}
+          {/* Rolling window config table with degradation indicator */}
           <div className="mt-4 overflow-x-auto">
             <table className="w-full text-xs border-collapse">
               <thead>
@@ -143,12 +189,16 @@ export default function WalkForwardChart() {
                   <th className="px-2 py-1 text-right">OOS WR%</th>
                   <th className="px-2 py-1 text-right">OOS PnL</th>
                   <th className="px-2 py-1 text-right">Degradation</th>
+                  <th className="px-2 py-1 text-right">Drop %</th>
                 </tr>
               </thead>
               <tbody>
                 {symbolData.windows.map(w => {
                   const c = w.configs[0]
                   if (!c) return null
+                  const dropPct = c.in_sample.sharpe !== 0
+                    ? ((c.in_sample.sharpe - c.oos.sharpe) / Math.abs(c.in_sample.sharpe)) * 100
+                    : 0
                   return (
                     <tr key={w.window} className="border-t border-gray-800 text-gray-300">
                       <td className="px-2 py-1 font-medium">W{w.window}</td>
@@ -162,6 +212,9 @@ export default function WalkForwardChart() {
                       <td className="px-2 py-1 text-right font-mono">{c.oos.pnl.toFixed(2)}</td>
                       <td className={`px-2 py-1 text-right font-mono ${c.degradation < 0 ? 'text-red-400' : 'text-green-400'}`}>
                         {c.degradation.toFixed(4)}
+                      </td>
+                      <td className={`px-2 py-1 text-right font-mono ${dropPct > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                        {dropPct > 0 ? '-' : '+'}{Math.abs(dropPct).toFixed(1)}%
                       </td>
                     </tr>
                   )
