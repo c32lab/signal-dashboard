@@ -9,6 +9,8 @@ import { bestConfigName } from './backtestUtils'
 import { useBacktestFilter } from './useBacktestFilter'
 import BacktestHeader from './BacktestHeader'
 import SymbolTableSection from './SymbolTableSection'
+import ParameterMatrixView from './ParameterMatrixView'
+import WalkForwardChart from './WalkForwardChart'
 
 interface BacktestResultViewProps {
   result: BacktestResult
@@ -74,6 +76,14 @@ export default function BacktestResultView({ result }: BacktestResultViewProps) 
 
       <SectionErrorBoundary title="Sensitivity Analysis">
         <SensitivityAnalysis configs={result.configs} summary={filtered.summary} />
+      </SectionErrorBoundary>
+
+      <SectionErrorBoundary title="Parameter Matrix">
+        <ParameterMatrixView />
+      </SectionErrorBoundary>
+
+      <SectionErrorBoundary title="Walk-Forward Analysis">
+        <WalkForwardChart />
       </SectionErrorBoundary>
 
       {result.by_regime && Object.keys(result.by_regime).length > 0 && (
