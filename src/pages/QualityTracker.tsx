@@ -108,10 +108,16 @@ export default function QualityTracker() {
         <CombinerWeights />
       </SectionErrorBoundary>
 
-      {confidenceRes.data && (
+      {confidenceRes.isLoading ? (
+        <SectionSkeleton text="Loading confidence distribution…" />
+      ) : confidenceRes.error ? (
+        <SectionError message={`Confidence: ${confidenceRes.error.message}`} />
+      ) : confidenceRes.data ? (
         <SectionErrorBoundary title="Confidence Distribution">
           <ConfidenceDistribution data={confidenceRes.data} />
         </SectionErrorBoundary>
+      ) : (
+        <SectionSkeleton text="No confidence data available" />
       )}
     </div>
   )

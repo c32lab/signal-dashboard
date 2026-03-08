@@ -40,18 +40,26 @@ export default function Dashboard() {
       {healthRes.isLoading && !healthData && (
         <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading alerts…</div>
       )}
-      {healthData && (
+      {healthData ? (
         <SectionErrorBoundary title="Alerts">
           <AlertsPanel data={healthData} />
         </SectionErrorBoundary>
+      ) : !healthRes.isLoading && (
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
+          No alerts data available
+        </div>
       )}
       {accuracyRes.isLoading && !accuracyData && (
         <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading accuracy…</div>
       )}
-      {accuracyData && (
+      {accuracyData ? (
         <SectionErrorBoundary title="Signal Accuracy">
           <AccuracyKPI data={accuracyData} />
         </SectionErrorBoundary>
+      ) : !accuracyRes.isLoading && (
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
+          No accuracy data available
+        </div>
       )}
       <SectionErrorBoundary title="Daily Accuracy Summary">
         <AccuracyDailySummary />
@@ -62,18 +70,26 @@ export default function Dashboard() {
       {healthRes.isLoading && !healthData && (
         <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading health…</div>
       )}
-      {healthData && (
+      {healthData ? (
         <SectionErrorBoundary title="Health Summary">
           <HealthSummary data={healthData} />
         </SectionErrorBoundary>
+      ) : !healthRes.isLoading && (
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
+          No health data available
+        </div>
       )}
       {perfRes.isLoading && !perfData && (
         <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading performance…</div>
       )}
-      {perfData && (
+      {perfData ? (
         <SectionErrorBoundary title="Performance Overview">
           <PerformanceOverview data={perfData} />
         </SectionErrorBoundary>
+      ) : !perfRes.isLoading && (
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
+          No performance data available
+        </div>
       )}
       <SectionErrorBoundary title="Live Signal Feed">
         <LiveSignalFeed />
@@ -90,10 +106,14 @@ export default function Dashboard() {
       {biasRes.isLoading && !biasData && (
         <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading source bias…</div>
       )}
-      {biasData && (
+      {biasData ? (
         <SectionErrorBoundary title="Source Bias">
           <SourceBias data={biasData} />
         </SectionErrorBoundary>
+      ) : !biasRes.isLoading && (
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
+          No source bias data available
+        </div>
       )}
       <SectionErrorBoundary title="Decision Distribution">
         <DecisionDistribution />

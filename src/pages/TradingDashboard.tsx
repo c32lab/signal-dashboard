@@ -55,17 +55,38 @@ export default function TradingDashboard() {
         <BalanceCards balance={balance} isLoading={isLoading} />
       </SectionErrorBoundary>
       <SectionErrorBoundary title="PnL Curve">
-        <PnlCurve data={pnlData} />
+        {isLoading ? (
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-2 animate-pulse">
+            <div className="h-4 bg-gray-800 rounded w-40" />
+            <div className="h-48 bg-gray-800 rounded" />
+          </div>
+        ) : (
+          <PnlCurve data={pnlData} />
+        )}
       </SectionErrorBoundary>
       <SectionErrorBoundary title="Trade Stats">
-        <TradeStats
-          totalCount={trades.length}
-          openCount={stats.openTrades.length}
-          closedCount={stats.closedTrades.length}
-          winRate={stats.winRate}
-          longCount={stats.longCount}
-          shortCount={stats.shortCount}
-        />
+        {isLoading ? (
+          <div className="space-y-3 animate-pulse">
+            <div className="h-4 bg-gray-800 rounded w-32" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+              {[0, 1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-2">
+                  <div className="h-3 bg-gray-800 rounded w-16" />
+                  <div className="h-6 bg-gray-800 rounded w-12" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <TradeStats
+            totalCount={trades.length}
+            openCount={stats.openTrades.length}
+            closedCount={stats.closedTrades.length}
+            winRate={stats.winRate}
+            longCount={stats.longCount}
+            shortCount={stats.shortCount}
+          />
+        )}
       </SectionErrorBoundary>
       <SectionErrorBoundary title="Open Positions">
         <PositionsList positions={positions} isLoading={isLoading} />
