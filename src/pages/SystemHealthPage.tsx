@@ -28,15 +28,23 @@ export default function SystemHealthPage() {
           Failed to load health data: {error.message ?? 'Unknown error'}
         </div>
       )}
-      {healthData && (
+      {healthData ? (
         <SectionErrorBoundary title="System Health">
           <HealthSummary data={healthData} />
         </SectionErrorBoundary>
+      ) : !isLoading && !error && (
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
+          No health data available
+        </div>
       )}
-      {collectorData && (
+      {collectorData ? (
         <SectionErrorBoundary title="Collector Status">
           <CollectorStatus data={collectorData} />
         </SectionErrorBoundary>
+      ) : !isLoading && !error && (
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
+          No collector data available
+        </div>
       )}
       <SectionErrorBoundary title="Combiner Weights">
         <CombinerWeights />

@@ -24,7 +24,18 @@ export default function TraderHistory() {
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* A. KPI Cards */}
       <SectionErrorBoundary title="KPI Cards">
-        <KpiCardGrid overall={overall} activeSignals={activeSignals} />
+        {isLoading && !overall ? (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 animate-pulse">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-2">
+                <div className="h-3 bg-gray-800 rounded w-20" />
+                <div className="h-6 bg-gray-800 rounded w-14" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <KpiCardGrid overall={overall} activeSignals={activeSignals} />
+        )}
       </SectionErrorBoundary>
 
       {/* B. Filter Bar */}

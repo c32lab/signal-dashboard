@@ -25,8 +25,8 @@ describe('PnlCurve', () => {
   })
 
   it('renders nothing when data is empty', () => {
-    const { container } = render(<PnlCurve data={[]} />)
-    expect(container.firstChild).toBeNull()
+    render(<PnlCurve data={[]} />)
+    expect(screen.getByText('No PnL data available')).toBeInTheDocument()
   })
 
   it('renders title', () => {

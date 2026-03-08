@@ -8,7 +8,13 @@ interface PnlCurveProps {
 }
 
 export default function PnlCurve({ data }: PnlCurveProps) {
-  if (data.length === 0) return null
+  if (data.length === 0) {
+    return (
+      <div className="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center text-gray-500 text-sm">
+        No PnL data available
+      </div>
+    )
+  }
 
   const lastPnl = data[data.length - 1]?.cumPnl ?? 0
   const pnlColor = lastPnl >= 0 ? '#22c55e' : '#ef4444'
