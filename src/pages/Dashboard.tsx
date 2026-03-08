@@ -31,7 +31,9 @@ export default function Dashboard() {
         <RegimeStatus />
       </SectionErrorBoundary>
       {healthData && (
-        <AlertsPanel data={healthData} />
+        <SectionErrorBoundary title="Alerts">
+          <AlertsPanel data={healthData} />
+        </SectionErrorBoundary>
       )}
       {accuracyData && (
         <SectionErrorBoundary title="Signal Accuracy">
@@ -45,7 +47,9 @@ export default function Dashboard() {
         <AccuracyMiniTrend />
       </SectionErrorBoundary>
       {healthData && (
-        <HealthSummary data={healthData} />
+        <SectionErrorBoundary title="Health Summary">
+          <HealthSummary data={healthData} />
+        </SectionErrorBoundary>
       )}
       {perfData && (
         <SectionErrorBoundary title="Performance Overview">

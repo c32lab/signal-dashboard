@@ -9,6 +9,7 @@ export default function SystemHealthPage() {
 
   const healthData = healthRes.data
   const collectorData = collectorRes.data
+  const isLoading = healthRes.isLoading || collectorRes.isLoading
 
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
@@ -16,6 +17,11 @@ export default function SystemHealthPage() {
       <SectionErrorBoundary title="Stability Countdown">
         <StabilityCountdown />
       </SectionErrorBoundary>
+      {isLoading && !healthData && !collectorData && (
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">
+          Loading health data…
+        </div>
+      )}
       {healthData && (
         <SectionErrorBoundary title="System Health">
           <HealthSummary data={healthData} />
