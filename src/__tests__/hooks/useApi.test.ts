@@ -20,7 +20,6 @@ const mockApi = {
   combinerWeights: vi.fn(),
   bias: vi.fn(),
   collectorHealth: vi.fn(),
-  status: vi.fn(),
   tradingSummary: vi.fn(),
 }
 vi.mock('../../api', () => ({ api: mockApi }))
@@ -38,7 +37,6 @@ const {
   useCombinerWeights,
   useBias,
   useCollectorHealth,
-  useStatus,
   useTradingSummary,
   useRecentDecisions,
 } = await import('../../hooks/useApi')
@@ -126,7 +124,6 @@ describe('useApi hooks', () => {
     ['useCombinerWeights', useCombinerWeights, 'combiner_weights'],
     ['useBias', useBias, 'bias'],
     ['useCollectorHealth', useCollectorHealth, 'collector-health'],
-    ['useStatus', useStatus, 'status'],
   ] as const)('%s passes correct SWR key', (_name, hook, expectedKey) => {
     (hook as () => unknown)()
     const [key] = mockUseSWR.mock.calls[0]

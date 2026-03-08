@@ -59,10 +59,6 @@ export function useCollectorHealth() {
   return useSWR('collector-health', () => api.collectorHealth(), { refreshInterval: REFRESH_INTERVAL })
 }
 
-export function useStatus() {
-  return useSWR('status', () => api.status(), { refreshInterval: REFRESH_INTERVAL })
-}
-
 export function useTradingSummary() {
   return useSWR<TradingSummary>('trading/summary', () => api.tradingSummary(), { refreshInterval: 10_000 })
 }
