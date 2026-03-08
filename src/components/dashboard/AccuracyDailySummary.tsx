@@ -60,11 +60,27 @@ function DeltaBadge({ current, baseline }: { current: number | null; baseline: n
 }
 
 export function AccuracyDailySummary() {
-  const { data: trend } = useSWR(
+  const { data: trend, isLoading, error } = useSWR(
     'accuracy/trend/7d',
     () => api.accuracyTrend(168),
     { refreshInterval: 60_000 },
   )
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">
+        Loading daily accuracy…
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="bg-gray-900 rounded-xl border border-red-800/50 p-4 text-sm text-red-300">
+        Failed to load daily accuracy: {error.message ?? 'Unknown error'}
+      </div>
+    )
+  }
 
   if (!trend || trend.length === 0) return null
 
