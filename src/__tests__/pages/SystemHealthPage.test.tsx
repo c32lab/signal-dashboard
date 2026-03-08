@@ -49,7 +49,7 @@ describe('SystemHealthPage', () => {
     mockUseHealth.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useHealth>)
     mockUseCollectorHealth.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useCollectorHealth>)
     render(<SystemHealthPage />)
-    expect(screen.queryByText(/running/i)).toBeNull()
+    expect(screen.queryByText(/Uptime/)).toBeNull()
   })
 
   it('renders combiner weights section', () => {
