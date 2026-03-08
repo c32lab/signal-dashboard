@@ -59,16 +59,21 @@ export default function WalkForwardChart() {
     return symbolData.windows.map(w => ({
       label: `W${w.window}`,
       is_sharpe: w.configs[0]?.in_sample.sharpe ?? 0,
-      oos_sharpe: w.configs[0]?.oos.sharpe ?? 0,
+      oos_sharpe: w.configs[0]?.out_of_sample.sharpe ?? 0,
     }))
   }, [symbolData])
 
   const degradationData = useMemo<DegradationRow[]>(() => {
     if (!symbolData) return []
-    return symbolData.windows.map(w => ({
-      label: `W${w.window}`,
-      degradation: w.configs[0]?.degradation ?? 0,
-    }))
+    return symbolData.windows.map(w => {
+      const c = w.configs[0]
+      const isSharpe = c?.in_sample.sharpe ?? 0
+      const oosSharpe = c?.out_of_sample.sharpe ?? 0
+      return {
+        label: `W${w.window}`,
+        degradation: isSharpe !== 0 ? (oosSharpe - isSharpe) / Math.abs(isSharpe) : 0,
+      }
+    })
   }, [symbolData])
 
   const summary = useMemo(() => computeSummary(chartData, degradationData), [chartData, degradationData])
@@ -101,7 +106,7 @@ export default function WalkForwardChart() {
       {symbolData && (
         <>
           <p className="text-xs text-gray-500 mb-2">
-            {symbolData.data_period} &middot; {symbolData.total_bars} bars &middot; {symbolData.num_windows} windows
+            {symbolData.num_windows} windows
           </p>
 
           {/* Summary stats card */}
@@ -196,8 +201,11 @@ export default function WalkForwardChart() {
                 {symbolData.windows.map(w => {
                   const c = w.configs[0]
                   if (!c) return null
+                  const degradation = c.in_sample.sharpe !== 0
+                    ? (c.out_of_sample.sharpe - c.in_sample.sharpe) / Math.abs(c.in_sample.sharpe)
+                    : 0
                   const dropPct = c.in_sample.sharpe !== 0
-                    ? ((c.in_sample.sharpe - c.oos.sharpe) / Math.abs(c.in_sample.sharpe)) * 100
+                    ? ((c.in_sample.sharpe - c.out_of_sample.sharpe) / Math.abs(c.in_sample.sharpe)) * 100
                     : 0
                   return (
                     <tr key={w.window} className="border-t border-gray-800 text-gray-300">
@@ -207,11 +215,11 @@ export default function WalkForwardChart() {
                       <td className="px-2 py-1 text-right font-mono">{c.in_sample.sharpe.toFixed(2)}</td>
                       <td className="px-2 py-1 text-right font-mono">{c.in_sample.win_rate.toFixed(1)}%</td>
                       <td className="px-2 py-1 text-right font-mono">{c.in_sample.pnl.toFixed(2)}</td>
-                      <td className="px-2 py-1 text-right font-mono">{c.oos.sharpe.toFixed(2)}</td>
-                      <td className="px-2 py-1 text-right font-mono">{c.oos.win_rate.toFixed(1)}%</td>
-                      <td className="px-2 py-1 text-right font-mono">{c.oos.pnl.toFixed(2)}</td>
-                      <td className={`px-2 py-1 text-right font-mono ${c.degradation < 0 ? 'text-red-400' : 'text-green-400'}`}>
-                        {c.degradation.toFixed(4)}
+                      <td className="px-2 py-1 text-right font-mono">{c.out_of_sample.sharpe.toFixed(2)}</td>
+                      <td className="px-2 py-1 text-right font-mono">{c.out_of_sample.win_rate.toFixed(1)}%</td>
+                      <td className="px-2 py-1 text-right font-mono">{c.out_of_sample.pnl.toFixed(2)}</td>
+                      <td className={`px-2 py-1 text-right font-mono ${degradation < 0 ? 'text-red-400' : 'text-green-400'}`}>
+                        {degradation.toFixed(4)}
                       </td>
                       <td className={`px-2 py-1 text-right font-mono ${dropPct > 0 ? 'text-red-400' : 'text-green-400'}`}>
                         {dropPct > 0 ? '-' : '+'}{Math.abs(dropPct).toFixed(1)}%
