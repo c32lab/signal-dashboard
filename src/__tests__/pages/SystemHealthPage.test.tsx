@@ -7,7 +7,6 @@ vi.mock('../../hooks/useApi', () => ({
   useCollectorHealth: vi.fn(),
   useCombinerWeights: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
   useAccuracyTrend: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
-  useStatus: vi.fn(() => ({ data: undefined })),
 }))
 
 import SystemHealthPage from '../../pages/SystemHealthPage'

@@ -40,7 +40,7 @@ export default defineConfig({
   server: {
     port: 3080,
     proxy: {
-      '/api': 'http://localhost:18800',
+      '/api': 'http://localhost:18810',
       '/predict-api': {
         target: 'http://localhost:18801',
         rewrite: (path) => path.replace(/^\/predict-api/, ''),

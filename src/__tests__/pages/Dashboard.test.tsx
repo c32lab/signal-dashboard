@@ -23,7 +23,6 @@ vi.mock('../../hooks/useApi', () => ({
   useCombinerWeights: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
   useBias: () => mockUseBias(),
   useCollectorHealth: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
-  useStatus: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
   useTradingSummary: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
   useRecentDecisions: vi.fn(() => ({ data: undefined, isLoading: false, error: undefined })),
 }))

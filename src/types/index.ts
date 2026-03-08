@@ -61,12 +61,6 @@ export interface BiasAlert {
   bias_score: number
 }
 
-export interface StatusResponse {
-  bias_alerts?: BiasAlert[]
-  duplicate_ratio?: number
-  disabled_symbols?: string[]
-}
-
 export interface PerformanceSymbol {
   symbol: string
   total: number

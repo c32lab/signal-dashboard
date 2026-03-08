@@ -13,7 +13,6 @@ import type {
   CombinerWeightsResponse,
   BiasResponse,
   CollectorHealthResponse,
-  StatusResponse,
 } from '../types'
 import { normalizeBacktestResults } from '../utils/backtestNormalizer'
 import type { TradingSummary } from '../types/trading'
@@ -83,9 +82,6 @@ export const api = {
 
   collectorHealth: () =>
     fetcher<CollectorHealthResponse>(`${BASE_URL}/api/collector-health`),
-
-  status: () =>
-    fetcher<StatusResponse>(`${BASE_URL}/api/status`),
 
   tradingSummary: () =>
     fetcher<TradingSummary>(`${BASE_URL}/api/trading/summary`),

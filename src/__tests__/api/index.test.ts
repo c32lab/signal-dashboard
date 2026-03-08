@@ -182,12 +182,6 @@ describe('api', () => {
     expect(mockFetch).toHaveBeenCalledWith('/api/collector-health')
   })
 
-  it('status() calls /api/status', async () => {
-    mockFetch.mockResolvedValue(okResponse({ status: 'ok' }))
-    await api.status()
-    expect(mockFetch).toHaveBeenCalledWith('/api/status')
-  })
-
   it('tradingSummary() calls /api/trading/summary', async () => {
     mockFetch.mockResolvedValue(okResponse({ balance: 1000 }))
     await api.tradingSummary()
