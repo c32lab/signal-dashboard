@@ -46,7 +46,7 @@ function computeSummary(windows: ChartRow[], degradations: DegradationRow[]): Su
 }
 
 export default function WalkForwardChart() {
-  const { data, isLoading } = useWalkForward()
+  const { data, isLoading, error } = useWalkForward()
   const [selectedSymbol, setSelectedSymbol] = useState<string>('')
 
   const symbols = data?.symbols ?? []
@@ -80,6 +80,14 @@ export default function WalkForwardChart() {
 
   if (isLoading) {
     return <div className="animate-pulse h-48 bg-gray-800 rounded" />
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-950/50 border border-red-800 text-red-300 rounded-lg p-4 text-sm">
+        Failed to load walk-forward data: {String(error?.message ?? error)}
+      </div>
+    )
   }
 
   if (!data || symbols.length === 0) return null
