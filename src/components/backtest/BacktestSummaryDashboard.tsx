@@ -31,9 +31,12 @@ export default function BacktestSummaryDashboard() {
         const c = w.configs[0]
         if (!c) continue
         totalWindows++
-        sumOosSharpe += c.oos.sharpe
-        sumDegradation += c.degradation
-        oosSharpes.push(c.oos.sharpe)
+        sumOosSharpe += c.out_of_sample.sharpe
+        const degradation = c.in_sample.sharpe !== 0
+          ? (c.out_of_sample.sharpe - c.in_sample.sharpe) / Math.abs(c.in_sample.sharpe)
+          : 0
+        sumDegradation += degradation
+        oosSharpes.push(c.out_of_sample.sharpe)
       }
     }
 

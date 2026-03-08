@@ -18,23 +18,18 @@ const MOCK_DATA: WalkForwardResponse = {
   symbols: [
     {
       symbol: 'BTCUSDT',
-      total_bars: 8640,
-      data_period: '2025-03-13 -> 2026-03-07',
       num_windows: 2,
       windows: [
         {
           window: 1,
           train_period: '2025-03-13 -> 2025-05-11',
           test_period: '2025-05-12 -> 2025-06-10',
-          train_bars: 1440,
-          test_bars: 720,
           configs: [
             {
               rank: 1,
               params: { rsi_period: 8 },
               in_sample: { sharpe: 2.43, win_rate: 83.3, return_pct: 0.76, trades: 24, pnl: 7.6 },
-              oos: { sharpe: -0.62, win_rate: 62.5, return_pct: -0.147, trades: 8, pnl: -1.47 },
-              degradation: -0.2551,
+              out_of_sample: { sharpe: -0.62, win_rate: 62.5, return_pct: -0.147, trades: 8, pnl: -1.47 },
             },
           ],
         },
@@ -42,15 +37,12 @@ const MOCK_DATA: WalkForwardResponse = {
           window: 2,
           train_period: '2025-04-12 -> 2025-06-10',
           test_period: '2025-06-11 -> 2025-07-10',
-          train_bars: 1440,
-          test_bars: 720,
           configs: [
             {
               rank: 1,
               params: { rsi_period: 14 },
               in_sample: { sharpe: 1.85, win_rate: 71.4, return_pct: 0.52, trades: 21, pnl: 5.2 },
-              oos: { sharpe: 0.91, win_rate: 66.7, return_pct: 0.18, trades: 12, pnl: 1.8 },
-              degradation: 0.0312,
+              out_of_sample: { sharpe: 0.91, win_rate: 66.7, return_pct: 0.18, trades: 12, pnl: 1.8 },
             },
           ],
         },
@@ -58,23 +50,18 @@ const MOCK_DATA: WalkForwardResponse = {
     },
     {
       symbol: 'ETHUSDT',
-      total_bars: 8640,
-      data_period: '2025-03-13 -> 2026-03-07',
       num_windows: 1,
       windows: [
         {
           window: 1,
           train_period: '2025-03-13 -> 2025-05-11',
           test_period: '2025-05-12 -> 2025-06-10',
-          train_bars: 1440,
-          test_bars: 720,
           configs: [
             {
               rank: 1,
               params: { rsi_period: 8 },
               in_sample: { sharpe: 1.55, win_rate: 75.0, return_pct: 0.44, trades: 20, pnl: 4.4 },
-              oos: { sharpe: 0.32, win_rate: 58.3, return_pct: 0.05, trades: 12, pnl: 0.5 },
-              degradation: -0.1122,
+              out_of_sample: { sharpe: 0.32, win_rate: 58.3, return_pct: 0.05, trades: 12, pnl: 0.5 },
             },
           ],
         },
@@ -135,10 +122,10 @@ describe('WalkForwardChart', () => {
     expect(screen.getByText('-0.62')).toBeInTheDocument()
   })
 
-  it('displays degradation values', () => {
+  it('displays computed degradation values', () => {
     render(<WalkForwardChart />)
-    expect(screen.getByText('-0.2551')).toBeInTheDocument()
-    expect(screen.getByText('0.0312')).toBeInTheDocument()
+    // W1 degradation: (-0.62 - 2.43) / |2.43| = -1.2551
+    expect(screen.getByText('-1.2551')).toBeInTheDocument()
   })
 
   it('renders degradation section heading', () => {

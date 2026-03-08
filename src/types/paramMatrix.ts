@@ -38,8 +38,6 @@ export interface WalkForwardConfig {
 
 export interface WalkForwardSymbol {
   symbol: string
-  total_bars: number
-  data_period: string
   num_windows: number
   windows: WalkForwardWindow[]
 }
@@ -48,8 +46,6 @@ export interface WalkForwardWindow {
   window: number
   train_period: string
   test_period: string
-  train_bars: number
-  test_bars: number
   configs: WalkForwardWindowConfig[]
 }
 
@@ -57,8 +53,7 @@ export interface WalkForwardWindowConfig {
   rank: number
   params: Record<string, number>
   in_sample: WalkForwardMetrics
-  oos: WalkForwardMetrics
-  degradation: number
+  out_of_sample: WalkForwardMetrics
 }
 
 export interface WalkForwardMetrics {

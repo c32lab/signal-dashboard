@@ -23,17 +23,15 @@ const WF_DATA: WalkForwardResponse = {
   symbols: [
     {
       symbol: 'BTCUSDT',
-      total_bars: 8640,
-      data_period: '2025-03-13 -> 2026-03-07',
       num_windows: 2,
       windows: [
         {
-          window: 1, train_period: '', test_period: '', train_bars: 1440, test_bars: 720,
-          configs: [{ rank: 1, params: {}, in_sample: { sharpe: 2.0, win_rate: 80, return_pct: 0.5, trades: 20, pnl: 5 }, oos: { sharpe: 0.5, win_rate: 60, return_pct: 0.1, trades: 10, pnl: 1 }, degradation: -0.1 }],
+          window: 1, train_period: '', test_period: '',
+          configs: [{ rank: 1, params: {}, in_sample: { sharpe: 2.0, win_rate: 80, return_pct: 0.5, trades: 20, pnl: 5 }, out_of_sample: { sharpe: 0.5, win_rate: 60, return_pct: 0.1, trades: 10, pnl: 1 } }],
         },
         {
-          window: 2, train_period: '', test_period: '', train_bars: 1440, test_bars: 720,
-          configs: [{ rank: 1, params: {}, in_sample: { sharpe: 1.5, win_rate: 70, return_pct: 0.3, trades: 15, pnl: 3 }, oos: { sharpe: 1.0, win_rate: 65, return_pct: 0.2, trades: 12, pnl: 2 }, degradation: 0.05 }],
+          window: 2, train_period: '', test_period: '',
+          configs: [{ rank: 1, params: {}, in_sample: { sharpe: 1.5, win_rate: 70, return_pct: 0.3, trades: 15, pnl: 3 }, out_of_sample: { sharpe: 1.0, win_rate: 65, return_pct: 0.2, trades: 12, pnl: 2 } }],
         },
       ],
     },
