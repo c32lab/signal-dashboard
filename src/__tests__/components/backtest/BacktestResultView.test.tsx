@@ -20,6 +20,11 @@ vi.mock('recharts', () => ({
   Scatter: () => <div />,
   AreaChart: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Area: () => <div />,
+  RadarChart: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Radar: () => <div />,
+  PolarGrid: () => <div />,
+  PolarAngleAxis: () => <div />,
+  PolarRadiusAxis: () => <div />,
 }))
 
 import BacktestResultView from '../../../components/backtest/BacktestResultView'
