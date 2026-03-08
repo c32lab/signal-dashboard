@@ -65,7 +65,7 @@ function CellPopover({ entry, effectiveX, effectiveY, x, y, onClose }: {
 }
 
 export default function ParameterMatrixView() {
-  const { data, isLoading } = useParamMatrix()
+  const { data, isLoading, error } = useParamMatrix()
   const [selectedMetric, setSelectedMetric] = useState<MetricKey>('sharpe')
   const [selectedSymbol, setSelectedSymbol] = useState<string>('')
   const [xAxis, setXAxis] = useState<string>('')
@@ -134,6 +134,14 @@ export default function ParameterMatrixView() {
 
   if (isLoading) {
     return <div className="animate-pulse h-48 bg-gray-800 rounded" />
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-950/50 border border-red-800 text-red-300 rounded-lg p-4 text-sm">
+        Failed to load parameter matrix: {String(error?.message ?? error)}
+      </div>
+    )
   }
 
   if (!data || symbols.length === 0) return null
