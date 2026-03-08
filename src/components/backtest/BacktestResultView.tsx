@@ -2,6 +2,9 @@ import type { BacktestResult } from '../../types/backtest'
 import SectionErrorBoundary from '../SectionErrorBoundary'
 import { ConfigWeightsDetail, ParamCompareTable, RegimeFilter, RegimeMiniCard, SummaryCard, PnlCompareChart, WinRateCompareChart, WeightHeatmap, PerformanceScatter, DirectionBreakdown } from './'
 import TradeDistributionChart from './TradeDistributionChart'
+import ParamSweepHeatmap from './ParamSweepHeatmap'
+import RadarCompareChart from './RadarCompareChart'
+import SensitivityAnalysis from './SensitivityAnalysis'
 import { bestConfigName } from './backtestUtils'
 import { useBacktestFilter } from './useBacktestFilter'
 import BacktestHeader from './BacktestHeader'
@@ -59,6 +62,18 @@ export default function BacktestResultView({ result }: BacktestResultViewProps) 
 
       <SectionErrorBoundary title="Weight Heatmap">
         <WeightHeatmap configs={result.configs} />
+      </SectionErrorBoundary>
+
+      <SectionErrorBoundary title="Param Sweep Heatmap">
+        <ParamSweepHeatmap summary={filtered.summary} />
+      </SectionErrorBoundary>
+
+      <SectionErrorBoundary title="Radar Comparison">
+        <RadarCompareChart summary={filtered.summary} />
+      </SectionErrorBoundary>
+
+      <SectionErrorBoundary title="Sensitivity Analysis">
+        <SensitivityAnalysis configs={result.configs} summary={filtered.summary} />
       </SectionErrorBoundary>
 
       {result.by_regime && Object.keys(result.by_regime).length > 0 && (
