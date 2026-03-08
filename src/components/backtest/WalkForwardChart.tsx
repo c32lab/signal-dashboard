@@ -181,7 +181,7 @@ export default function WalkForwardChart() {
 
           {/* Rolling window config table with degradation indicator */}
           <div className="mt-4 overflow-x-auto">
-            <table className="w-full text-xs border-collapse">
+            <table className="w-full text-xs border-collapse min-w-[700px]">
               <thead>
                 <tr className="text-gray-400">
                   <th className="px-2 py-1 text-left">Window</th>

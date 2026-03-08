@@ -29,7 +29,8 @@ export default function StatusTradesTable({ trades }: { trades: TradingTrade[] }
     return <p className="text-xs text-gray-500 italic py-2">No recent trades</p>
   }
   return (
-    <table className="w-full text-xs">
+    <div className="overflow-x-auto">
+    <table className="w-full text-xs min-w-[700px]">
       <thead>
         <tr className="text-gray-500 border-b border-gray-800">
           <th className="text-left py-1.5 pr-3 font-medium">Time</th>
@@ -65,5 +66,6 @@ export default function StatusTradesTable({ trades }: { trades: TradingTrade[] }
         ))}
       </tbody>
     </table>
+    </div>
   )
 }

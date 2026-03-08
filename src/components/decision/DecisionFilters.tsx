@@ -32,7 +32,7 @@ export default function DecisionFilters({
             <button
               key={p.value}
               onClick={() => onTimePreset(p.value)}
-              className={`px-2 sm:px-2.5 py-1 rounded text-xs font-medium transition-colors ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded text-xs font-medium transition-colors ${
                 timePreset === p.value
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200'
