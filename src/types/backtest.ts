@@ -58,3 +58,39 @@ export interface BacktestResult {
 export interface BacktestResponse {
   results: BacktestResult[]
 }
+
+// Parameter matrix result from /api/backtest/parameter-matrix
+export interface ParamMatrixCell {
+  min_confidence: number
+  technical_weight: number
+  derivatives_weight: number
+  win_rate_pct: number
+  sharpe: number
+  total_pnl_pct: number
+  max_drawdown_pct: number
+  total_trades: number
+}
+
+export interface ParamMatrixResponse {
+  generated_at: string
+  data_range: { start: string; end: string }
+  swept_params: string[]
+  results: ParamMatrixCell[]
+}
+
+// Walk-forward result from /api/backtest/walk-forward
+export interface WalkForwardWindow {
+  window_start: string
+  window_end: string
+  train_end: string
+  config: string
+  win_rate_pct: number
+  sharpe: number
+  total_pnl_pct: number
+  total_trades: number
+}
+
+export interface WalkForwardResponse {
+  generated_at: string
+  windows: WalkForwardWindow[]
+}
