@@ -28,47 +28,55 @@ export default function TraderHistory() {
       </SectionErrorBoundary>
 
       {/* B. Filter Bar */}
-      <FilterBar
-        symbolFilter={symbolFilter}
-        actionFilter={actionFilter}
-        typeFilter={typeFilter}
-        directionFilter={directionFilter}
-        timePeriod={timePeriod}
-        typeOptions={typeOptions}
-        exporting={exporting}
-        total={total}
-        onSymbol={handleSymbol}
-        onAction={handleAction}
-        onType={handleType}
-        onDirection={handleDirection}
-        onTimePeriod={setTimePeriod}
-        onExport={handleExport}
-      />
+      <SectionErrorBoundary title="Filters">
+        <FilterBar
+          symbolFilter={symbolFilter}
+          actionFilter={actionFilter}
+          typeFilter={typeFilter}
+          directionFilter={directionFilter}
+          timePeriod={timePeriod}
+          typeOptions={typeOptions}
+          exporting={exporting}
+          total={total}
+          onSymbol={handleSymbol}
+          onAction={handleAction}
+          onType={handleType}
+          onDirection={handleDirection}
+          onTimePeriod={setTimePeriod}
+          onExport={handleExport}
+        />
+      </SectionErrorBoundary>
 
       {/* F. Symbol Performance Summary */}
       {symbolFilter && perfData?.by_symbol && (
-        <SymbolSummary symbol={symbolFilter} bySymbol={perfData.by_symbol} />
+        <SectionErrorBoundary title="Symbol Summary">
+          <SymbolSummary symbol={symbolFilter} bySymbol={perfData.by_symbol} />
+        </SectionErrorBoundary>
       )}
 
       {/* C. Decision Table */}
-      <DecisionTable
-        decisions={decisions}
-        isLoading={isLoading}
-        error={error}
-      />
+      <SectionErrorBoundary title="Decision Table">
+        <DecisionTable
+          decisions={decisions}
+          isLoading={isLoading}
+          error={error}
+        />
+      </SectionErrorBoundary>
 
       {/* D. Pagination */}
       {!isLoading && !error && total > 0 && (
-        <Pagination
-          offset={offset}
-          total={total}
-          startRecord={startRecord}
-          endRecord={endRecord}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPrev={() => setOffset(o => Math.max(0, o - PAGE_SIZE))}
-          onNext={() => setOffset(o => o + PAGE_SIZE)}
-        />
+        <SectionErrorBoundary title="Pagination">
+          <Pagination
+            offset={offset}
+            total={total}
+            startRecord={startRecord}
+            endRecord={endRecord}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPrev={() => setOffset(o => Math.max(0, o - PAGE_SIZE))}
+            onNext={() => setOffset(o => o + PAGE_SIZE)}
+          />
+        </SectionErrorBoundary>
       )}
     </div>
   )
