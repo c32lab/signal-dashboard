@@ -11,6 +11,7 @@ import BacktestHeader from './BacktestHeader'
 import SymbolTableSection from './SymbolTableSection'
 import ParameterMatrixView from './ParameterMatrixView'
 import WalkForwardChart from './WalkForwardChart'
+import BacktestSummaryDashboard from './BacktestSummaryDashboard'
 
 interface BacktestResultViewProps {
   result: BacktestResult
@@ -24,6 +25,10 @@ export default function BacktestResultView({ result }: BacktestResultViewProps) 
 
   return (
     <div className="space-y-6">
+      <SectionErrorBoundary title="Executive Summary">
+        <BacktestSummaryDashboard />
+      </SectionErrorBoundary>
+
       <BacktestHeader
         generatedAt={result.generated_at}
         dataRange={result.data_range}

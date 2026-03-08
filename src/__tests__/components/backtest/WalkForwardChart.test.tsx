@@ -146,6 +146,20 @@ describe('WalkForwardChart', () => {
     expect(screen.getByText('Degradation per Window')).toBeInTheDocument()
   })
 
+  it('renders summary stats card', () => {
+    render(<WalkForwardChart />)
+    expect(screen.getByTestId('wf-summary-stats')).toBeInTheDocument()
+    expect(screen.getByText('Avg IS Sharpe')).toBeInTheDocument()
+    expect(screen.getByText('Avg OOS Sharpe')).toBeInTheDocument()
+    expect(screen.getByText('Avg Degradation')).toBeInTheDocument()
+    expect(screen.getByText('Stability Score')).toBeInTheDocument()
+  })
+
+  it('displays drop percentage column', () => {
+    render(<WalkForwardChart />)
+    expect(screen.getByText('Drop %')).toBeInTheDocument()
+  })
+
   it('returns null when no symbols', () => {
     vi.doMock('../../../hooks/useParamMatrix', () => ({
       useParamMatrix: () => ({ data: null, isLoading: false }),

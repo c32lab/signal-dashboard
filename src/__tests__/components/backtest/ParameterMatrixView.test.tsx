@@ -1,6 +1,6 @@
 /// <reference types="@testing-library/jest-dom/vitest" />
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import type { ParamMatrixResponse } from '../../../types/paramMatrix'
 
 const MOCK_DATA: ParamMatrixResponse = {
@@ -68,13 +68,37 @@ describe('ParameterMatrixView', () => {
     expect(screen.getByText(/Best combo highlighted/)).toBeInTheDocument()
   })
 
-  it('renders top configs table sorted by sharpe', () => {
+  it('renders best parameters summary card', () => {
     render(<ParameterMatrixView />)
-    expect(screen.getByText('Top Configs by Sharpe')).toBeInTheDocument()
-    // First row should be the highest sharpe (1.15)
+    expect(screen.getByText('Best Parameters')).toBeInTheDocument()
+    expect(screen.getByTestId('best-params-card')).toBeInTheDocument()
+  })
+
+  it('renders top 5 configurations table', () => {
+    render(<ParameterMatrixView />)
+    expect(screen.getByText('Top 5 Configurations')).toBeInTheDocument()
     const rows = screen.getAllByRole('row')
     const topConfigRows = rows.filter(r => r.textContent?.includes('rsi_period'))
     expect(topConfigRows.length).toBeGreaterThan(0)
+    expect(topConfigRows.length).toBeLessThanOrEqual(5)
+  })
+
+  it('renders color scale legend', () => {
+    render(<ParameterMatrixView />)
+    expect(screen.getByTestId('color-legend')).toBeInTheDocument()
+    expect(screen.getByText('Low')).toBeInTheDocument()
+    expect(screen.getByText('High')).toBeInTheDocument()
+  })
+
+  it('shows popover on cell click', () => {
+    render(<ParameterMatrixView />)
+    // Click a heatmap cell — find one with cursor-pointer class (heatmap td)
+    const cells = screen.getAllByText('0.64')
+    // Click the one that is in the heatmap (td with cursor-pointer)
+    const heatmapCell = cells.find(el => el.closest('td')?.classList.contains('cursor-pointer'))
+    expect(heatmapCell).toBeTruthy()
+    fireEvent.click(heatmapCell!)
+    expect(screen.getByText('Cell Details')).toBeInTheDocument()
   })
 
   it('returns null when no symbol data', () => {
