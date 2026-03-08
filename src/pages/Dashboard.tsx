@@ -21,19 +21,32 @@ export default function Dashboard() {
   const perfData = perfRes.data
   const accuracyData = accuracyRes.data
 
+  const anyError = biasRes.error || healthRes.error || perfRes.error || accuracyRes.error
+
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       <LastUpdated dataVersion={data} />
+      {anyError && (
+        <div className="bg-red-900/20 border border-red-800/50 rounded-xl p-4 text-sm text-red-300">
+          Some dashboard sections failed to load. Showing available data.
+        </div>
+      )}
       <SectionErrorBoundary title="Stability Countdown">
         <StabilityCountdown />
       </SectionErrorBoundary>
       <SectionErrorBoundary title="Market Regime">
         <RegimeStatus />
       </SectionErrorBoundary>
+      {healthRes.isLoading && !healthData && (
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading alerts…</div>
+      )}
       {healthData && (
         <SectionErrorBoundary title="Alerts">
           <AlertsPanel data={healthData} />
         </SectionErrorBoundary>
+      )}
+      {accuracyRes.isLoading && !accuracyData && (
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading accuracy…</div>
       )}
       {accuracyData && (
         <SectionErrorBoundary title="Signal Accuracy">
@@ -46,10 +59,16 @@ export default function Dashboard() {
       <SectionErrorBoundary title="Accuracy Trend">
         <AccuracyMiniTrend />
       </SectionErrorBoundary>
+      {healthRes.isLoading && !healthData && (
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading health…</div>
+      )}
       {healthData && (
         <SectionErrorBoundary title="Health Summary">
           <HealthSummary data={healthData} />
         </SectionErrorBoundary>
+      )}
+      {perfRes.isLoading && !perfData && (
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading performance…</div>
       )}
       {perfData && (
         <SectionErrorBoundary title="Performance Overview">
@@ -68,6 +87,9 @@ export default function Dashboard() {
       <SectionErrorBoundary title="Combiner Weights">
         <CombinerWeights />
       </SectionErrorBoundary>
+      {biasRes.isLoading && !biasData && (
+        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading source bias…</div>
+      )}
       {biasData && (
         <SectionErrorBoundary title="Source Bias">
           <SourceBias data={biasData} />

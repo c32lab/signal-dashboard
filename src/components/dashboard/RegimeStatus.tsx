@@ -8,7 +8,23 @@ interface SymbolRegime {
 }
 
 export function RegimeStatus() {
-  const { data: signals } = useSignalsLatest()
+  const { data: signals, isLoading, error } = useSignalsLatest()
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">
+        Loading market regime…
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="bg-gray-900 rounded-xl border border-red-800/50 p-4 text-sm text-red-300">
+        Failed to load market regime: {error.message ?? 'Unknown error'}
+      </div>
+    )
+  }
 
   if (!signals || signals.length === 0) return null
 
