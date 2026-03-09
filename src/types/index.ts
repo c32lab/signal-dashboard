@@ -191,6 +191,24 @@ export interface ConfidenceData {
   _meta?: Record<string, string>
 }
 
+export interface AccuracySummaryDirection {
+  total: number
+  correct: number
+  accuracy_pct: number
+}
+
+export interface AccuracySummaryWindow {
+  total: number
+  accuracy_1h_pct: number
+  accuracy_4h_pct: number
+  by_symbol: Record<string, { total: number; accuracy_1h_pct: number; accuracy_4h_pct: number }>
+  by_direction: Record<string, AccuracySummaryDirection>
+}
+
+export interface AccuracySummaryResponse {
+  windows: Record<string, AccuracySummaryWindow>
+}
+
 export interface DecisionFilters {
   limit?: number
   offset?: number

@@ -47,6 +47,10 @@ export function useAccuracy() {
   return useSWR('accuracy', () => api.accuracy(), { refreshInterval: REFRESH_INTERVAL })
 }
 
+export function useAccuracySummary() {
+  return useSWR('accuracy/summary', () => api.accuracySummary(), { refreshInterval: 60_000 })
+}
+
 export function useBacktest() {
   return useSWR<BacktestResponse>('backtest', () => api.backtest(), { refreshInterval: 60_000 })
 }

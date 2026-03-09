@@ -10,6 +10,7 @@ import type {
   SignalQualityResponse,
   AccuracyTrendItem,
   AccuracyResponse,
+  AccuracySummaryResponse,
   CombinerWeightsResponse,
   BiasResponse,
   CollectorHealthResponse,
@@ -68,6 +69,9 @@ export const api = {
 
   accuracy: () =>
     fetcher<AccuracyResponse>(`${BASE_URL}/api/accuracy`),
+
+  accuracySummary: () =>
+    fetcher<AccuracySummaryResponse>(`${BASE_URL}/api/accuracy/summary`),
 
   backtest: () =>
     fetcher<{ results: unknown[] }>(`${BASE_URL}/api/backtest`).then(raw => ({
