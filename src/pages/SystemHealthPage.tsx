@@ -1,6 +1,7 @@
 import { useCollectorHealth, useHealth } from '../hooks/useApi'
 import { CollectorStatus, HealthSummary, StabilityCountdown } from '../components/dashboard'
 import CombinerWeights from '../components/CombinerWeights'
+import FrontendHealthPanel from '../components/dashboard/FrontendHealthPanel'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
 
 export default function SystemHealthPage() {
@@ -48,6 +49,9 @@ export default function SystemHealthPage() {
       )}
       <SectionErrorBoundary title="Combiner Weights">
         <CombinerWeights />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary title="Frontend Health">
+        <FrontendHealthPanel />
       </SectionErrorBoundary>
     </div>
   )
