@@ -32,35 +32,35 @@ test.describe('Navigation', () => {
     await page.goto('/')
 
     // Navigate to backtest via nav link
-    await page.getByRole('link', { name: /回测对比/ }).click()
+    await page.getByRole('link', { name: /Backtest/ }).click()
     await expect(page).toHaveURL(/\/backtest/)
 
     // Navigate to trading
-    await page.getByRole('link', { name: /交易记录/ }).click()
+    await page.getByRole('link', { name: /Trading/ }).click()
     await expect(page).toHaveURL(/\/trading/)
 
     // Navigate to history
-    await page.getByRole('link', { name: /事件库/ }).click()
+    await page.getByRole('link', { name: /History/ }).click()
     await expect(page).toHaveURL(/\/history/)
 
     // Navigate to timeline
-    await page.getByRole('link', { name: /信号时间轴/ }).click()
+    await page.getByRole('link', { name: /Timeline/ }).click()
     await expect(page).toHaveURL(/\/timeline/)
 
     // Navigate back home
-    await page.getByRole('link', { name: /信号概览/ }).click()
+    await page.getByRole('link', { name: /Overview/ }).click()
     await expect(page).toHaveURL(/^\/$|localhost:3080\/$/)
   })
 
   test('advanced dropdown reveals quality and system health links', async ({ page }) => {
     await page.goto('/')
     // The advanced section is a dropdown — hover or click to reveal
-    const advancedTrigger = page.getByText(/高级分析/)
+    const advancedTrigger = page.getByText(/Advanced/)
     if (await advancedTrigger.isVisible()) {
       await advancedTrigger.click()
       // After opening, quality and system links should appear
-      await expect(page.getByRole('link', { name: /信号质量/ })).toBeVisible({ timeout: 3000 })
-      await expect(page.getByRole('link', { name: /系统健康/ })).toBeVisible({ timeout: 3000 })
+      await expect(page.getByRole('link', { name: /Quality/ })).toBeVisible({ timeout: 3000 })
+      await expect(page.getByRole('link', { name: /System Health/ })).toBeVisible({ timeout: 3000 })
     }
   })
 })

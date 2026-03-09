@@ -30,7 +30,7 @@ test.describe('Responsive – Mobile viewport (375x667)', () => {
     await page.goto('/')
     await page.getByLabel('Toggle navigation menu').click()
     // Click the trading link in the mobile menu
-    await page.getByRole('link', { name: /交易记录/ }).click()
+    await page.getByRole('link', { name: /Trading/ }).click()
     await expect(page).toHaveURL(/\/trading/)
     // Page should render without crashing
     await expect(page.locator('nav')).toBeVisible()
