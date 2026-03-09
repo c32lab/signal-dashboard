@@ -39,6 +39,10 @@ export function useAccuracyTrend() {
   return useSWR('accuracy/trend', () => api.accuracyTrend(24), { refreshInterval: 60_000 })
 }
 
+export function useAccuracyTrendWeekly() {
+  return useSWR('accuracy/trend/weekly', () => api.accuracyTrend(336), { refreshInterval: 60_000 })
+}
+
 export function useAccuracy() {
   return useSWR('accuracy', () => api.accuracy(), { refreshInterval: REFRESH_INTERVAL })
 }

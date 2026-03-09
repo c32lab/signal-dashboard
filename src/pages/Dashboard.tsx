@@ -8,6 +8,7 @@ import SectionErrorBoundary from '../components/SectionErrorBoundary'
 import TradingStatus from '../components/TradingStatus'
 import { useOverview, useBias, useHealth, usePerformance, useAccuracy } from '../hooks/useApi'
 import { HealthSummary, AlertsPanel, DecisionDistribution, SourceBias, PerformanceOverview, AccuracyKPI, AccuracyMiniTrend, RegimeStatus, StabilityCountdown, AccuracyDailySummary } from '../components/dashboard'
+import { AccuracyAlertIndicator } from '../components/quality'
 
 export default function Dashboard() {
   const { data } = useOverview()
@@ -53,9 +54,14 @@ export default function Dashboard() {
         <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading accuracy…</div>
       )}
       {accuracyData ? (
+        <>
+        <SectionErrorBoundary title="Accuracy Alert">
+          <AccuracyAlertIndicator />
+        </SectionErrorBoundary>
         <SectionErrorBoundary title="Signal Accuracy">
           <AccuracyKPI data={accuracyData} />
         </SectionErrorBoundary>
+        </>
       ) : !accuracyRes.isLoading && (
         <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
           No accuracy data available

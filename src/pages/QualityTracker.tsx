@@ -11,6 +11,8 @@ import {
   SectionSkeleton,
   SectionError,
   ConfidenceDistribution,
+  AccuracyAutoReport,
+  AccuracyWeekComparison,
 } from '../components/quality'
 import { useQualityPageData } from '../components/quality/useQualityPageData'
 
@@ -35,6 +37,12 @@ export default function QualityTracker() {
   return (
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       <LastUpdated dataVersion={perfRes.data} />
+      <SectionErrorBoundary title="Accuracy Auto Report">
+        <AccuracyAutoReport />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary title="Week-over-Week Comparison">
+        <AccuracyWeekComparison />
+      </SectionErrorBoundary>
       <SectionErrorBoundary title="Accuracy Trend Chart">
         <AccuracyTrendChart />
       </SectionErrorBoundary>

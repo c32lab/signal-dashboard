@@ -9,6 +9,7 @@ const mockUseSignalQuality = vi.fn((): HookResult => ({ data: undefined, isLoadi
 const mockUseAccuracy = vi.fn((): HookResult => ({ data: undefined, isLoading: true, error: undefined }))
 const mockUseConfidence = vi.fn((): HookResult => ({ data: undefined, isLoading: false, error: undefined }))
 const mockUseCombinerWeights = vi.fn((): HookResult => ({ data: undefined, isLoading: false, error: undefined }))
+const mockUseAccuracyTrendWeekly = vi.fn((): HookResult => ({ data: [], isLoading: false, error: undefined }))
 
 vi.mock('../../hooks/useApi', () => ({
   usePerformance: () => mockUsePerformance(),
@@ -17,6 +18,7 @@ vi.mock('../../hooks/useApi', () => ({
   useAccuracy: () => mockUseAccuracy(),
   useConfidence: () => mockUseConfidence(),
   useCombinerWeights: () => mockUseCombinerWeights(),
+  useAccuracyTrendWeekly: () => mockUseAccuracyTrendWeekly(),
 }))
 
 vi.mock('recharts', () => ({
