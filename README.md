@@ -1,3 +1,5 @@
+![CI](https://github.com/c32lab/signal-dashboard/actions/workflows/ci.yml/badge.svg)
+
 # Signal Dashboard
 
 Real-time monitoring dashboard for the Amani trading signal system. Displays signal health, decision history, accuracy tracking, backtest results, trading activity, and system diagnostics.
