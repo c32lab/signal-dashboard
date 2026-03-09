@@ -7,8 +7,7 @@ import LastUpdated from '../components/LastUpdated'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
 import TradingStatus from '../components/TradingStatus'
 import { useOverview, useBias, useHealth, usePerformance, useAccuracy } from '../hooks/useApi'
-import { HealthSummary, AlertsPanel, DecisionDistribution, SourceBias, PerformanceOverview, AccuracyKPI, AccuracyMiniTrend, RegimeStatus, StabilityCountdown, AccuracyDailySummary } from '../components/dashboard'
-import { AccuracyAlertIndicator } from '../components/quality'
+import { HealthSummary, AlertsPanel, DecisionDistribution, SourceBias, PerformanceOverview, AccuracyKPI, AccuracyMiniTrend, RegimeStatus, StabilityCountdown, AccuracyDailySummary, AccuracyAutoReport, AccuracyAlertIndicator } from '../components/dashboard'
 
 export default function Dashboard() {
   const { data } = useOverview()
@@ -57,6 +56,9 @@ export default function Dashboard() {
         <>
         <SectionErrorBoundary title="Accuracy Alert">
           <AccuracyAlertIndicator />
+        </SectionErrorBoundary>
+        <SectionErrorBoundary title="Accuracy Auto Report">
+          <AccuracyAutoReport />
         </SectionErrorBoundary>
         <SectionErrorBoundary title="Signal Accuracy">
           <AccuracyKPI data={accuracyData} />

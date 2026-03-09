@@ -14,6 +14,7 @@ import {
   AccuracyAutoReport,
   AccuracyWeekComparison,
 } from '../components/quality'
+import { AccuracyWeeklyTrend } from '../components/dashboard'
 import { useQualityPageData } from '../components/quality/useQualityPageData'
 
 export default function QualityTracker() {
@@ -42,6 +43,9 @@ export default function QualityTracker() {
       </SectionErrorBoundary>
       <SectionErrorBoundary title="Week-over-Week Comparison">
         <AccuracyWeekComparison />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary title="Weekly Accuracy Trend">
+        <AccuracyWeeklyTrend />
       </SectionErrorBoundary>
       <SectionErrorBoundary title="Accuracy Trend Chart">
         <AccuracyTrendChart />
