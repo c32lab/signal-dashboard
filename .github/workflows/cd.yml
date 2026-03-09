@@ -1,0 +1,29 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, cd]
+    # Only deploy after CI passes (push triggers both workflows independently,
+    # but self-hosted runner picks up the job only if the workflow file is on main)
+    steps:
+      - name: Deploy
+        working-directory: /Users/zhwu/signal-dashboard
+        run: |
+          git pull --rebase origin main
+          docker compose up --build -d
+          echo "✅ signal-dashboard deployed"
+
+      - name: Health check
+        run: |
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://localhost:3080/)
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ Health check passed (HTTP $STATUS)"
+          else
+            echo "❌ Health check failed (HTTP $STATUS)"
+            exit 1
+          fi
