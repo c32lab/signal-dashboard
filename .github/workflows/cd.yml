@@ -11,17 +11,27 @@ jobs:
     runs-on: [self-hosted, cd]
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - uses: actions/checkout@v4
+
       - name: Deploy
-        working-directory: /Users/zhwu/signal-dashboard
         run: |
-          git pull --rebase origin main
+          cp docker-compose.yml Dockerfile nginx.conf /opt/deploy/${{ github.event.repository.name }}/ 2>/dev/null || true
+          cd /opt/deploy/${{ github.event.repository.name }}
+          docker compose down --remove-orphans 2>/dev/null || true
+          cd $GITHUB_WORKSPACE
           docker compose up --build -d
-          echo "✅ signal-dashboard deployed"
+          echo "✅ ${{ github.event.repository.name }} deployed"
 
       - name: Health check
         run: |
           sleep 10
-          STATUS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://localhost:3080/)
+          PORT=""
+          case "${{ github.event.repository.name }}" in
+            signal-dashboard) PORT=3080 ;;
+            predict-dashboard) PORT=18828 ;;
+            dashboard-portal) PORT=8080 ;;
+          esac
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://localhost:$PORT/)
           if [ "$STATUS" = "200" ]; then
             echo "✅ Health check passed (HTTP $STATUS)"
           else
