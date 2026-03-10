@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ReferenceLine, ResponsiveContainer } from 'recharts'
 import { useAccuracyTrendWeekly } from '../../hooks/useApi'
 import type { AccuracyTrendItem } from '../../types'
@@ -30,11 +30,11 @@ function aggregateDailyAccuracy(items: AccuracyTrendItem[], rangeStart: number, 
 export function AccuracyWeeklyTrend() {
   const { data, isLoading, error } = useAccuracyTrendWeekly()
 
+  const [now] = useState(() => Date.now())
+
   const chartData = useMemo<DailyRow[]>(() => {
     const items = (data ?? []) as AccuracyTrendItem[]
     if (items.length === 0) return []
-
-    const now = Date.now()
     const oneWeekMs = 7 * 24 * 3600 * 1000
 
     const thisWeekMap = aggregateDailyAccuracy(items, now - oneWeekMs, now)
@@ -66,7 +66,7 @@ export function AccuracyWeeklyTrend() {
       })
     }
     return rows
-  }, [data])
+  }, [data, now])
 
   if (isLoading) {
     return (

@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import {
   RadarChart,
   Radar,
@@ -24,7 +23,7 @@ function normalize(value: number, min: number, max: number): number {
 export default function RadarCompareChart({ summary }: RadarCompareChartProps) {
   const configNames = summary.map((s) => s.config)
 
-  const chartData = useMemo(() => {
+  const chartData = (() => {
     if (summary.length === 0) return []
 
     const winRates = summary.map((s) => s.win_rate_pct)
@@ -52,7 +51,7 @@ export default function RadarCompareChart({ summary }: RadarCompareChartProps) {
       })
       return row
     })
-  }, [summary])
+  })()
 
   if (summary.length === 0) return null
 

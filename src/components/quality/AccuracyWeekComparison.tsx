@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useAccuracyTrendWeekly } from '../../hooks/useApi'
 import type { AccuracyTrendItem } from '../../types'
 
@@ -31,9 +31,10 @@ function changeIndicator(current: number, previous: number): { text: string; col
 export default function AccuracyWeekComparison() {
   const { data, isLoading, error } = useAccuracyTrendWeekly()
 
+  const [now] = useState(() => Date.now())
+
   const { thisWeek, lastWeek } = useMemo(() => {
     const items = (data ?? []) as AccuracyTrendItem[]
-    const now = Date.now()
     const oneWeekMs = 7 * 24 * 3600 * 1000
 
     const thisWeekItems = items.filter((d) => {
@@ -49,7 +50,7 @@ export default function AccuracyWeekComparison() {
       thisWeek: computeWeekStats(thisWeekItems),
       lastWeek: computeWeekStats(lastWeekItems),
     }
-  }, [data])
+  }, [data, now])
 
   if (isLoading) return <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading week comparison…</div>
   if (error) return <div className="bg-gray-900 rounded-xl border border-gray-800 p-4 text-sm text-red-400">Failed to load weekly data</div>

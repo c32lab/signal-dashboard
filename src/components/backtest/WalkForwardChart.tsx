@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import {
   ResponsiveContainer,
   Bar,
@@ -54,29 +54,27 @@ export default function WalkForwardChart() {
   const activeSymbol = selectedSymbol || symbolNames[0] || ''
   const symbolData = symbols.find(s => s.symbol === activeSymbol)
 
-  const chartData = useMemo<ChartRow[]>(() => {
-    if (!symbolData) return []
-    return symbolData.windows.map(w => ({
-      label: `W${w.window}`,
-      is_sharpe: w.configs[0]?.in_sample.sharpe ?? 0,
-      oos_sharpe: w.configs[0]?.out_of_sample.sharpe ?? 0,
-    }))
-  }, [symbolData])
-
-  const degradationData = useMemo<DegradationRow[]>(() => {
-    if (!symbolData) return []
-    return symbolData.windows.map(w => {
-      const c = w.configs[0]
-      const isSharpe = c?.in_sample.sharpe ?? 0
-      const oosSharpe = c?.out_of_sample.sharpe ?? 0
-      return {
+  const chartData: ChartRow[] = symbolData
+    ? symbolData.windows.map(w => ({
         label: `W${w.window}`,
-        degradation: isSharpe !== 0 ? (oosSharpe - isSharpe) / Math.abs(isSharpe) : 0,
-      }
-    })
-  }, [symbolData])
+        is_sharpe: w.configs[0]?.in_sample.sharpe ?? 0,
+        oos_sharpe: w.configs[0]?.out_of_sample.sharpe ?? 0,
+      }))
+    : []
 
-  const summary = useMemo(() => computeSummary(chartData, degradationData), [chartData, degradationData])
+  const degradationData: DegradationRow[] = symbolData
+    ? symbolData.windows.map(w => {
+        const c = w.configs[0]
+        const isSharpe = c?.in_sample.sharpe ?? 0
+        const oosSharpe = c?.out_of_sample.sharpe ?? 0
+        return {
+          label: `W${w.window}`,
+          degradation: isSharpe !== 0 ? (oosSharpe - isSharpe) / Math.abs(isSharpe) : 0,
+        }
+      })
+    : []
+
+  const summary = computeSummary(chartData, degradationData)
 
   if (isLoading) {
     return <div className="animate-pulse h-48 bg-gray-800 rounded" />
