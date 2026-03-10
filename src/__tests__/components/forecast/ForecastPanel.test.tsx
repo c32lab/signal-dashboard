@@ -75,14 +75,14 @@ describe('ForecastPanel', () => {
     expect(screen.getByText('No active predictions')).toBeInTheDocument()
   })
 
-  it('shows validated predictions banner when isHistorical is true', () => {
+  it('shows fallback banner when isHistorical is true', () => {
     const historicalData = {
       ...mockForecastData,
       isHistorical: true,
     }
     mockUseForecastPanel.mockReturnValue({ data: historicalData, error: undefined, isLoading: false })
     render(<ForecastPanel />)
-    expect(screen.getByText(/Showing recent validated predictions/)).toBeInTheDocument()
+    expect(screen.getByText('No active predictions. Showing recent results:')).toBeInTheDocument()
   })
 
   it('shows "Recent Predictions (validated)" header when isHistorical is true', () => {
@@ -95,9 +95,20 @@ describe('ForecastPanel', () => {
     expect(screen.getByText(/Recent Predictions \(validated\)/)).toBeInTheDocument()
   })
 
-  it('does not show validated banner when isHistorical is false', () => {
+  it('applies opacity-75 to predictions list when isHistorical', () => {
+    const historicalData = {
+      ...mockForecastData,
+      isHistorical: true,
+    }
+    mockUseForecastPanel.mockReturnValue({ data: historicalData, error: undefined, isLoading: false })
+    const { container } = render(<ForecastPanel />)
+    expect(container.querySelector('.opacity-75')).not.toBeNull()
+  })
+
+  it('does not show fallback banner or opacity when isHistorical is false', () => {
     mockUseForecastPanel.mockReturnValue({ data: mockForecastData, error: undefined, isLoading: false })
-    render(<ForecastPanel />)
-    expect(screen.queryByText(/Showing recent validated predictions/)).not.toBeInTheDocument()
+    const { container } = render(<ForecastPanel />)
+    expect(screen.queryByText(/No active predictions/)).not.toBeInTheDocument()
+    expect(container.querySelector('.opacity-75')).toBeNull()
   })
 })

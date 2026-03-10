@@ -30,11 +30,13 @@ export default function ForecastPanel() {
 
       {data.isHistorical && (
         <p className="text-xs text-blue-400 bg-blue-900/30 border border-blue-800/50 rounded px-3 py-1.5 mb-2">
-          Showing recent validated predictions
+          No active predictions. Showing recent results:
         </p>
       )}
 
-      <ActivePredictionsList predictions={allPredictions} isHistorical={data.isHistorical} />
+      <div className={data.isHistorical ? 'opacity-75' : ''}>
+        <ActivePredictionsList predictions={allPredictions} isHistorical={data.isHistorical} />
+      </div>
 
       <div className="pt-2 border-t border-gray-800">
         <PredictAccuracyBadge accuracy={data.accuracy} />
