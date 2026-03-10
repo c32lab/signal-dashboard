@@ -7,6 +7,8 @@ import LastUpdated from '../components/LastUpdated'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
 import TradingStatus from '../components/TradingStatus'
 import ForecastPanel from '../components/forecast/ForecastPanel'
+import SectionSkeleton from '../components/ui/SectionSkeleton'
+import EmptyState from '../components/ui/EmptyState'
 import { useOverview, useBias, useHealth, usePerformance, useAccuracy } from '../hooks/useApi'
 import { HealthSummary, AlertsPanel, DecisionDistribution, SourceBias, PerformanceOverview, AccuracyKPI, AccuracyMiniTrend, RegimeStatus, StabilityCountdown, AccuracyDailySummary, AccuracyAutoReport, AccuracyAlertIndicator } from '../components/dashboard'
 
@@ -39,19 +41,17 @@ export default function Dashboard() {
         <RegimeStatus />
       </SectionErrorBoundary>
       {healthRes.isLoading && !healthData && (
-        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading alerts…</div>
+        <SectionSkeleton label="alerts" />
       )}
       {healthData ? (
         <SectionErrorBoundary title="Alerts">
           <AlertsPanel data={healthData} />
         </SectionErrorBoundary>
       ) : !healthRes.isLoading && (
-        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
-          No alerts data available
-        </div>
+        <EmptyState message="No alerts data available" />
       )}
       {accuracyRes.isLoading && !accuracyData && (
-        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading accuracy…</div>
+        <SectionSkeleton label="accuracy" />
       )}
       {accuracyData ? (
         <>
@@ -66,9 +66,7 @@ export default function Dashboard() {
         </SectionErrorBoundary>
         </>
       ) : !accuracyRes.isLoading && (
-        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
-          No accuracy data available
-        </div>
+        <EmptyState message="No accuracy data available" />
       )}
       <SectionErrorBoundary title="Daily Accuracy Summary">
         <AccuracyDailySummary />
@@ -77,28 +75,24 @@ export default function Dashboard() {
         <AccuracyMiniTrend />
       </SectionErrorBoundary>
       {healthRes.isLoading && !healthData && (
-        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading health…</div>
+        <SectionSkeleton label="health" />
       )}
       {healthData ? (
         <SectionErrorBoundary title="Health Summary">
           <HealthSummary data={healthData} />
         </SectionErrorBoundary>
       ) : !healthRes.isLoading && (
-        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
-          No health data available
-        </div>
+        <EmptyState message="No health data available" />
       )}
       {perfRes.isLoading && !perfData && (
-        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading performance…</div>
+        <SectionSkeleton label="performance" />
       )}
       {perfData ? (
         <SectionErrorBoundary title="Performance Overview">
           <PerformanceOverview data={perfData} />
         </SectionErrorBoundary>
       ) : !perfRes.isLoading && (
-        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
-          No performance data available
-        </div>
+        <EmptyState message="No performance data available" />
       )}
       <SectionErrorBoundary title="Live Signal Feed">
         <LiveSignalFeed />
@@ -116,16 +110,14 @@ export default function Dashboard() {
         <ForecastPanel />
       </SectionErrorBoundary>
       {biasRes.isLoading && !biasData && (
-        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading source bias…</div>
+        <SectionSkeleton label="source bias" />
       )}
       {biasData ? (
         <SectionErrorBoundary title="Source Bias">
           <SourceBias data={biasData} />
         </SectionErrorBoundary>
       ) : !biasRes.isLoading && (
-        <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
-          No source bias data available
-        </div>
+        <EmptyState message="No source bias data available" />
       )}
       <SectionErrorBoundary title="Decision Distribution">
         <DecisionDistribution />

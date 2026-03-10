@@ -1,5 +1,8 @@
 import { useCombinerWeights } from '../hooks/useApi'
 import CombinerWeightsChart from './CombinerWeightsChart'
+import SectionSkeleton from './ui/SectionSkeleton'
+import ApiError from './ui/ApiError'
+import EmptyState from './ui/EmptyState'
 
 interface WeightEntry {
   source: string
@@ -8,30 +11,18 @@ interface WeightEntry {
 }
 
 export default function CombinerWeights() {
-  const { data, error, isLoading } = useCombinerWeights()
+  const { data, error, isLoading, mutate } = useCombinerWeights()
 
   if (isLoading) {
-    return (
-      <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
-        Loading combiner weights…
-      </div>
-    )
+    return <SectionSkeleton label="combiner weights" />
   }
 
   if (error) {
-    return (
-      <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-red-400 text-sm">
-        Combiner Weights: {error.message}
-      </div>
-    )
+    return <ApiError message={`Combiner Weights: ${error.message}`} onRetry={() => mutate()} />
   }
 
   if (!data?.weights || Object.keys(data.weights).length === 0) {
-    return (
-      <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm">
-        No combiner weights data
-      </div>
-    )
+    return <EmptyState message="No combiner weights data" />
   }
 
   const entries: WeightEntry[] = Object.entries(data.weights)

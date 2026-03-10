@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { NAV_ENTRIES, isGroup } from './navTypes'
 import DesktopDropdown from './DesktopDropdown'
 import MobileMenu from './MobileMenu'
+import ApiStatusIndicator from './ApiStatusIndicator'
 
 export default function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -10,9 +11,12 @@ export default function NavBar() {
   return (
     <nav className="bg-gray-900 border-b border-gray-800">
       <div className="flex items-center justify-between px-4 py-3">
-        <span className="text-gray-400 text-sm font-semibold tracking-wide md:hidden">
-          Signal Dashboard
-        </span>
+        <div className="flex items-center gap-3 md:hidden">
+          <span className="text-gray-400 text-sm font-semibold tracking-wide">
+            Signal Dashboard
+          </span>
+          <ApiStatusIndicator />
+        </div>
         {/* Desktop nav links */}
         <div className="hidden md:flex gap-4 items-center">
           {NAV_ENTRIES.map((entry) =>
@@ -31,6 +35,7 @@ export default function NavBar() {
               </NavLink>
             )
           )}
+          <ApiStatusIndicator />
         </div>
         {/* Hamburger button (mobile only) */}
         <button

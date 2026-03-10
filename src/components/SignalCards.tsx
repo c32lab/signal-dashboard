@@ -2,6 +2,8 @@ import type { Signal } from '../types'
 import { useSignalsLatest } from '../hooks/useApi'
 import { formatTime } from '../utils/format'
 import { useSymbols } from '../hooks/useSymbols'
+import SectionSkeleton from './ui/SectionSkeleton'
+import ApiError from './ui/ApiError'
 
 function directionStyle(direction: string): { badge: string; bar: string; border: string } {
   switch (direction) {
@@ -61,18 +63,14 @@ function SignalCard({ symbol, signal }: { symbol: string; signal: Signal | undef
 
 export default function SignalCards() {
   const symbols = useSymbols()
-  const { data, error, isLoading } = useSignalsLatest()
+  const { data, error, isLoading, mutate } = useSignalsLatest()
 
   if (isLoading) {
-    return <div className="px-6 text-gray-400 text-sm">Loading signals…</div>
+    return <SectionSkeleton label="signals" />
   }
 
   if (error) {
-    return (
-      <div className="px-6 text-red-400 text-sm">
-        Failed to load signals: {error?.message}
-      </div>
-    )
+    return <ApiError message={`Failed to load signals: ${error.message}`} onRetry={() => mutate()} />
   }
 
   const signalMap: Record<string, Signal> = {}
