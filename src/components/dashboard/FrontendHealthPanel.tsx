@@ -22,7 +22,7 @@ export default function FrontendHealthPanel() {
   }, [])
 
   return (
-    <section className="bg-gray-900 rounded-xl border border-gray-800 p-4 space-y-4">
+    <section className="bg-gray-900 rounded-xl border border-gray-800 p-2 sm:p-4 space-y-4">
       <div className="flex items-center gap-3">
         <h2 className="text-sm font-semibold text-gray-200">Frontend Health</h2>
         {errorCount > 0 && (

@@ -21,7 +21,7 @@ export function AccuracyKPI({ data }: { data: AccuracyResponse }) {
   )
 
   return (
-    <section className="bg-gray-900 rounded-xl border border-gray-800 p-4 flex flex-col gap-3">
+    <section className="bg-gray-900 rounded-xl border border-gray-800 p-2 sm:p-4 flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-semibold text-gray-200">Signal Accuracy</h2>

@@ -9,7 +9,7 @@ export function AlertsPanel({ data }: { data: HealthResponse }) {
   if (!hasAlerts) return null
 
   return (
-    <section className="rounded-lg border border-gray-800 bg-gray-900 p-4 flex flex-col gap-2">
+    <section className="rounded-lg border border-gray-800 bg-gray-900 p-2 sm:p-4 flex flex-col gap-2">
       {alerts.map((alert: BiasAlert, i: number) => {
         const isHigh = alert.bias_score > 0.7
         const isMed = alert.bias_score > 0.5

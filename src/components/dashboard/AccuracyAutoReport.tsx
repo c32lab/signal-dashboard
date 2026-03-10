@@ -48,7 +48,7 @@ export function AccuracyAutoReport() {
   const directionData = summaryData?.windows?.['24h']?.by_direction
 
   return (
-    <section className="bg-gray-900 rounded-xl border border-gray-800 p-4 space-y-4">
+    <section className="bg-gray-900 rounded-xl border border-gray-800 p-2 sm:p-4 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold text-gray-200">Accuracy Auto Report</h2>
         <span className="text-xs text-gray-600">

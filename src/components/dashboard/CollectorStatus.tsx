@@ -2,7 +2,7 @@ import type { CollectorHealthResponse } from '../../types'
 
 export function CollectorStatus({ data }: { data: CollectorHealthResponse }) {
   return (
-    <section className="bg-gray-900 rounded-xl border border-gray-800 p-4">
+    <section className="bg-gray-900 rounded-xl border border-gray-800 p-2 sm:p-4">
       <h2 className="text-sm font-semibold text-gray-200 mb-3">Collector Status</h2>
       <div className="flex flex-wrap gap-2">
         {data.collectors.map((c) => {

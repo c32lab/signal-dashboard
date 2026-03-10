@@ -87,7 +87,7 @@ export function AccuracyDailySummary() {
   const stats = computeDailyStats(trend)
 
   return (
-    <section className="bg-gray-900 rounded-xl border border-gray-800 p-4">
+    <section className="bg-gray-900 rounded-xl border border-gray-800 p-2 sm:p-4">
       <h2 className="text-sm font-semibold text-gray-200 mb-3">Daily Accuracy Summary</h2>
       <div className="grid grid-cols-3 gap-3">
         {/* Today */}

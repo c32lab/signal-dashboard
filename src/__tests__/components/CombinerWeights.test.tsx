@@ -6,6 +6,10 @@ vi.mock('../../hooks/useApi', () => ({
   useCombinerWeights: vi.fn(),
 }))
 
+vi.mock('../../hooks/useIsMobile', () => ({
+  useIsMobile: () => false,
+}))
+
 vi.mock('recharts', () => ({
   ResponsiveContainer: ({ children }: { children: React.ReactNode }) => <div data-testid="responsive-container">{children}</div>,
   BarChart: ({ children }: { children: React.ReactNode }) => <div data-testid="bar-chart">{children}</div>,

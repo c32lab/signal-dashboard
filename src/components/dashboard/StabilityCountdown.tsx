@@ -39,7 +39,7 @@ export function StabilityCountdown() {
 
   if (completed) {
     return (
-      <section className="bg-gray-900 rounded-xl border border-green-800 p-4">
+      <section className="bg-gray-900 rounded-xl border border-green-800 p-2 sm:p-4">
         <div className="flex items-center gap-2 mb-3">
           <h2 className="text-sm font-semibold text-gray-200">NT 72h Stability Test</h2>
         </div>
@@ -58,7 +58,7 @@ export function StabilityCountdown() {
   }
 
   return (
-    <section className={`bg-gray-900 rounded-xl border ${progressPct >= 50 ? 'border-green-800' : 'border-yellow-800'} p-4`}>
+    <section className={`bg-gray-900 rounded-xl border ${progressPct >= 50 ? 'border-green-800' : 'border-yellow-800'} p-2 sm:p-4`}>
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-gray-200">NT 72h Stability Test</h2>
         <span className="text-xs text-gray-500 font-mono">

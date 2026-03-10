@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useDecisions } from '../hooks/useApi'
 import { useSymbols } from '../hooks/useSymbols'
-import { DecisionRow, DecisionFilters, DecisionPagination, PAGE_SIZE, fromIso, TIME_PRESETS } from './decision'
+import { DecisionRow, DecisionCard, DecisionFilters, DecisionPagination, PAGE_SIZE, fromIso, TIME_PRESETS } from './decision'
 import type { TimePreset } from './decision'
 
 const TABLE_HEADERS = ['ID', 'Time', 'Symbol', 'Direction', 'Type', 'Action', 'Price', 'Conf', 'Score', 'Reasoning']
@@ -64,7 +64,17 @@ export default function DecisionTable() {
 
       {!isLoading && !error && (
         <>
-          <div className="overflow-x-auto rounded-xl border border-gray-800">
+          {/* Mobile: stacked cards */}
+          <div className="md:hidden space-y-2">
+            {pageRows.length === 0 ? (
+              <p className="py-8 text-center text-gray-600 text-sm">No decisions found</p>
+            ) : (
+              pageRows.map((d) => <DecisionCard key={String(d.id)} d={d} />)
+            )}
+          </div>
+
+          {/* Desktop: table */}
+          <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-800">
             <table className="w-full text-left min-w-[600px]">
               <thead className="bg-gray-900">
                 <tr>

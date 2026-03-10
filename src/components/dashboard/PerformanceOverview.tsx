@@ -17,7 +17,7 @@ export function PerformanceOverview({ data }: { data: PerformanceResponse }) {
   const sorted = [...by_symbol].sort((a, b) => b.accuracy_pct - a.accuracy_pct)
 
   return (
-    <section className="bg-gray-900 rounded-xl border border-gray-800 p-4 flex flex-col gap-4">
+    <section className="bg-gray-900 rounded-xl border border-gray-800 p-2 sm:p-4 flex flex-col gap-4">
       <h2 className="text-sm font-semibold text-gray-200">Performance Overview</h2>
 
       {/* Overall stats */}

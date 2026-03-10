@@ -34,7 +34,9 @@ describe('DecisionTable', () => {
       isLoading: false, error: undefined,
     } as unknown as ReturnType<typeof useDecisions>)
     render(<DecisionTable />)
-    expect(screen.getByText('No decisions found')).toBeInTheDocument()
+    // Both mobile card view and desktop table render "No decisions found"
+    const emptyMessages = screen.getAllByText('No decisions found')
+    expect(emptyMessages.length).toBeGreaterThanOrEqual(1)
   })
 
   it('renders table headers', () => {
@@ -64,9 +66,11 @@ describe('DecisionTable', () => {
       isLoading: false, error: undefined,
     } as unknown as ReturnType<typeof useDecisions>)
     render(<DecisionTable />)
-    // BTC appears in both the symbol filter and the table row
+    // BTC appears in mobile card, desktop table row, and possibly the symbol filter
     const btcElements = screen.getAllByText('BTC')
     expect(btcElements.length).toBeGreaterThanOrEqual(1)
-    expect(screen.getByText('Strong momentum')).toBeInTheDocument()
+    // "Strong momentum" appears in both mobile card and desktop table
+    const reasoningElements = screen.getAllByText('Strong momentum')
+    expect(reasoningElements.length).toBeGreaterThanOrEqual(1)
   })
 })

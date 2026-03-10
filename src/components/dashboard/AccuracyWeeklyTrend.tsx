@@ -94,7 +94,7 @@ export function AccuracyWeeklyTrend() {
   const trendColor = trendDelta > 1 ? 'text-green-400' : trendDelta < -1 ? 'text-red-400' : 'text-gray-400'
 
   return (
-    <section className="bg-gray-900 rounded-xl border border-gray-800 p-4 space-y-3">
+    <section className="bg-gray-900 rounded-xl border border-gray-800 p-2 sm:p-4 space-y-3">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold text-gray-200">Weekly Accuracy Trend</h2>
         <span className={`text-xs font-medium ${trendColor}`}>

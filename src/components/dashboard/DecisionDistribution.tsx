@@ -34,7 +34,7 @@ export function DecisionDistribution() {
   const chartData = Object.entries(counts).map(([symbol, c]) => ({ symbol, ...c }))
 
   return (
-    <section className="bg-gray-900 rounded-xl border border-gray-800 p-4">
+    <section className="bg-gray-900 rounded-xl border border-gray-800 p-2 sm:p-4">
       <h2 className="text-sm font-semibold text-gray-200 mb-3">Decision Distribution (Last 50)</h2>
       <ResponsiveContainer width="100%" height={Math.max(160, chartData.length * 40)}>
         <BarChart data={chartData} margin={{ top: 4, right: 12, bottom: 4, left: 8 }}>

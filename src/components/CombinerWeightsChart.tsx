@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 interface WeightEntry {
   source: string
@@ -39,12 +40,13 @@ interface CombinerWeightsChartProps {
 }
 
 export default function CombinerWeightsChart({ entries }: CombinerWeightsChartProps) {
+  const isMobile = useIsMobile()
   return (
     <ResponsiveContainer width="100%" height={Math.max(180, entries.length * 40)}>
       <BarChart
         data={entries}
         layout="vertical"
-        margin={{ top: 4, right: 48, bottom: 4, left: 4 }}
+        margin={{ top: 4, right: isMobile ? 24 : 48, bottom: 4, left: 4 }}
       >
         <XAxis
           type="number"
@@ -60,7 +62,7 @@ export default function CombinerWeightsChart({ entries }: CombinerWeightsChartPr
           tick={{ fill: '#9ca3af', fontSize: 11, fontWeight: 600 }}
           tickLine={false}
           axisLine={false}
-          width={76}
+          width={isMobile ? 60 : 76}
         />
         <Tooltip
           formatter={(value: number | undefined) => [

@@ -13,6 +13,10 @@ vi.mock('recharts', () => ({
   LabelList: () => <div />,
 }))
 
+vi.mock('../../hooks/useIsMobile', () => ({
+  useIsMobile: () => false,
+}))
+
 import CombinerWeightsChart from '../../components/CombinerWeightsChart'
 
 const entries = [

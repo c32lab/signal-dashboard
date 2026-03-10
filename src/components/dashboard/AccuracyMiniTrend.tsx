@@ -41,7 +41,7 @@ export function AccuracyMiniTrend() {
   if (error) return <SectionError message={`Trend: ${(error as Error).message}`} />
 
   return (
-    <section className="bg-gray-900 rounded-xl border border-gray-800 p-4">
+    <section className="bg-gray-900 rounded-xl border border-gray-800 p-2 sm:p-4">
       <h2 className="text-sm font-semibold text-gray-200 mb-3">Accuracy Trend (24h)</h2>
       {pivoted.length === 0 ? (
         <p className="text-center text-gray-600 py-8 text-sm">No trend data</p>

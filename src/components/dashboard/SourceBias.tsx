@@ -29,7 +29,7 @@ export function SourceBias({ data }: { data: BiasResponse }) {
   })()
 
   return (
-    <section className="bg-gray-900 rounded-xl border border-gray-800 p-4">
+    <section className="bg-gray-900 rounded-xl border border-gray-800 p-2 sm:p-4">
       <div className="flex items-start justify-between mb-3 gap-2">
         <h2 className="text-sm font-semibold text-gray-200">Source Bias</h2>
         <div className="flex flex-wrap items-center gap-2 text-xs">
