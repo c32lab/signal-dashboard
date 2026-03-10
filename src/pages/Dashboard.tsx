@@ -6,6 +6,7 @@ import DecisionTable from '../components/DecisionTable'
 import LastUpdated from '../components/LastUpdated'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
 import TradingStatus from '../components/TradingStatus'
+import ForecastPanel from '../components/forecast/ForecastPanel'
 import { useOverview, useBias, useHealth, usePerformance, useAccuracy } from '../hooks/useApi'
 import { HealthSummary, AlertsPanel, DecisionDistribution, SourceBias, PerformanceOverview, AccuracyKPI, AccuracyMiniTrend, RegimeStatus, StabilityCountdown, AccuracyDailySummary, AccuracyAutoReport, AccuracyAlertIndicator } from '../components/dashboard'
 
@@ -110,6 +111,9 @@ export default function Dashboard() {
       </SectionErrorBoundary>
       <SectionErrorBoundary title="Combiner Weights">
         <CombinerWeights />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary title="Forecast Signal">
+        <ForecastPanel />
       </SectionErrorBoundary>
       {biasRes.isLoading && !biasData && (
         <div className="bg-gray-900 rounded-xl border border-gray-800 p-8 text-center text-gray-500 text-sm animate-pulse">Loading source bias…</div>

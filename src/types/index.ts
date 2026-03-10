@@ -257,3 +257,36 @@ export interface RawDecisionJson {
   suggested_stop_loss?: number
   suggested_take_profit?: number
 }
+
+export interface ForecastPrediction {
+  id: number
+  symbol: string
+  direction: 'LONG' | 'SHORT' | 'NEUTRAL'
+  confidence: number
+  trigger_pattern: string
+  trigger_event: string
+  expected_impact: number
+  expected_horizon: string
+  timestamp: string
+}
+
+export interface ForecastSignal {
+  symbol: string
+  direction: 'LONG' | 'SHORT' | 'NEUTRAL'
+  confidence: number
+  prediction_count: number
+  predictions: ForecastPrediction[]
+}
+
+export interface PredictAccuracy {
+  '1d': number
+  '3d': number
+  '7d': number
+}
+
+export interface ForecastPanelData {
+  signals: ForecastSignal[]
+  accuracy: PredictAccuracy
+  bridge_status: 'connected' | 'disconnected' | 'degraded'
+  last_sync: string
+}
