@@ -52,4 +52,26 @@ describe('ForecastPanel', () => {
     const dot = container.querySelector('.bg-green-500')
     expect(dot).toBeInTheDocument()
   })
+
+  it('renders disconnected state with red dot', () => {
+    const disconnectedData = {
+      ...mockForecastData,
+      signals: [],
+      bridge_status: 'disconnected' as const,
+    }
+    mockUseForecastPanel.mockReturnValue({ data: disconnectedData, error: new Error('Predict API: 503'), isLoading: false })
+    const { container } = render(<ForecastPanel />)
+    const dot = container.querySelector('.bg-red-500')
+    expect(dot).toBeInTheDocument()
+  })
+
+  it('renders empty predictions state', () => {
+    const emptyData = {
+      ...mockForecastData,
+      signals: [],
+    }
+    mockUseForecastPanel.mockReturnValue({ data: emptyData, error: undefined, isLoading: false })
+    render(<ForecastPanel />)
+    expect(screen.getByText('No active predictions')).toBeInTheDocument()
+  })
 })
