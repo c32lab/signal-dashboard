@@ -1,4 +1,4 @@
-const PREDICT_BASE = '/predict-api/api'
+const PREDICT_BASE = import.meta.env.VITE_PREDICT_API_URL || '/predict-api/api'
 
 export interface PredictPredictionRaw {
   id: number
