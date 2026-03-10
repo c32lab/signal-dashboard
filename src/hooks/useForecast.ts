@@ -61,7 +61,7 @@ export function useForecastPanel() {
     refreshInterval: 30_000,
     shouldRetryOnError: false,
   })
-  const recentPredictions = useSWR('predict/recent', () => predictApi.recentPredictions(5), {
+  const validatedPredictions = useSWR('predict/validated', () => predictApi.recentValidated(5), {
     refreshInterval: 60_000,
     shouldRetryOnError: false,
   })
@@ -88,12 +88,12 @@ export function useForecastPanel() {
     ? transformPredictions(predictions.data.predictions)
     : []
 
-  const recentSignals = recentPredictions.data
-    ? transformPredictions(recentPredictions.data.predictions)
+  const validatedSignals = validatedPredictions.data
+    ? transformPredictions(validatedPredictions.data.predictions)
     : []
 
-  const useRecent = activeSignals.length === 0 && recentSignals.length > 0
-  const signals = useRecent ? recentSignals : activeSignals
+  const isShowingValidated = activeSignals.length === 0 && validatedSignals.length > 0
+  const signals = isShowingValidated ? validatedSignals : activeSignals
 
   const acc: PredictAccuracy = accuracy.data
     ? {
@@ -110,7 +110,7 @@ export function useForecastPanel() {
         accuracy: acc,
         bridge_status: bridgeStatus,
         last_sync: new Date().toISOString(),
-        isHistorical: isConnected && useRecent,
+        isHistorical: isConnected && isShowingValidated,
       }
 
   return { data, error, isLoading }

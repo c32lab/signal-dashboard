@@ -2,6 +2,7 @@ import type { ForecastPrediction } from '../../types'
 
 interface ActivePredictionsListProps {
   predictions: ForecastPrediction[]
+  isHistorical?: boolean
 }
 
 function directionBadge(direction: string): string {
@@ -21,7 +22,7 @@ function formatTimestamp(ts: string): string {
   return d.toLocaleString()
 }
 
-export default function ActivePredictionsList({ predictions }: ActivePredictionsListProps) {
+export default function ActivePredictionsList({ predictions, isHistorical }: ActivePredictionsListProps) {
   const sorted = [...predictions].sort((a, b) => b.confidence - a.confidence).slice(0, 10)
 
   if (sorted.length === 0) {
@@ -31,7 +32,7 @@ export default function ActivePredictionsList({ predictions }: ActivePredictions
   return (
     <div>
       <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">
-        Active Predictions ({sorted.length})
+        {isHistorical ? `Recent Predictions (validated) (${sorted.length})` : `Active Predictions (${sorted.length})`}
       </h3>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">

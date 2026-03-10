@@ -75,19 +75,29 @@ describe('ForecastPanel', () => {
     expect(screen.getByText('No active predictions')).toBeInTheDocument()
   })
 
-  it('shows historical label when isHistorical is true', () => {
+  it('shows validated predictions banner when isHistorical is true', () => {
     const historicalData = {
       ...mockForecastData,
       isHistorical: true,
     }
     mockUseForecastPanel.mockReturnValue({ data: historicalData, error: undefined, isLoading: false })
     render(<ForecastPanel />)
-    expect(screen.getByText(/No active predictions — showing recent history/)).toBeInTheDocument()
+    expect(screen.getByText(/Showing recent validated predictions/)).toBeInTheDocument()
   })
 
-  it('does not show historical label when isHistorical is false', () => {
+  it('shows "Recent Predictions (validated)" header when isHistorical is true', () => {
+    const historicalData = {
+      ...mockForecastData,
+      isHistorical: true,
+    }
+    mockUseForecastPanel.mockReturnValue({ data: historicalData, error: undefined, isLoading: false })
+    render(<ForecastPanel />)
+    expect(screen.getByText(/Recent Predictions \(validated\)/)).toBeInTheDocument()
+  })
+
+  it('does not show validated banner when isHistorical is false', () => {
     mockUseForecastPanel.mockReturnValue({ data: mockForecastData, error: undefined, isLoading: false })
     render(<ForecastPanel />)
-    expect(screen.queryByText(/showing recent history/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Showing recent validated predictions/)).not.toBeInTheDocument()
   })
 })
