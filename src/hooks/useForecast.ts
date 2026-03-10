@@ -61,6 +61,10 @@ export function useForecastPanel() {
     refreshInterval: 30_000,
     shouldRetryOnError: false,
   })
+  const recentPredictions = useSWR('predict/recent', () => predictApi.recentPredictions(5), {
+    refreshInterval: 60_000,
+    shouldRetryOnError: false,
+  })
   const accuracy = useSWR('predict/accuracy', () => predictApi.accuracy(), {
     refreshInterval: 60_000,
     shouldRetryOnError: false,
@@ -80,9 +84,16 @@ export function useForecastPanel() {
       ? 'degraded'
       : 'connected'
 
-  const signals = predictions.data
+  const activeSignals = predictions.data
     ? transformPredictions(predictions.data.predictions)
     : []
+
+  const recentSignals = recentPredictions.data
+    ? transformPredictions(recentPredictions.data.predictions)
+    : []
+
+  const useRecent = activeSignals.length === 0 && recentSignals.length > 0
+  const signals = useRecent ? recentSignals : activeSignals
 
   const acc: PredictAccuracy = accuracy.data
     ? {
@@ -99,6 +110,7 @@ export function useForecastPanel() {
         accuracy: acc,
         bridge_status: bridgeStatus,
         last_sync: new Date().toISOString(),
+        isHistorical: isConnected && useRecent,
       }
 
   return { data, error, isLoading }

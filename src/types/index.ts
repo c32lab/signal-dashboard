@@ -289,4 +289,5 @@ export interface ForecastPanelData {
   accuracy: PredictAccuracy
   bridge_status: 'connected' | 'disconnected' | 'degraded'
   last_sync: string
+  isHistorical?: boolean
 }

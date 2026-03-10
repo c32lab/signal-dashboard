@@ -28,6 +28,12 @@ export default function ForecastPanel() {
 
       <ForecastSignalCards signals={data.signals} />
 
+      {data.isHistorical && (
+        <p className="text-xs text-gray-500 italic mb-2">
+          No active predictions — showing recent history
+        </p>
+      )}
+
       <ActivePredictionsList predictions={allPredictions} />
 
       <div className="pt-2 border-t border-gray-800">

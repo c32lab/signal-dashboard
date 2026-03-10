@@ -43,6 +43,11 @@ export const predictApi = {
       `${PREDICT_BASE}/predictions?status=active&limit=${limit}`
     ),
 
+  recentPredictions: (limit = 5) =>
+    predictFetcher<PredictPredictionsResponse>(
+      `${PREDICT_BASE}/predictions?limit=${limit}`
+    ),
+
   accuracy: () =>
     predictFetcher<PredictAccuracyResponse>(`${PREDICT_BASE}/predict-accuracy`),
 
