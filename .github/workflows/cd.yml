@@ -11,14 +11,14 @@ jobs:
     runs-on: [self-hosted, cd]
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - name: Fix workspace permissions
+        run: sudo chown -R $(whoami) $GITHUB_WORKSPACE || true
+
       - uses: actions/checkout@v4
 
-      - name: Deploy
+      - name: Build and deploy
         run: |
-          cp docker-compose.yml Dockerfile nginx.conf /opt/deploy/${{ github.event.repository.name }}/ 2>/dev/null || true
-          cd /opt/deploy/${{ github.event.repository.name }}
           docker compose down --remove-orphans 2>/dev/null || true
-          cd $GITHUB_WORKSPACE
           docker compose up --build -d
           echo "✅ ${{ github.event.repository.name }} deployed"
 
