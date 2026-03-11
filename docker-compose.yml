@@ -3,6 +3,10 @@ services:
     build: .
     ports:
       - "3080:3080"
+    environment:
+      - SIGNAL_API_UPSTREAM=${SIGNAL_API_UPSTREAM:-host.docker.internal:18810}
+      - PREDICT_API_UPSTREAM=${PREDICT_API_UPSTREAM:-host.docker.internal:18801}
+      - DATA_API_UPSTREAM=${DATA_API_UPSTREAM:-host.docker.internal:8081}
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
