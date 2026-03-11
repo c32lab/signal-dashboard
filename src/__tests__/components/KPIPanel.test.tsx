@@ -4,12 +4,14 @@ import { render, screen } from '@testing-library/react'
 
 vi.mock('../../hooks/useApi', () => ({
   useOverview: vi.fn(),
+  useAccuracySummary: vi.fn(),
 }))
 
 import KPIPanel from '../../components/KPIPanel'
-import { useOverview } from '../../hooks/useApi'
+import { useOverview, useAccuracySummary } from '../../hooks/useApi'
 
 const mockUseOverview = vi.mocked(useOverview)
+const mockUseAccuracySummary = vi.mocked(useAccuracySummary)
 
 function makeOverview() {
   return {
@@ -21,29 +23,51 @@ function makeOverview() {
   }
 }
 
+function makeAccuracySummary(accuracy24h = 72.5, accuracy7d = 68.0) {
+  return {
+    windows: {
+      '24h': { total: 100, accuracy_1h_pct: accuracy24h, accuracy_4h_pct: 75.0, by_symbol: {}, by_direction: {} },
+      '7d': { total: 500, accuracy_1h_pct: accuracy7d, accuracy_4h_pct: 70.0, by_symbol: {}, by_direction: {} },
+      '30d': { total: 2000, accuracy_1h_pct: 65.0, accuracy_4h_pct: 68.0, by_symbol: {}, by_direction: {} },
+    },
+  }
+}
+
+function setupMocks(
+  overviewData = makeOverview(),
+  accuracyData = makeAccuracySummary(),
+  overviewLoading = false,
+  overviewError: Error | undefined = undefined,
+) {
+  mockUseOverview.mockReturnValue({ data: overviewData, isLoading: overviewLoading, error: overviewError } as unknown as ReturnType<typeof useOverview>)
+  mockUseAccuracySummary.mockReturnValue({ data: accuracyData } as unknown as ReturnType<typeof useAccuracySummary>)
+}
+
 describe('KPIPanel', () => {
   it('renders loading state', () => {
     mockUseOverview.mockReturnValue({ data: undefined, isLoading: true, error: undefined } as unknown as ReturnType<typeof useOverview>)
+    mockUseAccuracySummary.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useAccuracySummary>)
     render(<KPIPanel />)
     expect(screen.getByText('Loading overview…')).toBeInTheDocument()
   })
 
   it('renders error state', () => {
     mockUseOverview.mockReturnValue({ data: undefined, isLoading: false, error: new Error('Server down') } as unknown as ReturnType<typeof useOverview>)
+    mockUseAccuracySummary.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useAccuracySummary>)
     render(<KPIPanel />)
     expect(screen.getByText(/Failed to load overview/)).toBeInTheDocument()
     expect(screen.getByText(/Server down/)).toBeInTheDocument()
   })
 
   it('renders total decisions count', () => {
-    mockUseOverview.mockReturnValue({ data: makeOverview(), isLoading: false, error: undefined } as unknown as ReturnType<typeof useOverview>)
+    setupMocks()
     render(<KPIPanel />)
     expect(screen.getByText('1,500')).toBeInTheDocument()
     expect(screen.getByText('Total Decisions')).toBeInTheDocument()
   })
 
   it('renders direction distribution (LONG/SHORT/HOLD)', () => {
-    mockUseOverview.mockReturnValue({ data: makeOverview(), isLoading: false, error: undefined } as unknown as ReturnType<typeof useOverview>)
+    setupMocks()
     render(<KPIPanel />)
     expect(screen.getByText('LONG')).toBeInTheDocument()
     expect(screen.getByText('SHORT')).toBeInTheDocument()
@@ -54,7 +78,7 @@ describe('KPIPanel', () => {
   })
 
   it('renders symbol distribution', () => {
-    mockUseOverview.mockReturnValue({ data: makeOverview(), isLoading: false, error: undefined } as unknown as ReturnType<typeof useOverview>)
+    setupMocks()
     render(<KPIPanel />)
     expect(screen.getByText('BTC')).toBeInTheDocument()
     expect(screen.getByText('ETH')).toBeInTheDocument()
@@ -63,9 +87,38 @@ describe('KPIPanel', () => {
   })
 
   it('renders last 1h total', () => {
-    mockUseOverview.mockReturnValue({ data: makeOverview(), isLoading: false, error: undefined } as unknown as ReturnType<typeof useOverview>)
+    setupMocks()
     render(<KPIPanel />)
     expect(screen.getByText('8')).toBeInTheDocument() // 5 + 3
     expect(screen.getByText('Last 1h')).toBeInTheDocument()
+  })
+
+  it('renders accuracy card with delta badge', () => {
+    setupMocks()
+    render(<KPIPanel />)
+    expect(screen.getByText('Accuracy (1h)')).toBeInTheDocument()
+    expect(screen.getByText('72.5%')).toBeInTheDocument()
+    expect(screen.getByText('vs 7d')).toBeInTheDocument()
+  })
+
+  it('shows critical anomaly when accuracy below 50%', () => {
+    setupMocks(makeOverview(), makeAccuracySummary(45.0, 68.0))
+    render(<KPIPanel />)
+    expect(screen.getByText('Accuracy below 50%')).toBeInTheDocument()
+  })
+
+  it('shows warning anomaly when no signals in last hour', () => {
+    const overview = makeOverview()
+    overview.recent_1h = { BTC: 0, ETH: 0 }
+    setupMocks(overview)
+    render(<KPIPanel />)
+    expect(screen.getByText('No signals in last hour')).toBeInTheDocument()
+  })
+
+  it('renders without accuracy card when data is unavailable', () => {
+    mockUseOverview.mockReturnValue({ data: makeOverview(), isLoading: false, error: undefined } as unknown as ReturnType<typeof useOverview>)
+    mockUseAccuracySummary.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useAccuracySummary>)
+    render(<KPIPanel />)
+    expect(screen.queryByText('Accuracy (1h)')).not.toBeInTheDocument()
   })
 })

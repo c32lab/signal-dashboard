@@ -1,7 +1,10 @@
-import { useOverview } from '../hooks/useApi'
+import { useOverview, useAccuracySummary } from '../hooks/useApi'
+import DeltaBadge from './ui/DeltaBadge'
+import AnomalyBadge from './ui/AnomalyBadge'
 
 export default function KPIPanel() {
   const { data, error, isLoading } = useOverview()
+  const { data: accuracyData } = useAccuracySummary()
 
   if (isLoading) {
     return (
@@ -27,6 +30,9 @@ export default function KPIPanel() {
   const symbolEntries = Object.entries(data.symbol_distribution).sort(([, a], [, b]) => b - a)
   const recent1hTotal = Object.values(data.recent_1h).reduce((a, b) => a + b, 0)
 
+  const accuracy24h = accuracyData?.windows?.['24h']?.accuracy_1h_pct
+  const accuracy7d = accuracyData?.windows?.['7d']?.accuracy_1h_pct
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 px-2 sm:px-6 py-2 sm:py-4">
       {/* Total decisions */}
@@ -39,7 +45,31 @@ export default function KPIPanel() {
       <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
         <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Last 1h</p>
         <p className="text-3xl font-bold text-blue-400">{recent1hTotal}</p>
+        {recent1hTotal === 0 && (
+          <div className="mt-2">
+            <AnomalyBadge level="warning" message="No signals in last hour" />
+          </div>
+        )}
       </div>
+
+      {/* Accuracy 1h */}
+      {accuracy24h != null && (
+        <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
+          <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Accuracy (1h)</p>
+          <p className="text-3xl font-bold text-white">{accuracy24h.toFixed(1)}%</p>
+          {accuracy7d != null && (
+            <div className="mt-1">
+              <DeltaBadge current={accuracy24h} previous={accuracy7d} format="percent" />
+              <span className="text-xs text-gray-600 ml-1">vs 7d</span>
+            </div>
+          )}
+          {accuracy24h < 50 && (
+            <div className="mt-2">
+              <AnomalyBadge level="critical" message="Accuracy below 50%" />
+            </div>
+          )}
+        </div>
+      )}
 
       {/* By direction */}
       <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
