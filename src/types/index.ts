@@ -194,7 +194,8 @@ export interface ConfidenceData {
 export interface AccuracySummaryDirection {
   total: number
   correct: number
-  accuracy_pct: number
+  accuracy_1h_pct?: number
+  accuracy_4h_pct?: number
 }
 
 export interface AccuracySummaryWindow {

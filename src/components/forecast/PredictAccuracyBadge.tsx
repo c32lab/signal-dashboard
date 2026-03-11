@@ -23,7 +23,7 @@ export default function PredictAccuracyBadge({ accuracy }: PredictAccuracyBadgeP
           {i > 0 && <span className="text-gray-600">|</span>}
           <span>{h.label}</span>
           <span className={`font-semibold ${accuracyColor(accuracy[h.key])}`}>
-            {accuracy[h.key].toFixed(1)}%
+            {(accuracy[h.key] ?? 0).toFixed(1)}%
           </span>
         </span>
       ))}

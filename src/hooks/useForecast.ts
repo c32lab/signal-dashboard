@@ -95,11 +95,11 @@ export function useForecastPanel() {
   const isShowingValidated = activeSignals.length === 0 && validatedSignals.length > 0
   const signals = isShowingValidated ? validatedSignals : activeSignals
 
-  const acc: PredictAccuracy = accuracy.data
+  const acc: PredictAccuracy = accuracy.data?.overall
     ? {
-        '1d': accuracy.data.overall.accuracy_1d,
-        '3d': accuracy.data.overall.accuracy_3d,
-        '7d': accuracy.data.overall.accuracy_7d,
+        '1d': accuracy.data.overall.accuracy_1d ?? 0,
+        '3d': accuracy.data.overall.accuracy_3d ?? 0,
+        '7d': accuracy.data.overall.accuracy_7d ?? 0,
       }
     : { '1d': 0, '3d': 0, '7d': 0 }
 

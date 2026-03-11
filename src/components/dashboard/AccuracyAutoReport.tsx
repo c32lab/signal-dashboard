@@ -112,8 +112,8 @@ export function AccuracyAutoReport() {
                 <div className={`text-xs font-semibold mb-1 ${dir === 'LONG' ? 'text-green-400' : 'text-red-400'}`}>
                   {dir}
                 </div>
-                <div className={`text-xl font-bold font-mono ${accuracyColor(stats.accuracy_pct)}`}>
-                  {stats.accuracy_pct.toFixed(1)}%
+                <div className={`text-xl font-bold font-mono ${accuracyColor(stats.accuracy_4h_pct ?? stats.accuracy_1h_pct ?? 0)}`}>
+                  {(stats.accuracy_4h_pct ?? stats.accuracy_1h_pct ?? 0).toFixed(1)}%
                 </div>
                 <div className="text-xs text-gray-500 mt-0.5">
                   {stats.correct}/{stats.total} correct
