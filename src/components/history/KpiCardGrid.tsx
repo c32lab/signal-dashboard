@@ -24,6 +24,7 @@ export default function KpiCardGrid({
         label="Win Rate"
         value={overall ? `${overall.accuracy_pct.toFixed(1)}%` : '—'}
         color={accColor(overall?.accuracy_pct)}
+        anomaly={overall && overall.accuracy_pct < 50 ? { level: 'critical', message: 'Win rate below 50%' } : undefined}
       />
       <KpiCard
         label="Avg PnL"
@@ -34,6 +35,7 @@ export default function KpiCardGrid({
         label="Active Signals"
         value={activeSignals != null ? String(activeSignals) : '—'}
         color="text-blue-400"
+        anomaly={activeSignals === 0 ? { level: 'warning', message: 'No active signals' } : undefined}
       />
     </div>
   )

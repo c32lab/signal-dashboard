@@ -50,4 +50,44 @@ describe('KpiCardGrid', () => {
     )
     expect(screen.getByText('0')).toBeInTheDocument()
   })
+
+  it('shows critical anomaly when win rate is below 50%', () => {
+    render(
+      <KpiCardGrid
+        overall={{ total: 10, accuracy_pct: 45, avg_pnl_pct: 1 }}
+        activeSignals={3}
+      />
+    )
+    expect(screen.getByText('Win rate below 50%')).toBeInTheDocument()
+  })
+
+  it('does not show anomaly when win rate is 50% or above', () => {
+    render(
+      <KpiCardGrid
+        overall={{ total: 10, accuracy_pct: 50, avg_pnl_pct: 1 }}
+        activeSignals={3}
+      />
+    )
+    expect(screen.queryByText('Win rate below 50%')).not.toBeInTheDocument()
+  })
+
+  it('shows warning anomaly when active signals is 0', () => {
+    render(
+      <KpiCardGrid
+        overall={{ total: 10, accuracy_pct: 60, avg_pnl_pct: 1 }}
+        activeSignals={0}
+      />
+    )
+    expect(screen.getByText('No active signals')).toBeInTheDocument()
+  })
+
+  it('does not show active signals anomaly when null', () => {
+    render(
+      <KpiCardGrid
+        overall={{ total: 10, accuracy_pct: 60, avg_pnl_pct: 1 }}
+        activeSignals={null}
+      />
+    )
+    expect(screen.queryByText('No active signals')).not.toBeInTheDocument()
+  })
 })

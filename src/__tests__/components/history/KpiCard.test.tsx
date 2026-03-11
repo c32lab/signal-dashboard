@@ -27,4 +27,40 @@ describe('KpiCard', () => {
     const el = screen.getByText('99')
     expect(el.className).toContain('font-mono')
   })
+
+  it('renders DeltaBadge when delta prop is provided', () => {
+    render(<KpiCard label="Win Rate" value="60%" delta={{ current: 60, previous: 50, format: 'percent' }} />)
+    expect(screen.getByText('Win Rate')).toBeInTheDocument()
+    expect(screen.getByText('60%')).toBeInTheDocument()
+    // DeltaBadge should render with the delta info (arrow + value)
+    expect(screen.getByText(/\+10\.0pp/)).toBeInTheDocument()
+  })
+
+  it('renders AnomalyBadge when anomaly prop is provided', () => {
+    render(<KpiCard label="Win Rate" value="45%" anomaly={{ level: 'critical', message: 'Win rate below 50%' }} />)
+    expect(screen.getByText('Win rate below 50%')).toBeInTheDocument()
+  })
+
+  it('renders both delta and anomaly when both provided', () => {
+    render(
+      <KpiCard
+        label="Win Rate"
+        value="45%"
+        delta={{ current: 45, previous: 55, format: 'percent' }}
+        anomaly={{ level: 'critical', message: 'Win rate below 50%' }}
+      />
+    )
+    expect(screen.getByText(/\-10\.0pp/)).toBeInTheDocument()
+    expect(screen.getByText('Win rate below 50%')).toBeInTheDocument()
+  })
+
+  it('renders warning anomaly badge', () => {
+    render(<KpiCard label="Active Signals" value="0" anomaly={{ level: 'warning', message: 'No active signals' }} />)
+    expect(screen.getByText('No active signals')).toBeInTheDocument()
+  })
+
+  it('does not render delta or anomaly when props are not provided', () => {
+    const { container } = render(<KpiCard label="Total" value="100" />)
+    expect(container.querySelectorAll('.mt-1')).toHaveLength(0)
+  })
 })
