@@ -1,10 +1,11 @@
-import { useOverview, useAccuracySummary } from '../hooks/useApi'
+import { useOverview, useAccuracySummary, useSignalsLatest } from '../hooks/useApi'
 import DeltaBadge from './ui/DeltaBadge'
 import AnomalyBadge from './ui/AnomalyBadge'
 
 export default function KPIPanel() {
   const { data, error, isLoading } = useOverview()
   const { data: accuracyData } = useAccuracySummary()
+  const { data: latestSignals } = useSignalsLatest()
 
   if (isLoading) {
     return (
@@ -33,12 +34,17 @@ export default function KPIPanel() {
   const accuracy24h = accuracyData?.windows?.['24h']?.accuracy_1h_pct
   const accuracy7d = accuracyData?.windows?.['7d']?.accuracy_1h_pct
 
+  const fourHoursAgo = Date.now() - 4 * 60 * 60 * 1000
+  const allSignalsStale = latestSignals && latestSignals.length > 0 &&
+    latestSignals.every((s: { timestamp: string }) => new Date(s.timestamp).getTime() < fourHoursAgo)
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 px-2 sm:px-6 py-2 sm:py-4">
       {/* Total decisions */}
       <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
         <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Total Decisions</p>
         <p className="text-3xl font-bold text-white">{data.total_decisions.toLocaleString('en-US')}</p>
+        {/* TODO: add delta when API supports previous_total */}
       </div>
 
       {/* Recent 1h */}
@@ -48,6 +54,11 @@ export default function KPIPanel() {
         {recent1hTotal === 0 && (
           <div className="mt-2">
             <AnomalyBadge level="warning" message="No signals in last hour" />
+          </div>
+        )}
+        {allSignalsStale && (
+          <div className="mt-1">
+            <AnomalyBadge level="critical" message="No signals for 4h+" />
           </div>
         )}
       </div>

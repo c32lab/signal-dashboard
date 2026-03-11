@@ -5,13 +5,15 @@ import { render, screen } from '@testing-library/react'
 vi.mock('../../hooks/useApi', () => ({
   useOverview: vi.fn(),
   useAccuracySummary: vi.fn(),
+  useSignalsLatest: vi.fn(),
 }))
 
 import KPIPanel from '../../components/KPIPanel'
-import { useOverview, useAccuracySummary } from '../../hooks/useApi'
+import { useOverview, useAccuracySummary, useSignalsLatest } from '../../hooks/useApi'
 
 const mockUseOverview = vi.mocked(useOverview)
 const mockUseAccuracySummary = vi.mocked(useAccuracySummary)
+const mockUseSignalsLatest = vi.mocked(useSignalsLatest)
 
 function makeOverview() {
   return {
@@ -38,15 +40,18 @@ function setupMocks(
   accuracyData = makeAccuracySummary(),
   overviewLoading = false,
   overviewError: Error | undefined = undefined,
+  latestSignals: Array<{ timestamp: string }> | undefined = undefined,
 ) {
   mockUseOverview.mockReturnValue({ data: overviewData, isLoading: overviewLoading, error: overviewError } as unknown as ReturnType<typeof useOverview>)
   mockUseAccuracySummary.mockReturnValue({ data: accuracyData } as unknown as ReturnType<typeof useAccuracySummary>)
+  mockUseSignalsLatest.mockReturnValue({ data: latestSignals } as unknown as ReturnType<typeof useSignalsLatest>)
 }
 
 describe('KPIPanel', () => {
   it('renders loading state', () => {
     mockUseOverview.mockReturnValue({ data: undefined, isLoading: true, error: undefined } as unknown as ReturnType<typeof useOverview>)
     mockUseAccuracySummary.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useAccuracySummary>)
+    mockUseSignalsLatest.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useSignalsLatest>)
     render(<KPIPanel />)
     expect(screen.getByText('Loading overview…')).toBeInTheDocument()
   })
@@ -54,6 +59,7 @@ describe('KPIPanel', () => {
   it('renders error state', () => {
     mockUseOverview.mockReturnValue({ data: undefined, isLoading: false, error: new Error('Server down') } as unknown as ReturnType<typeof useOverview>)
     mockUseAccuracySummary.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useAccuracySummary>)
+    mockUseSignalsLatest.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useSignalsLatest>)
     render(<KPIPanel />)
     expect(screen.getByText(/Failed to load overview/)).toBeInTheDocument()
     expect(screen.getByText(/Server down/)).toBeInTheDocument()
@@ -118,7 +124,34 @@ describe('KPIPanel', () => {
   it('renders without accuracy card when data is unavailable', () => {
     mockUseOverview.mockReturnValue({ data: makeOverview(), isLoading: false, error: undefined } as unknown as ReturnType<typeof useOverview>)
     mockUseAccuracySummary.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useAccuracySummary>)
+    mockUseSignalsLatest.mockReturnValue({ data: undefined } as unknown as ReturnType<typeof useSignalsLatest>)
     render(<KPIPanel />)
     expect(screen.queryByText('Accuracy (1h)')).not.toBeInTheDocument()
+  })
+
+  it('shows critical anomaly when all signals are older than 4 hours', () => {
+    const fiveHoursAgo = new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
+    const staleSignals = [
+      { timestamp: fiveHoursAgo },
+      { timestamp: fiveHoursAgo },
+    ]
+    setupMocks(makeOverview(), makeAccuracySummary(), false, undefined, staleSignals)
+    render(<KPIPanel />)
+    expect(screen.getByText('No signals for 4h+')).toBeInTheDocument()
+  })
+
+  it('does not show 4h drought warning when recent signals exist', () => {
+    const recentSignals = [
+      { timestamp: new Date().toISOString() },
+    ]
+    setupMocks(makeOverview(), makeAccuracySummary(), false, undefined, recentSignals)
+    render(<KPIPanel />)
+    expect(screen.queryByText('No signals for 4h+')).not.toBeInTheDocument()
+  })
+
+  it('does not show 4h drought warning when signals data is not loaded', () => {
+    setupMocks(makeOverview(), makeAccuracySummary(), false, undefined, undefined)
+    render(<KPIPanel />)
+    expect(screen.queryByText('No signals for 4h+')).not.toBeInTheDocument()
   })
 })
