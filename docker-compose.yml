@@ -8,6 +8,8 @@ services:
       - PREDICT_API_UPSTREAM=${PREDICT_API_UPSTREAM:-host.docker.internal:18801}
       - DATA_API_UPSTREAM=${DATA_API_UPSTREAM:-host.docker.internal:8081}
     restart: unless-stopped
+    mem_limit: 256m
+    memswap_limit: 256m
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
