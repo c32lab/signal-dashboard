@@ -17,28 +17,31 @@ const dataApi = toUrl(process.env.DATA_API_UPSTREAM, "localhost:8081");
 
 const app = express();
 
-// Signal API — /api/ forwards directly (no rewrite)
+// Signal API — pathFilter preserves /api prefix
 app.use(
-  "/api",
-  createProxyMiddleware({ target: signalApi, changeOrigin: true }),
+  createProxyMiddleware({
+    target: signalApi,
+    changeOrigin: true,
+    pathFilter: "/api",
+  }),
 );
 
-// Predict API — /predict-api/ strips prefix
+// Predict API — pathFilter + pathRewrite strips /predict-api
 app.use(
-  "/predict-api",
   createProxyMiddleware({
     target: predictApi,
     changeOrigin: true,
+    pathFilter: "/predict-api",
     pathRewrite: { "^/predict-api": "" },
   }),
 );
 
-// Data API — /data-api/ strips prefix
+// Data API — pathFilter + pathRewrite strips /data-api
 app.use(
-  "/data-api",
   createProxyMiddleware({
     target: dataApi,
     changeOrigin: true,
+    pathFilter: "/data-api",
     pathRewrite: { "^/data-api": "" },
   }),
 );
