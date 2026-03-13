@@ -1,103 +1,103 @@
 # CLAUDE.md - Signal Dashboard
 
-## 项目概述
-React + Vite + Tailwind + Recharts + SWR 前端 dashboard，展示加密货币信号系统的决策和质量数据。
+## Project Overview
+React + Vite + Tailwind + Recharts + SWR frontend dashboard for displaying crypto signal system decisions and quality data.
 
-## 技术栈
+## Tech Stack
 - React 19 + TypeScript 5.9 + Vite 7
-- Tailwind CSS v4（通过 @tailwindcss/vite 插件）
-- Recharts 3（图表）
-- SWR 2（数据获取 + 缓存）
-- React Router v7（路由）
+- Tailwind CSS v4 (via @tailwindcss/vite plugin)
+- Recharts 3 (charts)
+- SWR 2 (data fetching + caching)
+- React Router v7 (routing)
 
-## ⛔ 绝对禁止
-- **不准改端口** — dev :3080，signal API :18810
-- predict 代码已移至独立项目 predict-dashboard，本项目不含 predict 相关代码
+## ⛔ Strictly Forbidden
+- **Do NOT change ports** — dev :3080, signal API :18810
+- Predict code has been moved to the standalone predict-dashboard project; this repo contains no predict-related code
 
-## 开发
+## Development
 ```bash
 npm run dev    # Vite dev server on :3080
 npm run build  # tsc + vite build
 npm run lint   # ESLint
 ```
 
-## 配置层级（⚠️ 关键 — RCA-007 教训）
-当前只有一层配置：`vite.config.ts`（proxy + 端口）。
-如果未来新增 `.env` 文件，必须在此处标注优先级和作用范围。
+## Config Hierarchy (⚠️ Critical — RCA-007 Lesson)
+Currently only one config layer: `vite.config.ts` (proxy + port).
+If `.env` files are added in the future, document their priority and scope here.
 
-### Proxy 映射
-| 前缀 | 目标 | 后端服务 |
-|------|------|---------|
-| `/api` | `localhost:18810` | amani-signal（信号引擎）|
-| `/predict-api` | `localhost:18801` | amani-predict（预测引擎）|
-| `/data-api` | `localhost:8081` | data-eng（数据工程）|
+### Proxy Mapping
+| Prefix | Target | Backend Service |
+|--------|--------|----------------|
+| `/api` | `localhost:18810` | amani-signal (signal engine) |
+| `/predict-api` | `localhost:18801` | amani-predict (prediction engine) |
+| `/data-api` | `localhost:8081` | data-eng (data engineering) |
 
-`/predict-api` 和 `/data-api` 有 path rewrite，去掉前缀后转发。
+`/predict-api` and `/data-api` have path rewrite — prefix is stripped before forwarding.
 
-## 页面结构
-| 路由 | 页面 | 数据源 |
-|------|------|--------|
-| `/` | Dashboard (信号概览) | signal API |
-| `/backtest` | Backtest A/B Test (回测对比) | signal API |
-| `/trading` | Trading Dashboard (交易记录) | signal API |
-| `/history` | Trader History (事件库) | signal API |
-| `/quality` | Quality Tracker (信号质量) | signal API |
-| `/timeline` | Signal Timeline (信号时间轴) | signal API |
-| `/advanced/system` | System Health (系统健康) | signal API |
-| `/code-quality` | Code Quality (内部工具,不在导航) | — |
+## Page Structure
+| Route | Page | Data Source |
+|-------|------|-------------|
+| `/` | Dashboard (signal overview) | signal API |
+| `/backtest` | Backtest A/B Test (backtest comparison) | signal API |
+| `/trading` | Trading Dashboard (trade records) | signal API |
+| `/history` | Trader History (event library) | signal API |
+| `/quality` | Quality Tracker (signal quality) | signal API |
+| `/timeline` | Signal Timeline | signal API |
+| `/advanced/system` | System Health | signal API |
+| `/code-quality` | Code Quality (internal tool, not in nav) | — |
 
-## 百分比字段格式（⚠️ 关键 — RCA-006 教训）
-**改任何百分比显示前必读 `src/utils/fieldConventions.ts`**
+## Percentage Field Format (⚠️ Critical — RCA-006 Lesson)
+**Read `src/utils/fieldConventions.ts` before modifying any percentage display**
 
-### 规则
-- 字段名含 `_pct` → 已经是百分比（0-100），直接显示 + `%`
-- `confidence` / `strength` → 0-1 小数，前端 ×100
-- `funding_rate` → 极小小数，前端 ×100
-- `price_change` / `avg_impact` / `expected_impact` → 已经是百分比，**绝对不要 ×100**
-- `accuracy['1h_pct']` / `accuracy['4h_pct']` → 已经是百分比（0-100），不要 ×100
+### Rules
+- Fields with `_pct` suffix → already percentage (0-100), display directly with `%`
+- `confidence` / `strength` → 0-1 decimal, frontend ×100
+- `funding_rate` → very small decimal, frontend ×100
+- `price_change` / `avg_impact` / `expected_impact` → already percentage, **absolutely do NOT ×100**
+- `accuracy['1h_pct']` / `accuracy['4h_pct']` → already percentage (0-100), do NOT ×100
 
-### 来自 API 的 `_meta` 字段
-大多数端点返回 `_meta` 字段标注值的格式（如 `"confidence": "0-1"`），前端忽略即可。
+### `_meta` Fields from API
+Most endpoints return `_meta` fields annotating value formats (e.g. `"confidence": "0-1"`); frontend can safely ignore them.
 
-## 数据验证（Fallback 机制）
-`src/utils/dataValidation.ts` 有 `STATIC_PRICE_RANGES` 硬编码回退值。
-优先级：data-eng API (`/data-api/api/price-ranges`) > 静态回退。
-**修改时注意保持两层一致。**
+## Data Validation (Fallback Mechanism)
+`src/utils/dataValidation.ts` has `STATIC_PRICE_RANGES` hardcoded fallback values.
+Priority: data-eng API (`/data-api/api/price-ranges`) > static fallback.
+**Keep both layers consistent when modifying.**
 
-## 文件结构
+## File Structure
 ```
 src/
-├── api/          # API 客户端（index.ts=signal）
-├── assets/       # 静态资源
-├── components/   # 共享组件（含 backtest/ dashboard/ history/ quality/ 子目录）
-├── hooks/        # SWR hooks（useApi.ts, useSymbols.tsx）
-├── pages/        # 页面组件（每页一个文件）
-├── types/        # TypeScript 类型定义
-├── utils/        # 工具函数（字段格式、数据验证、格式化）
-├── App.tsx       # 路由 + 导航布局
-├── index.css     # 全局样式（Tailwind 入口）
-└── main.tsx      # 入口
+├── api/          # API client (index.ts=signal)
+├── assets/       # Static assets
+├── components/   # Shared components (with backtest/ dashboard/ history/ quality/ subdirs)
+├── hooks/        # SWR hooks (useApi.ts, useSymbols.tsx)
+├── pages/        # Page components (one file per page)
+├── types/        # TypeScript type definitions
+├── utils/        # Utility functions (field formatting, data validation, formatting)
+├── App.tsx       # Router + navigation layout
+├── index.css     # Global styles (Tailwind entry)
+└── main.tsx      # Entry point
 ```
 
-## 主题
-深色主题：`bg-gray-950`（页面背景）、`bg-gray-900`（卡片）、`border-gray-800`。
+## Theme
+Dark theme: `bg-gray-950` (page background), `bg-gray-900` (cards), `border-gray-800`.
 
-## 提交规范
-- 前缀：feat / fix / docs / config / chore / refactor / test
-- `git add` 用具体文件名，禁止 `git add -A`
-- 提交前运行 `npx tsc --project tsconfig.app.json --noEmit` 确保无 TS 错误（注意是 tsconfig.app.json 不是 tsconfig.json）
-- **Pre-commit hook**（`.git/hooks/pre-commit`）：自动阻止端口被篡改 — 检查 vite.config.ts 不含 18810、dashboard port 必须是 3080、nginx.conf/docker-compose.yml 不被改成错误端口
-- **提交后立即部署：** `cd ~/signal-dashboard && docker compose down && docker compose up -d --build`
-- Docker build 用 `tsc -b`（比 tsconfig.app.json 更严格），确保两者都 0 error
+## Commit Guidelines
+- Prefix: feat / fix / docs / config / chore / refactor / test
+- `git add` specific files only, never use `git add -A`
+- Run `npx tsc --project tsconfig.app.json --noEmit` before committing to ensure zero TS errors (note: tsconfig.app.json, not tsconfig.json)
+- **Pre-commit hook** (`.git/hooks/pre-commit`): automatically prevents port tampering — checks vite.config.ts doesn't contain 18810, dashboard port must be 3080, nginx.conf/docker-compose.yml not changed to wrong ports
+- **Deploy immediately after commit:** `cd ~/signal-dashboard && docker compose down && docker compose up -d --build`
+- Docker build uses `tsc -b` (stricter than tsconfig.app.json), ensure both have 0 errors
 
-## Recharts Tooltip（⚠️ 重复教训 ×3）
-Recharts Tooltip 的 `labelFormatter` / `formatter` 回调参数类型可能是 `undefined` 或 `ReactNode`，不是 `string`。**必须加防御：**
+## Recharts Tooltip (⚠️ Repeated Lesson ×3)
+Recharts Tooltip `labelFormatter` / `formatter` callback parameter types may be `undefined` or `ReactNode`, not `string`. **Defensive checks required:**
 ```typescript
-// ✅ 正确
+// ✅ Correct
 labelFormatter={(ts: unknown) => formatDateTime(String(ts ?? ''))}
 formatter={(value: unknown, name: unknown) => [`${Number(value ?? 0).toFixed(2)}%`, String(name ?? '')]}
 
-// ❌ 错误 — 会报 TS 类型错误
+// ❌ Wrong — will cause TS type errors
 labelFormatter={(ts) => formatDateTime(String(ts))}
 formatter={(value, name) => [`${Number(value).toFixed(2)}%`, String(name)]}
 ```
@@ -112,11 +112,11 @@ npm run test:e2e:ui   # Run with Playwright UI mode
 - Tests are resilient to backend being unavailable (verify rendering, navigation, no crashes)
 - `webServer` config auto-starts `npm run dev` if not already running
 
-## 禁止
-- **一个 repo 同时只能有一个 CC 操作** — 多 CC 并行同一 repo 会导致冲突、互相覆盖文件、端口被改。串行执行，不并行
-- **绝对不要修改 vite.config.ts 的 proxy 端口** — `/api` → :18810, `/predict-api` → :18801, `/data-api` → :8081。这些端口是固定的
-- **绝对不要修改 nginx.conf / docker-compose.yml / Dockerfile 的端口** — Dashboard 端口是 **3080**（开发和生产都是 3080）。:18810 是 amani-signal API，不是前端。CC 不要碰端口配置
-- **绝对不要删除或 revert 已有的组件文件** — 特别是 ConfidenceDistribution.tsx、AccuracyKPI.tsx 等。这些是人工审核后的正式功能，不是 out-of-scope artifact
-- 不要对 `price_change` / `avg_impact` / `expected_impact` 做 ×100
-- 不要引入新的 CSS 框架（已有 Tailwind）
-- 不要使用 `sudo npm`
+## Forbidden
+- **Only one CC session per repo at a time** — parallel CC sessions on the same repo cause conflicts, file overwrites, and port changes. Execute serially, not in parallel
+- **Absolutely do NOT modify vite.config.ts proxy ports** — `/api` → :18810, `/predict-api` → :18801, `/data-api` → :8081. These ports are fixed
+- **Absolutely do NOT modify nginx.conf / docker-compose.yml / Dockerfile ports** — Dashboard port is **3080** (both dev and production). :18810 is the amani-signal API, not the frontend. CC must not touch port config
+- **Absolutely do NOT delete or revert existing component files** — especially ConfidenceDistribution.tsx, AccuracyKPI.tsx, etc. These are formally reviewed features, not out-of-scope artifacts
+- Do NOT multiply `price_change` / `avg_impact` / `expected_impact` by 100
+- Do NOT introduce new CSS frameworks (Tailwind is already in use)
+- Do NOT use `sudo npm`
