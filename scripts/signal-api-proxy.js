@@ -1,7 +1,7 @@
-// TCP proxy: forwards localhost:8090 -> 10.10.50.33:8090
+// TCP proxy: forwards localhost:8090 -> YOUR_SERVER_IP:8090
 // Required because OrbStack Docker containers cannot reach LAN IPs directly
 const net = require('net');
-const REMOTE_HOST = process.env.SIGNAL_API_HOST || '10.10.50.33';
+const REMOTE_HOST = process.env.SIGNAL_API_HOST || 'YOUR_SERVER_IP';
 const REMOTE_PORT = parseInt(process.env.SIGNAL_API_PORT || '8090');
 const LOCAL_PORT = parseInt(process.env.LOCAL_PORT || '8090');
 
