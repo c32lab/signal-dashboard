@@ -49,7 +49,7 @@ export default function AccuracyLeaderboard({ data }: { data: PerformanceSymbol[
             width={44}
           />
           <Tooltip
-            formatter={(value: number | undefined) => [`${Number(value ?? 0).toFixed(1)}%`, 'Accuracy']}
+            formatter={(value) => [`${Number(value ?? 0).toFixed(1)}%`, 'Accuracy']}
             {...TOOLTIP_STYLE}
           />
           <Bar dataKey="accuracy_pct" name="Accuracy" radius={[0, 4, 4, 0]} fill="#6b7280" isAnimationActive={false}>

@@ -68,8 +68,8 @@ export function SourceBias({ data }: { data: BiasResponse }) {
             width={90}
           />
           <Tooltip
-            formatter={(value: number | undefined) => [
-              `${(value ?? 0) >= 0 ? '+' : ''}${Number(value ?? 0).toFixed(3)}`,
+            formatter={(value) => [
+              `${Number(value ?? 0) >= 0 ? '+' : ''}${Number(value ?? 0).toFixed(3)}`,
               'Bias Score',
             ]}
             {...TOOLTIP_STYLE}

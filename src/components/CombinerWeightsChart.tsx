@@ -65,8 +65,8 @@ export default function CombinerWeightsChart({ entries }: CombinerWeightsChartPr
           width={isMobile ? 60 : 76}
         />
         <Tooltip
-          formatter={(value: number | undefined) => [
-            `${((value ?? 0) * 100).toFixed(1)}%`, // weight: decimal_0_1 → ×100
+          formatter={(value) => [
+            `${(Number(value ?? 0) * 100).toFixed(1)}%`, // weight: decimal_0_1 → ×100
             'Weight',
           ]}
           {...TOOLTIP_STYLE}

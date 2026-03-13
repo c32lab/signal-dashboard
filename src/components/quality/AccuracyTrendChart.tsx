@@ -66,9 +66,9 @@ export default function AccuracyTrendChart() {
                 width={36}
               />
               <Tooltip
-                formatter={(value: number | undefined, name?: string) => [
+                formatter={(value, name) => [
                   `${Number(value ?? 0).toFixed(1)}%`,
-                  name ?? '',
+                  String(name ?? ''),
                 ]}
                 {...TOOLTIP_STYLE}
               />

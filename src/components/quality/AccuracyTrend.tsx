@@ -79,7 +79,7 @@ export default function AccuracyTrend({
                 width={36}
               />
               <Tooltip
-                formatter={(value: number | undefined, name?: string) => [`${Number(value ?? 0).toFixed(1)}%`, name ?? '']}
+                formatter={(value, name) => [`${Number(value ?? 0).toFixed(1)}%`, String(name ?? '')]}
                 {...TOOLTIP_STYLE}
               />
               <Legend wrapperStyle={{ fontSize: 12, color: '#9ca3af' }} />

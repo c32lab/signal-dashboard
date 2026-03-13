@@ -70,7 +70,7 @@ export function PerformanceOverview({ data }: { data: PerformanceResponse }) {
             width={72}
           />
           <Tooltip
-            formatter={(value: number | undefined) => [`${(value ?? 0).toFixed(1)}%`, 'Accuracy']}
+            formatter={(value) => [`${Number(value ?? 0).toFixed(1)}%`, 'Accuracy']}
             {...TOOLTIP_STYLE}
           />
           <ReferenceLine x={50} stroke="#374151" strokeWidth={1} strokeDasharray="4 2" />
