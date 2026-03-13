@@ -38,11 +38,11 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3080,
+    port: 8081,
     proxy: {
-      '/api': 'http://localhost:18810',
+      '/api': 'http://localhost:8090',
       '/predict-api': {
-        target: 'http://localhost:18801',
+        target: 'http://localhost:8092',
         rewrite: (path) => path.replace(/^\/predict-api/, ''),
       },
       '/data-api': {

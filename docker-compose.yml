@@ -2,10 +2,10 @@ services:
   signal-dashboard:
     build: .
     ports:
-      - "3080:3080"
+      - "8081:8081"
     environment:
-      - SIGNAL_API_UPSTREAM=${SIGNAL_API_UPSTREAM:-host.docker.internal:18810}
-      - PREDICT_API_UPSTREAM=${PREDICT_API_UPSTREAM:-host.docker.internal:18801}
+      - SIGNAL_API_UPSTREAM=${SIGNAL_API_UPSTREAM:-host.docker.internal:8090}
+      - PREDICT_API_UPSTREAM=${PREDICT_API_UPSTREAM:-host.docker.internal:8092}
       - DATA_API_UPSTREAM=${DATA_API_UPSTREAM:-host.docker.internal:8081}
     restart: unless-stopped
     mem_limit: 256m
@@ -13,7 +13,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3080/"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8081/"]
       interval: 30s
       timeout: 5s
       retries: 3

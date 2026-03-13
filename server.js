@@ -4,15 +4,15 @@ import { fileURLToPath } from "url";
 import path from "path";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PORT = 3080;
+const PORT = 8081;
 
 function toUrl(raw, fallback) {
   const val = raw || fallback;
   return val.startsWith("http") ? val : `http://${val}`;
 }
 
-const signalApi = toUrl(process.env.SIGNAL_API_UPSTREAM, "localhost:18810");
-const predictApi = toUrl(process.env.PREDICT_API_UPSTREAM, "localhost:18801");
+const signalApi = toUrl(process.env.SIGNAL_API_UPSTREAM, "localhost:8090");
+const predictApi = toUrl(process.env.PREDICT_API_UPSTREAM, "localhost:8092");
 const dataApi = toUrl(process.env.DATA_API_UPSTREAM, "localhost:8081");
 
 const app = express();

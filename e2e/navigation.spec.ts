@@ -49,7 +49,7 @@ test.describe('Navigation', () => {
 
     // Navigate back home
     await page.getByRole('link', { name: /Overview/ }).click()
-    await expect(page).toHaveURL(/^\/$|localhost:3080\/$/)
+    await expect(page).toHaveURL(/^\/$|localhost:8081\/$/)
   })
 
   test('advanced dropdown reveals quality and system health links', async ({ page }) => {

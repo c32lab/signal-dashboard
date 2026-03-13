@@ -35,7 +35,7 @@ export const SIGNAL_FIELDS = {
   'raw.suggested_take_profit': { format: 'usd_price',   display: 'display as-is', example: '69800.0' },
 } as const
 
-// ─── Predict API (:18801) ────────────────────────────────────────────────────
+// ─── Predict API (:8092) ─────────────────────────────────────────────────────
 
 export const PREDICT_FIELDS = {
   // /api/prediction → macro

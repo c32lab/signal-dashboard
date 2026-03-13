@@ -27,7 +27,7 @@ jobs:
           sleep 10
           PORT=""
           case "${{ github.event.repository.name }}" in
-            signal-dashboard) PORT=3080 ;;
+            signal-dashboard) PORT=8081 ;;
             predict-dashboard) PORT=18828 ;;
             dashboard-portal) PORT=8080 ;;
           esac
