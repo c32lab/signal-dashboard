@@ -43,7 +43,7 @@ describe('api', () => {
 
     const result = await api.health()
     expect(result).toEqual(data)
-    expect(mockFetch).toHaveBeenCalledWith('/api/health')
+    expect(mockFetch).toHaveBeenCalledWith('./api/health')
   })
 
   it('decisions() with no params calls /api/decisions', async () => {
@@ -52,7 +52,7 @@ describe('api', () => {
 
     const result = await api.decisions()
     expect(result).toEqual(data)
-    expect(mockFetch).toHaveBeenCalledWith('/api/decisions')
+    expect(mockFetch).toHaveBeenCalledWith('./api/decisions')
   })
 
   it('decisions() with params appends query string', async () => {
@@ -61,7 +61,7 @@ describe('api', () => {
 
     await api.decisions({ limit: 10, symbol: 'BTC/USDT', from: '2025-01-01' })
     const url = mockFetch.mock.calls[0][0] as string
-    expect(url).toContain('/api/decisions?')
+    expect(url).toContain('./api/decisions?')
     expect(url).toContain('limit=10')
     expect(url).toContain('symbol=BTC%2FUSDT')
     expect(url).toContain('from=2025-01-01')
@@ -102,14 +102,14 @@ describe('api', () => {
     mockFetch.mockResolvedValue(okResponse({ total_decisions: 100 }))
     const result = await api.overview()
     expect(result).toEqual({ total_decisions: 100 })
-    expect(mockFetch).toHaveBeenCalledWith('/api/overview')
+    expect(mockFetch).toHaveBeenCalledWith('./api/overview')
   })
 
   it('decision(id) calls /api/decisions/:id', async () => {
     mockFetch.mockResolvedValue(okResponse({ id: '123' }))
     const result = await api.decision('123')
     expect(result).toEqual({ id: '123' })
-    expect(mockFetch).toHaveBeenCalledWith('/api/decisions/123')
+    expect(mockFetch).toHaveBeenCalledWith('./api/decisions/123')
   })
 
   it('signalsLatest() extracts signals array', async () => {
@@ -117,31 +117,31 @@ describe('api', () => {
     mockFetch.mockResolvedValue(okResponse({ signals }))
     const result = await api.signalsLatest()
     expect(result).toEqual(signals)
-    expect(mockFetch).toHaveBeenCalledWith('/api/signals/latest')
+    expect(mockFetch).toHaveBeenCalledWith('./api/signals/latest')
   })
 
   it('performance() calls /api/performance', async () => {
     mockFetch.mockResolvedValue(okResponse({ overall: {} }))
     await api.performance()
-    expect(mockFetch).toHaveBeenCalledWith('/api/performance')
+    expect(mockFetch).toHaveBeenCalledWith('./api/performance')
   })
 
   it('confidence() calls /api/confidence', async () => {
     mockFetch.mockResolvedValue(okResponse({ buckets: [] }))
     await api.confidence()
-    expect(mockFetch).toHaveBeenCalledWith('/api/confidence')
+    expect(mockFetch).toHaveBeenCalledWith('./api/confidence')
   })
 
   it('signalQuality() includes hours param', async () => {
     mockFetch.mockResolvedValue(okResponse({ by_symbol: {} }))
     await api.signalQuality(12)
-    expect(mockFetch).toHaveBeenCalledWith('/api/signal_quality?hours=12')
+    expect(mockFetch).toHaveBeenCalledWith('./api/signal_quality?hours=12')
   })
 
   it('signalQuality() defaults to 6 hours', async () => {
     mockFetch.mockResolvedValue(okResponse({ by_symbol: {} }))
     await api.signalQuality()
-    expect(mockFetch).toHaveBeenCalledWith('/api/signal_quality?hours=6')
+    expect(mockFetch).toHaveBeenCalledWith('./api/signal_quality?hours=6')
   })
 
   it('accuracyTrend() extracts trend array', async () => {
@@ -149,43 +149,43 @@ describe('api', () => {
     mockFetch.mockResolvedValue(okResponse({ trend }))
     const result = await api.accuracyTrend()
     expect(result).toEqual(trend)
-    expect(mockFetch).toHaveBeenCalledWith('/api/accuracy/trend?hours=24')
+    expect(mockFetch).toHaveBeenCalledWith('./api/accuracy/trend?hours=24')
   })
 
   it('accuracyTrend() accepts custom hours', async () => {
     mockFetch.mockResolvedValue(okResponse({ trend: [] }))
     await api.accuracyTrend(12)
-    expect(mockFetch).toHaveBeenCalledWith('/api/accuracy/trend?hours=12')
+    expect(mockFetch).toHaveBeenCalledWith('./api/accuracy/trend?hours=12')
   })
 
   it('accuracy() calls /api/accuracy', async () => {
     mockFetch.mockResolvedValue(okResponse({ overall: {} }))
     await api.accuracy()
-    expect(mockFetch).toHaveBeenCalledWith('/api/accuracy')
+    expect(mockFetch).toHaveBeenCalledWith('./api/accuracy')
   })
 
   it('combinerWeights() calls /api/combiner_weights', async () => {
     mockFetch.mockResolvedValue(okResponse({ weights: {} }))
     await api.combinerWeights()
-    expect(mockFetch).toHaveBeenCalledWith('/api/combiner_weights')
+    expect(mockFetch).toHaveBeenCalledWith('./api/combiner_weights')
   })
 
   it('bias() calls /api/bias', async () => {
     mockFetch.mockResolvedValue(okResponse({ collectors: {} }))
     await api.bias()
-    expect(mockFetch).toHaveBeenCalledWith('/api/bias')
+    expect(mockFetch).toHaveBeenCalledWith('./api/bias')
   })
 
   it('collectorHealth() calls /api/collector-health', async () => {
     mockFetch.mockResolvedValue(okResponse({ collectors: [] }))
     await api.collectorHealth()
-    expect(mockFetch).toHaveBeenCalledWith('/api/collector-health')
+    expect(mockFetch).toHaveBeenCalledWith('./api/collector-health')
   })
 
   it('tradingSummary() calls /api/trading/summary', async () => {
     mockFetch.mockResolvedValue(okResponse({ balance: 1000 }))
     await api.tradingSummary()
-    expect(mockFetch).toHaveBeenCalledWith('/api/trading/summary')
+    expect(mockFetch).toHaveBeenCalledWith('./api/trading/summary')
   })
 
   it('backtest() handles missing results field', async () => {

@@ -18,7 +18,7 @@ import type {
 import { normalizeBacktestResults } from '../utils/backtestNormalizer'
 import type { TradingSummary } from '../types/trading'
 
-const BASE_URL = import.meta.env.VITE_SIGNAL_API_URL || ''
+const BASE_URL = import.meta.env.VITE_SIGNAL_API_URL || '.'
 
 async function fetcher<T>(url: string): Promise<T> {
   const res = await fetch(url)
