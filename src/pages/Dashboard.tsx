@@ -7,6 +7,7 @@ import LastUpdated from '../components/LastUpdated'
 import SectionErrorBoundary from '../components/SectionErrorBoundary'
 import TradingStatus from '../components/TradingStatus'
 import ForecastPanel from '../components/forecast/ForecastPanel'
+import { EventCalendar, UpcomingAlerts } from '../components/events'
 import SectionSkeleton from '../components/ui/SectionSkeleton'
 import EmptyState from '../components/ui/EmptyState'
 import { useOverview, useBias, useHealth, usePerformance, useAccuracy } from '../hooks/useApi'
@@ -96,6 +97,12 @@ export default function Dashboard() {
       )}
       <SectionErrorBoundary title="Live Signal Feed">
         <LiveSignalFeed />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary title="Event Calendar">
+        <EventCalendar />
+      </SectionErrorBoundary>
+      <SectionErrorBoundary title="Upcoming Alerts">
+        <UpcomingAlerts />
       </SectionErrorBoundary>
       <SectionErrorBoundary title="KPI Panel">
         <KPIPanel />
