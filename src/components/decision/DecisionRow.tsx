@@ -1,6 +1,7 @@
 import type { Decision } from '../../types'
 import { validatePrice, validateConfidence } from '../../utils/dataValidation'
 import { formatPrice } from '../../utils/format'
+import { parseCalibratedConfidence } from '../../utils/parseCalibrated'
 import DataWarning from '../DataWarning'
 import { directionBadge, typeBadge, formatTs } from './decisionHelpers'
 
@@ -43,9 +44,16 @@ export default function DecisionRow({ d }: { d: Decision }) {
             : zeroConf
             ? `Confidence=0 but action=${d.action}`
             : undefined
+          const rawPct = Math.round(d.confidence * 100)
+          const cal = d.calibrated_confidence ?? parseCalibratedConfidence(d.raw_json)
+          const calPct = cal != null ? Math.round(cal * 100) : null
+          const showCal = calPct != null && Math.abs(calPct - rawPct) > 1
           return (
             <>
-              {Math.round(d.confidence * 100)}% {/* confidence: decimal_0_1 → ×100 */}
+              {rawPct}%
+              {showCal && (
+                <span className="text-blue-400" title="Raw → Calibrated"> → {calPct}%</span>
+              )}
               {warn && <DataWarning message={warn} />}
             </>
           )

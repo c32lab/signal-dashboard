@@ -6,8 +6,13 @@ vi.mock('../../hooks/useApi', () => ({
   useRecentDecisions: vi.fn(),
 }))
 
+vi.mock('../../utils/parseCalibrated', () => ({
+  parseCalibratedConfidence: vi.fn(() => null),
+}))
+
 import LiveSignalFeed from '../../components/LiveSignalFeed'
 import { useRecentDecisions } from '../../hooks/useApi'
+import { parseCalibratedConfidence } from '../../utils/parseCalibrated'
 
 const mockUseRecentDecisions = vi.mocked(useRecentDecisions)
 
@@ -84,5 +89,75 @@ describe('LiveSignalFeed', () => {
     } as unknown as ReturnType<typeof useRecentDecisions>)
     render(<LiveSignalFeed />)
     expect(screen.getByText('showing latest 50')).toBeInTheDocument()
+  })
+
+  it('shows calibrated confidence in feed row when available', () => {
+    const decisions = [{
+      id: '1',
+      timestamp: '2026-03-07T01:00:00Z',
+      symbol: 'BTC/USDT',
+      action: 'LONG',
+      direction: 'LONG',
+      confidence: 0.52,
+      calibrated_confidence: 0.61,
+      decision_type: 'FAST',
+      combined_score: 0.5,
+      reasoning: '',
+      price_at_decision: 60000,
+    }]
+    mockUseRecentDecisions.mockReturnValue({
+      data: { decisions, total: 1, limit: 60, offset: 0 },
+      isLoading: false, error: undefined,
+    } as unknown as ReturnType<typeof useRecentDecisions>)
+    render(<LiveSignalFeed />)
+    expect(screen.getByText('52→')).toBeInTheDocument()
+    expect(screen.getByText('61%')).toBeInTheDocument()
+  })
+
+  it('shows only raw confidence when calibrated is not available', () => {
+    const decisions = [{
+      id: '1',
+      timestamp: '2026-03-07T01:00:00Z',
+      symbol: 'BTC/USDT',
+      action: 'LONG',
+      direction: 'LONG',
+      confidence: 0.70,
+      decision_type: 'FAST',
+      combined_score: 0.5,
+      reasoning: '',
+      price_at_decision: 60000,
+    }]
+    mockUseRecentDecisions.mockReturnValue({
+      data: { decisions, total: 1, limit: 60, offset: 0 },
+      isLoading: false, error: undefined,
+    } as unknown as ReturnType<typeof useRecentDecisions>)
+    render(<LiveSignalFeed />)
+    expect(screen.getByText('70%')).toBeInTheDocument()
+    expect(screen.queryByText(/→/)).not.toBeInTheDocument()
+  })
+
+  it('falls back to parseCalibratedConfidence from raw_json', () => {
+    const mockParse = vi.mocked(parseCalibratedConfidence)
+    mockParse.mockReturnValueOnce(0.80)
+    const decisions = [{
+      id: '1',
+      timestamp: '2026-03-07T01:00:00Z',
+      symbol: 'BTC/USDT',
+      action: 'LONG',
+      direction: 'LONG',
+      confidence: 0.52,
+      decision_type: 'FAST',
+      combined_score: 0.5,
+      reasoning: '',
+      price_at_decision: 60000,
+      raw_json: '{"combined":{"calibrated_confidence":0.80}}',
+    }]
+    mockUseRecentDecisions.mockReturnValue({
+      data: { decisions, total: 1, limit: 60, offset: 0 },
+      isLoading: false, error: undefined,
+    } as unknown as ReturnType<typeof useRecentDecisions>)
+    render(<LiveSignalFeed />)
+    expect(screen.getByText('52→')).toBeInTheDocument()
+    expect(screen.getByText('80%')).toBeInTheDocument()
   })
 })

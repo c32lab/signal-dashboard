@@ -7,6 +7,10 @@ vi.mock('../../../utils/format', () => ({
   formatDateTime: (v: string) => v,
 }))
 
+vi.mock('../../../utils/parseCalibrated', () => ({
+  parseCalibratedConfidence: vi.fn(() => null),
+}))
+
 type ValidationResult = { valid: boolean; warning?: string }
 const mockValidatePrice = vi.fn((): ValidationResult => ({ valid: true }))
 const mockValidateConfidence = vi.fn((): ValidationResult => ({ valid: true }))
@@ -21,6 +25,7 @@ vi.mock('../../../components/DataWarning', () => ({
 }))
 
 import { DecisionRow } from '../../../components/decision'
+import { parseCalibratedConfidence } from '../../../utils/parseCalibrated'
 import type { Decision } from '../../../types'
 
 const baseDecision: Decision = {
@@ -145,5 +150,31 @@ describe('DecisionRow', () => {
   it('renders SLOW type badge', () => {
     render(<table><tbody><DecisionRow d={{ ...baseDecision, decision_type: 'SLOW' }} /></tbody></table>)
     expect(screen.getByText('SLOW')).toBeInTheDocument()
+  })
+
+  it('shows calibrated confidence from calibrated_confidence field', () => {
+    render(<table><tbody><DecisionRow d={{ ...baseDecision, confidence: 0.52, calibrated_confidence: 0.61 }} /></tbody></table>)
+    expect(screen.getByText('52%')).toBeInTheDocument()
+    expect(screen.getByText(/→ 61%/)).toBeInTheDocument()
+  })
+
+  it('shows calibrated confidence parsed from raw_json', () => {
+    const mockParse = vi.mocked(parseCalibratedConfidence)
+    mockParse.mockReturnValueOnce(0.75)
+    render(<table><tbody><DecisionRow d={{ ...baseDecision, confidence: 0.52 }} /></tbody></table>)
+    expect(screen.getByText('52%')).toBeInTheDocument()
+    expect(screen.getByText(/→ 75%/)).toBeInTheDocument()
+  })
+
+  it('does not show calibrated when difference is 1% or less', () => {
+    render(<table><tbody><DecisionRow d={{ ...baseDecision, confidence: 0.52, calibrated_confidence: 0.525 }} /></tbody></table>)
+    expect(screen.getByText(/52%/)).toBeInTheDocument()
+    expect(screen.queryByText(/→/)).not.toBeInTheDocument()
+  })
+
+  it('does not show calibrated when not available', () => {
+    render(<table><tbody><DecisionRow d={{ ...baseDecision, confidence: 0.85 }} /></tbody></table>)
+    expect(screen.getByText(/85%/)).toBeInTheDocument()
+    expect(screen.queryByText(/→/)).not.toBeInTheDocument()
   })
 })

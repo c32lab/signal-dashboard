@@ -10,6 +10,7 @@ export interface Decision {
   reasoning: string
   price_at_decision: number
   raw_json?: string
+  calibrated_confidence?: number
 }
 
 export interface DecisionsResponse {
@@ -31,6 +32,7 @@ export interface Signal {
   reasoning: string
   price_at_decision: number
   raw_json?: string
+  calibrated_confidence?: number
 }
 
 export interface Overview {

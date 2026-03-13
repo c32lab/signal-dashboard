@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useRecentDecisions } from '../hooks/useApi'
 import type { Decision } from '../types'
 import { formatTime } from '../utils/format'
+import { parseCalibratedConfidence } from '../utils/parseCalibrated'
 
 function actionBadgeClass(action: string): string {
   switch (action?.toUpperCase()) {
@@ -32,14 +33,23 @@ function formatTimeFeed(ts: string): string {
   return formatTime(ts)
 }
 
-function ConfidenceBar({ value }: { value: number }) {
-  const pct = Math.round(value * 100)
+function ConfidenceBar({ value, calibrated }: { value: number; calibrated?: number | null }) {
+  const rawPct = Math.round(value * 100)
+  const calPct = calibrated != null ? Math.round(calibrated * 100) : null
+  const barPct = calPct ?? rawPct
   return (
     <div className="flex items-center gap-1.5">
       <div className="w-14 bg-gray-800 rounded-full h-1.5 overflow-hidden">
-        <div className="h-full bg-blue-500 rounded-full" style={{ width: `${pct}%` }} />
+        <div className="h-full bg-blue-500 rounded-full" style={{ width: `${barPct}%` }} />
       </div>
-      <span className="text-gray-400 font-mono w-8 text-right shrink-0">{pct}%</span>
+      {calPct != null ? (
+        <span className="font-mono w-14 text-right shrink-0" title="Raw → Calibrated">
+          <span className="text-gray-500">{rawPct}→</span>
+          <span className="text-blue-400">{calPct}%</span>
+        </span>
+      ) : (
+        <span className="text-gray-400 font-mono w-8 text-right shrink-0">{rawPct}%</span>
+      )}
     </div>
   )
 }
@@ -55,7 +65,7 @@ function FeedRow({ d }: { d: Decision }) {
       <span className={`px-1.5 py-0.5 rounded-full shrink-0 ${directionBadgeClass(d.direction)}`}>
         {d.direction}
       </span>
-      <ConfidenceBar value={d.confidence} />
+      <ConfidenceBar value={d.confidence} calibrated={d.calibrated_confidence ?? parseCalibratedConfidence(d.raw_json)} />
       <span className="text-gray-400 font-mono shrink-0 w-14 text-right hidden sm:inline">
         {typeof d.combined_score === 'number' ? d.combined_score.toFixed(3) : '—'}
       </span>
