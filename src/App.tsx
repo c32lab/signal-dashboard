@@ -15,6 +15,18 @@ const SystemHealthPage = lazy(() => import('./pages/SystemHealthPage'))
 const TradingDashboard = lazy(() => import('./pages/TradingDashboard'))
 const SignalTimeline = lazy(() => import('./pages/SignalTimeline'))
 
+// Derive BrowserRouter basename from <base href> (set by Vite's `base: './'`).
+// "/signal/" → "/signal", "/" → ""
+function getBasename(): string {
+  try {
+    return new URL(document.baseURI).pathname.replace(/\/+$/, '')
+  } catch {
+    return ''
+  }
+}
+
+const APP_BASENAME = getBasename()
+
 function App() {
   // Preload dynamic price ranges from data-eng API on app mount
   useEffect(() => { fetchDynamicPriceRanges() }, [])
@@ -28,7 +40,7 @@ function App() {
       errorRetryCount: 3,
       errorRetryInterval: 5000,
     }}>
-    <BrowserRouter>
+    <BrowserRouter basename={APP_BASENAME}>
     <SymbolsProvider>
       <div className="bg-gray-950 text-gray-100 min-h-screen">
         <NavBar />
