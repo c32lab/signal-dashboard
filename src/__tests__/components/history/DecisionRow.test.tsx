@@ -7,12 +7,17 @@ vi.mock('../../../utils/dataValidation', () => ({
   validateConfidence: vi.fn(() => ({ valid: true })),
 }))
 
+vi.mock('../../../utils/parseCalibrated', () => ({
+  parseCalibratedConfidence: vi.fn(() => null),
+}))
+
 vi.mock('../../../components/DataWarning', () => ({
   default: ({ message }: { message: string }) => <span data-testid="data-warning">{message}</span>,
 }))
 
 import DecisionRow from '../../../components/history/DecisionRow'
 import { validateConfidence } from '../../../utils/dataValidation'
+import { parseCalibratedConfidence } from '../../../utils/parseCalibrated'
 import type { Decision } from '../../../types'
 
 const baseDecision: Decision = {
@@ -116,5 +121,30 @@ describe('DecisionRow', () => {
   it('renders SHORT action and direction', () => {
     renderRow({ action: 'SHORT', direction: 'SHORT' })
     expect(screen.getAllByText('SHORT')).toHaveLength(2)
+  })
+
+  it('shows calibrated confidence from calibrated_confidence field', () => {
+    renderRow({ confidence: 0.52, calibrated_confidence: 0.61 })
+    expect(screen.getByText('52%')).toBeInTheDocument()
+    expect(screen.getByText(/→ 61%/)).toBeInTheDocument()
+  })
+
+  it('shows calibrated confidence parsed from raw_json', () => {
+    vi.mocked(parseCalibratedConfidence).mockReturnValueOnce(0.75)
+    renderRow({ confidence: 0.52 })
+    expect(screen.getByText('52%')).toBeInTheDocument()
+    expect(screen.getByText(/→ 75%/)).toBeInTheDocument()
+  })
+
+  it('does not show calibrated when difference is 1% or less', () => {
+    renderRow({ confidence: 0.52, calibrated_confidence: 0.525 })
+    expect(screen.getByText(/52%/)).toBeInTheDocument()
+    expect(screen.queryByText(/→/)).not.toBeInTheDocument()
+  })
+
+  it('does not show calibrated when not available', () => {
+    renderRow({ confidence: 0.85 })
+    expect(screen.getByText(/85%/)).toBeInTheDocument()
+    expect(screen.queryByText(/→/)).not.toBeInTheDocument()
   })
 })
