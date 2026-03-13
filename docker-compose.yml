@@ -1,6 +1,6 @@
 services:
   signal-dashboard:
-    build: .
+    image: ghcr.io/c32lab/signal-dashboard:latest
     ports:
       - "8081:8081"
     environment:
