@@ -62,3 +62,16 @@ jobs:
             echo "❌ Health check failed (HTTP $STATUS)"
             exit 1
           fi
+
+      - name: Cleanup old images
+        if: success()
+        run: |
+          echo "--- Pruning dangling images ---"
+          docker image prune -f
+          echo "--- Removing old ghcr.io/c32lab images (keep latest 3) ---"
+          for repo in signal-dashboard; do
+            docker images "ghcr.io/c32lab/${repo}" --format "{{.ID}} {{.CreatedAt}}" | \
+              sort -k2 -r | awk 'NR>3 {print $1}' | xargs -r docker rmi -f 2>/dev/null || true
+          done
+          echo "--- Disk usage ---"
+          df -h / | tail -1
