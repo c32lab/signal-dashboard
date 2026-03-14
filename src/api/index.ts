@@ -15,6 +15,11 @@ import type {
   BiasResponse,
   CollectorHealthResponse,
 } from '../types'
+import type {
+  OrderbookFlowApiResponse,
+  LargeOrderApiResponse,
+  CvdApiResponse,
+} from '../components/orderbook/types'
 import { normalizeBacktestResults } from '../utils/backtestNormalizer'
 import type { TradingSummary } from '../types/trading'
 
@@ -89,4 +94,13 @@ export const api = {
 
   tradingSummary: () =>
     fetcher<TradingSummary>(`${BASE_URL}/api/trading/summary`),
+
+  orderbookFlow: (symbol?: string) =>
+    fetcher<OrderbookFlowApiResponse>(`${BASE_URL}/api/orderbook/flow${symbol ? `?symbol=${symbol}` : ''}`),
+
+  orderbookLargeOrders: (symbol?: string) =>
+    fetcher<LargeOrderApiResponse>(`${BASE_URL}/api/orderbook/large-orders${symbol ? `?symbol=${symbol}` : ''}`),
+
+  orderbookCvd: (symbol?: string) =>
+    fetcher<CvdApiResponse>(`${BASE_URL}/api/orderbook/cvd${symbol ? `?symbol=${symbol}` : ''}`),
 }

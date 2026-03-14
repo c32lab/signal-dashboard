@@ -1,4 +1,6 @@
 import { mockLargeOrders } from './mockData'
+import { useOrderbookLargeOrders } from '../../hooks/useApi'
+import { apiLargeOrderToDisplay } from './types'
 import type { LargeOrder } from './types'
 
 function formatTime(iso: string): string {
@@ -36,14 +38,35 @@ function SideBadge({ side }: { side: LargeOrder['side'] }) {
 }
 
 export default function LargeOrderAlerts() {
-  const sorted = [...mockLargeOrders].sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-  )
-  const orders = sorted.slice(0, 10)
+  const { data: apiData, error } = useOrderbookLargeOrders('BTCUSDT')
+  const isLive = apiData && !error
+
+  let orders: LargeOrder[]
+  if (isLive) {
+    orders = apiData.large_orders
+      .map((item) => apiLargeOrderToDisplay(item, apiData.symbol))
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, 10)
+  } else {
+    orders = [...mockLargeOrders]
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, 10)
+  }
 
   return (
     <div>
-      <h3 className="text-sm font-semibold text-gray-200 mb-3">Large Order Alerts</h3>
+      <div className="flex items-center gap-2 mb-3">
+        <h3 className="text-sm font-semibold text-gray-200">Large Order Alerts</h3>
+        {isLive ? (
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-900/40 text-green-400 border border-green-800/50">
+            LIVE
+          </span>
+        ) : (
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-900/40 text-yellow-500 border border-yellow-800/50">
+            MOCK
+          </span>
+        )}
+      </div>
       {orders.length === 0 ? (
         <p className="text-gray-600 text-xs py-4">No large orders detected</p>
       ) : (

@@ -81,3 +81,15 @@ export function useRecentDecisions(minutes: number) {
     { refreshInterval: 15_000 },
   )
 }
+
+export function useOrderbookFlow(symbol?: string) {
+  return useSWR(['orderbook/flow', symbol], () => api.orderbookFlow(symbol), { refreshInterval: REFRESH_INTERVAL })
+}
+
+export function useOrderbookLargeOrders(symbol?: string) {
+  return useSWR(['orderbook/large-orders', symbol], () => api.orderbookLargeOrders(symbol), { refreshInterval: REFRESH_INTERVAL })
+}
+
+export function useOrderbookCvd(symbol?: string) {
+  return useSWR(['orderbook/cvd', symbol], () => api.orderbookCvd(symbol), { refreshInterval: REFRESH_INTERVAL })
+}
