@@ -1,5 +1,6 @@
 import TradeFlowChart from './TradeFlowChart'
 import LargeOrderAlerts from './LargeOrderAlerts'
+import CvdDivergenceChart from './CvdDivergenceChart'
 
 export default function OrderbookPanel() {
   return (
@@ -10,6 +11,7 @@ export default function OrderbookPanel() {
       <div className="px-4 pb-4 space-y-6">
         <TradeFlowChart />
         <LargeOrderAlerts />
+        <CvdDivergenceChart />
       </div>
     </section>
   )
