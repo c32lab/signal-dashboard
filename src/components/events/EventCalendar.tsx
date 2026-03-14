@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import type { ForwardEvent } from './types'
 import { mockForwardEvents } from './mockData'
+import { useForwardEvents } from '../../hooks/useForwardEvents'
 import { DIRECTION_COLOR, DIRECTION_ARROW } from './eventUtils'
 
 function impactDot(impact: ForwardEvent['impact']) {
@@ -128,9 +129,13 @@ function EventCard({
 export default function EventCalendar() {
   const [collapsed, setCollapsed] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const { events: liveEvents, error, isLoading } = useForwardEvents()
+
+  const useFallback = !!error || (!isLoading && liveEvents.length === 0)
+  const events = useFallback ? mockForwardEvents : liveEvents
 
   const grouped = useMemo(() => {
-    const sorted = [...mockForwardEvents].sort((a, b) => a.days_until - b.days_until)
+    const sorted = [...events].sort((a, b) => a.days_until - b.days_until)
     const map = new Map<number, ForwardEvent[]>()
     for (const ev of sorted) {
       const day = ev.days_until
@@ -138,7 +143,7 @@ export default function EventCalendar() {
       map.get(day)!.push(ev)
     }
     return map
-  }, [])
+  }, [events])
 
   const dayLabel = (d: number) =>
     d === 0 ? 'Today' : d === 1 ? 'Tomorrow' : `Day +${d}`
@@ -151,6 +156,11 @@ export default function EventCalendar() {
             Event Calendar
           </span>
           <span className="text-xs text-gray-500">Next 7 days</span>
+          {useFallback && (
+            <span className="text-xs text-yellow-500/80 bg-yellow-500/10 px-1.5 py-0.5 rounded">
+              demo data
+            </span>
+          )}
         </div>
         <button
           onClick={() => setCollapsed((c) => !c)}
@@ -162,7 +172,13 @@ export default function EventCalendar() {
 
       {!collapsed && (
         <div className="px-4 pb-4">
-          {grouped.size === 0 ? (
+          {isLoading ? (
+            <div className="flex gap-3 py-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="min-w-[220px] h-24 bg-gray-800/50 rounded-lg animate-pulse" />
+              ))}
+            </div>
+          ) : grouped.size === 0 ? (
             <p className="text-gray-600 text-xs py-4">
               No upcoming events in the next 7 days
             </p>

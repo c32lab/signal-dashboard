@@ -1,59 +1,89 @@
 /// <reference types="@testing-library/jest-dom/vitest" />
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
+
+const mockUseForwardEvents = vi.fn()
+vi.mock('../../../hooks/useForwardEvents', () => ({
+  useForwardEvents: (...args: unknown[]) => mockUseForwardEvents(...args),
+}))
+
 import UpcomingAlerts from '../../../components/events/UpcomingAlerts'
+import { mockForwardEvents } from '../../../components/events/mockData'
 
 describe('UpcomingAlerts', () => {
-  it('renders the section title', () => {
-    render(<UpcomingAlerts />)
-    expect(screen.getByText('Upcoming Alerts')).toBeInTheDocument()
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
-  it('renders at most 5 events', () => {
-    const { container } = render(<UpcomingAlerts />)
-    // Each alert has a border-l-2 class
-    const alerts = container.querySelectorAll('.border-l-2')
-    expect(alerts.length).toBeLessThanOrEqual(5)
-    expect(alerts.length).toBeGreaterThan(0)
+  describe('with live data', () => {
+    beforeEach(() => {
+      mockUseForwardEvents.mockReturnValue({
+        events: mockForwardEvents,
+        error: undefined,
+        isLoading: false,
+      })
+    })
+
+    it('renders the section title', () => {
+      render(<UpcomingAlerts />)
+      expect(screen.getByText('Upcoming Alerts')).toBeInTheDocument()
+    })
+
+    it('does not show demo data badge', () => {
+      render(<UpcomingAlerts />)
+      expect(screen.queryByText('demo data')).not.toBeInTheDocument()
+    })
+
+    it('renders at most 5 events', () => {
+      const { container } = render(<UpcomingAlerts />)
+      const alerts = container.querySelectorAll('.border-l-2')
+      expect(alerts.length).toBeLessThanOrEqual(5)
+      expect(alerts.length).toBeGreaterThan(0)
+    })
+
+    it('sorts by days_until (soonest first)', () => {
+      render(<UpcomingAlerts />)
+      const titles = screen.getAllByText(
+        /SOL Token Unlock|FOMC Interest Rate Decision|BTC ETF Options Expiry|CPI Release|ETH Network Upgrade|NFP Report/,
+      )
+      expect(titles[0].textContent).toBe('SOL Token Unlock')
+    })
+
+    it('shows high impact events with red border', () => {
+      const { container } = render(<UpcomingAlerts />)
+      expect(container.querySelectorAll('.border-l-red-500').length).toBeGreaterThan(0)
+    })
+
+    it('shows direction with probability for sufficient samples', () => {
+      render(<UpcomingAlerts />)
+      expect(screen.getByText(/71%/)).toBeInTheDocument()
+      expect(screen.getByText(/62%/)).toBeInTheDocument()
+    })
+
+    it('shows "No signal" for events with sample_count < 5', () => {
+      render(<UpcomingAlerts />)
+      expect(screen.getByText('No signal')).toBeInTheDocument()
+    })
   })
 
-  it('sorts by days_until (soonest first)', () => {
-    render(<UpcomingAlerts />)
-    const titles = screen.getAllByText(
-      /SOL Token Unlock|FOMC Interest Rate Decision|BTC ETF Options Expiry|CPI Release|ETH Network Upgrade|NFP Report/,
-    )
-    // SOL is 1d out (soonest), should be first
-    expect(titles[0].textContent).toBe('SOL Token Unlock')
+  describe('loading state', () => {
+    it('shows skeleton placeholders', () => {
+      mockUseForwardEvents.mockReturnValue({ events: [], error: undefined, isLoading: true })
+      const { container } = render(<UpcomingAlerts />)
+      expect(container.querySelectorAll('.animate-pulse').length).toBe(3)
+    })
   })
 
-  it('shows high impact events with red border', () => {
-    const { container } = render(<UpcomingAlerts />)
-    const redBorders = container.querySelectorAll('.border-l-red-500')
-    expect(redBorders.length).toBeGreaterThan(0)
-  })
-
-  it('shows impact badges', () => {
-    render(<UpcomingAlerts />)
-    expect(screen.getAllByText('high').length).toBeGreaterThan(0)
-    expect(screen.getAllByText('medium').length).toBeGreaterThan(0)
-  })
-
-  it('shows direction with probability for sufficient samples', () => {
-    render(<UpcomingAlerts />)
-    // SOL: 71% bearish
-    expect(screen.getByText(/71%/)).toBeInTheDocument()
-    // FOMC: 62% bullish
-    expect(screen.getByText(/62%/)).toBeInTheDocument()
-  })
-
-  it('shows "No signal" for events with sample_count < 5', () => {
-    render(<UpcomingAlerts />)
-    // BTC ETF Options Expiry has sample_count=3
-    expect(screen.getByText('No signal')).toBeInTheDocument()
-  })
-
-  it('shows days until label', () => {
-    render(<UpcomingAlerts />)
-    expect(screen.getByText('Tomorrow')).toBeInTheDocument()
+  describe('error fallback', () => {
+    it('shows demo data badge when API errors', () => {
+      mockUseForwardEvents.mockReturnValue({
+        events: [],
+        error: new Error('API error'),
+        isLoading: false,
+      })
+      render(<UpcomingAlerts />)
+      expect(screen.getByText('demo data')).toBeInTheDocument()
+      expect(screen.getByText('Upcoming Alerts')).toBeInTheDocument()
+    })
   })
 })

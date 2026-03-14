@@ -1,3 +1,5 @@
+import type { ForwardEvent } from '../components/events/types'
+
 const PREDICT_BASE = import.meta.env.VITE_PREDICT_API_URL || '/predict-api/api'
 
 export interface PredictPredictionRaw {
@@ -53,4 +55,7 @@ export const predictApi = {
 
   health: () =>
     predictFetcher<PredictHealthResponse>(`${PREDICT_BASE}/health`),
+
+  forwardEvents: () =>
+    predictFetcher<{ events: ForwardEvent[] }>(`${PREDICT_BASE}/events/forward`),
 }

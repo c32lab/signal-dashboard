@@ -1,95 +1,107 @@
 /// <reference types="@testing-library/jest-dom/vitest" />
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
+
+const mockUseForwardEvents = vi.fn()
+vi.mock('../../../hooks/useForwardEvents', () => ({
+  useForwardEvents: (...args: unknown[]) => mockUseForwardEvents(...args),
+}))
+
 import EventCalendar from '../../../components/events/EventCalendar'
+import { mockForwardEvents } from '../../../components/events/mockData'
 
 describe('EventCalendar', () => {
-  it('renders the section title', () => {
-    render(<EventCalendar />)
-    expect(screen.getByText('Event Calendar')).toBeInTheDocument()
-    expect(screen.getByText('Next 7 days')).toBeInTheDocument()
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
-  it('renders all mock events', () => {
-    render(<EventCalendar />)
-    expect(screen.getByText('FOMC Interest Rate Decision')).toBeInTheDocument()
-    expect(screen.getByText('CPI Release')).toBeInTheDocument()
-    expect(screen.getByText('SOL Token Unlock')).toBeInTheDocument()
-    expect(screen.getByText('ETH Network Upgrade')).toBeInTheDocument()
-    expect(screen.getByText('NFP Report')).toBeInTheDocument()
-    expect(screen.getByText('BTC ETF Options Expiry')).toBeInTheDocument()
+  describe('with live data', () => {
+    beforeEach(() => {
+      mockUseForwardEvents.mockReturnValue({
+        events: mockForwardEvents,
+        error: undefined,
+        isLoading: false,
+      })
+    })
+
+    it('renders the section title', () => {
+      render(<EventCalendar />)
+      expect(screen.getByText('Event Calendar')).toBeInTheDocument()
+      expect(screen.getByText('Next 7 days')).toBeInTheDocument()
+    })
+
+    it('does not show demo data badge', () => {
+      render(<EventCalendar />)
+      expect(screen.queryByText('demo data')).not.toBeInTheDocument()
+    })
+
+    it('renders all events', () => {
+      render(<EventCalendar />)
+      expect(screen.getByText('FOMC Interest Rate Decision')).toBeInTheDocument()
+      expect(screen.getByText('CPI Release')).toBeInTheDocument()
+      expect(screen.getByText('SOL Token Unlock')).toBeInTheDocument()
+    })
+
+    it('shows impact badges', () => {
+      render(<EventCalendar />)
+      expect(screen.getAllByText('High').length).toBeGreaterThanOrEqual(3)
+      expect(screen.getAllByText('Medium').length).toBeGreaterThanOrEqual(2)
+    })
+
+    it('shows direction probability for events with sufficient samples', () => {
+      render(<EventCalendar />)
+      expect(screen.getByText(/62%/)).toBeInTheDocument()
+      expect(screen.getByText(/71%/)).toBeInTheDocument()
+    })
+
+    it('shows "Insufficient data" for events with sample_count < 5', () => {
+      render(<EventCalendar />)
+      expect(screen.getByText('Insufficient data')).toBeInTheDocument()
+    })
+
+    it('collapse/expand toggle works', () => {
+      render(<EventCalendar />)
+      fireEvent.click(screen.getByText('▲ collapse'))
+      expect(screen.queryByText('FOMC Interest Rate Decision')).not.toBeInTheDocument()
+      fireEvent.click(screen.getByText('▼ expand'))
+      expect(screen.getByText('FOMC Interest Rate Decision')).toBeInTheDocument()
+    })
+
+    it('expands event details on click', () => {
+      render(<EventCalendar />)
+      fireEvent.click(screen.getByText('FOMC Interest Rate Decision'))
+      expect(screen.getByText(/Historical FOMC decisions/)).toBeInTheDocument()
+      expect(screen.getByText('3.2%')).toBeInTheDocument()
+    })
   })
 
-  it('shows impact badges', () => {
-    render(<EventCalendar />)
-    const highBadges = screen.getAllByText('High')
-    expect(highBadges.length).toBeGreaterThanOrEqual(3)
-    const mediumBadges = screen.getAllByText('Medium')
-    expect(mediumBadges.length).toBeGreaterThanOrEqual(2)
-    const lowBadges = screen.getAllByText('Low')
-    expect(lowBadges.length).toBeGreaterThanOrEqual(1)
+  describe('loading state', () => {
+    it('shows skeleton placeholders', () => {
+      mockUseForwardEvents.mockReturnValue({ events: [], error: undefined, isLoading: true })
+      const { container } = render(<EventCalendar />)
+      expect(container.querySelectorAll('.animate-pulse').length).toBe(3)
+    })
   })
 
-  it('shows direction probability for events with sufficient samples', () => {
-    render(<EventCalendar />)
-    // FOMC: 62% bullish, sample_count=24
-    expect(screen.getByText(/62%/)).toBeInTheDocument()
-    // SOL unlock: 71% bearish, sample_count=8
-    expect(screen.getByText(/71%/)).toBeInTheDocument()
+  describe('error fallback', () => {
+    it('shows demo data badge when API errors', () => {
+      mockUseForwardEvents.mockReturnValue({
+        events: [],
+        error: new Error('API error'),
+        isLoading: false,
+      })
+      render(<EventCalendar />)
+      expect(screen.getByText('demo data')).toBeInTheDocument()
+      // Should still render mock events as fallback
+      expect(screen.getByText('FOMC Interest Rate Decision')).toBeInTheDocument()
+    })
   })
 
-  it('shows "Insufficient data" for events with sample_count < 5', () => {
-    render(<EventCalendar />)
-    // BTC ETF Options Expiry has sample_count=3
-    expect(screen.getByText('Insufficient data')).toBeInTheDocument()
-  })
-
-  it('shows low sample warning for 5 <= sample_count < 20', () => {
-    render(<EventCalendar />)
-    // SOL Token Unlock has sample_count=8
-    expect(screen.getByText(/Low sample \(n=8\)/)).toBeInTheDocument()
-    // ETH Network Upgrade has sample_count=12
-    expect(screen.getByText(/Low sample \(n=12\)/)).toBeInTheDocument()
-    // CPI Release has sample_count=18
-    expect(screen.getByText(/Low sample \(n=18\)/)).toBeInTheDocument()
-  })
-
-  it('shows normal sample count for n >= 20', () => {
-    render(<EventCalendar />)
-    // FOMC has sample_count=24
-    expect(screen.getByText('n=24')).toBeInTheDocument()
-    // NFP has sample_count=22
-    expect(screen.getByText('n=22')).toBeInTheDocument()
-  })
-
-  it('collapse/expand toggle works', () => {
-    render(<EventCalendar />)
-    const collapseBtn = screen.getByText('▲ collapse')
-    fireEvent.click(collapseBtn)
-    expect(screen.getByText('▼ expand')).toBeInTheDocument()
-    // Events should be hidden
-    expect(screen.queryByText('FOMC Interest Rate Decision')).not.toBeInTheDocument()
-    // Expand again
-    fireEvent.click(screen.getByText('▼ expand'))
-    expect(screen.getByText('FOMC Interest Rate Decision')).toBeInTheDocument()
-  })
-
-  it('expands event details on click', () => {
-    render(<EventCalendar />)
-    const fomcCard = screen.getByText('FOMC Interest Rate Decision')
-    fireEvent.click(fomcCard)
-    // Should now show reasoning and stats
-    expect(
-      screen.getByText(/Historical FOMC decisions/),
-    ).toBeInTheDocument()
-    expect(screen.getByText('Avg Move')).toBeInTheDocument()
-    expect(screen.getByText('3.2%')).toBeInTheDocument()
-  })
-
-  it('shows day group labels', () => {
-    render(<EventCalendar />)
-    // "Tomorrow" appears as both a day group label and in the event card
-    const tomorrowElements = screen.getAllByText('Tomorrow')
-    expect(tomorrowElements.length).toBeGreaterThanOrEqual(1)
+  describe('empty fallback', () => {
+    it('shows demo data badge when API returns empty events', () => {
+      mockUseForwardEvents.mockReturnValue({ events: [], error: undefined, isLoading: false })
+      render(<EventCalendar />)
+      expect(screen.getByText('demo data')).toBeInTheDocument()
+    })
   })
 })

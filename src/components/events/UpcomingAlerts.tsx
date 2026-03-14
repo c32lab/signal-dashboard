@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import type { ForwardEvent } from './types'
 import { mockForwardEvents } from './mockData'
+import { useForwardEvents } from '../../hooks/useForwardEvents'
 import { DIRECTION_COLOR, DIRECTION_ARROW, IMPACT_ORDER } from './eventUtils'
 
 function impactBorderClass(impact: ForwardEvent['impact']) {
@@ -35,26 +36,42 @@ function impactLabel(impact: ForwardEvent['impact']) {
 }
 
 export default function UpcomingAlerts() {
+  const { events: liveEvents, error, isLoading } = useForwardEvents()
+
+  const useFallback = !!error || (!isLoading && liveEvents.length === 0)
+  const events = useFallback ? mockForwardEvents : liveEvents
+
   const sorted = useMemo(
     () =>
-      [...mockForwardEvents]
+      [...events]
         .sort((a, b) => {
           if (a.days_until !== b.days_until) return a.days_until - b.days_until
           return IMPACT_ORDER[a.impact] - IMPACT_ORDER[b.impact]
         })
         .slice(0, 5),
-    [],
+    [events],
   )
 
   return (
     <section className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
-      <div className="px-4 py-3">
+      <div className="px-4 py-3 flex items-center gap-2">
         <span className="text-sm font-semibold text-gray-200">
           Upcoming Alerts
         </span>
+        {useFallback && (
+          <span className="text-xs text-yellow-500/80 bg-yellow-500/10 px-1.5 py-0.5 rounded">
+            demo data
+          </span>
+        )}
       </div>
 
-      {sorted.length === 0 ? (
+      {isLoading ? (
+        <div className="px-4 pb-4 space-y-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-14 bg-gray-800/50 rounded-lg animate-pulse" />
+          ))}
+        </div>
+      ) : sorted.length === 0 ? (
         <p className="px-4 pb-4 text-gray-600 text-xs">
           No upcoming alerts
         </p>
