@@ -39,7 +39,7 @@ function SideBadge({ side }: { side: LargeOrder['side'] }) {
 
 export default function LargeOrderAlerts() {
   const { data: apiData, error } = useOrderbookLargeOrders('BTCUSDT')
-  const isLive = apiData && !error
+  const isLive = apiData && !error && Array.isArray(apiData.large_orders)
 
   let orders: LargeOrder[]
   if (isLive) {

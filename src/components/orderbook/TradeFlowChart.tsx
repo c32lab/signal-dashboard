@@ -26,7 +26,7 @@ function formatUsd(value: number): string {
 
 export default function TradeFlowChart() {
   const { data: liveData, error } = useOrderbookFlow('BTCUSDT')
-  const isLive = liveData && !error
+  const isLive = liveData && !error && typeof liveData.buy_volume === 'number'
 
   const chartData = mockTradeFlow.map((p) => ({
     time: formatTime(p.timestamp),
