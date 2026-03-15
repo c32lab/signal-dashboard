@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react'
 import type { ForwardEvent } from './types'
-import { mockForwardEvents } from './mockData'
 import { useForwardEvents } from '../../hooks/useForwardEvents'
 import { DIRECTION_COLOR, DIRECTION_ARROW } from './eventUtils'
 
@@ -129,10 +128,7 @@ function EventCard({
 export default function EventCalendar() {
   const [collapsed, setCollapsed] = useState(false)
   const [expandedId, setExpandedId] = useState<string | null>(null)
-  const { events: liveEvents, error, isLoading } = useForwardEvents()
-
-  const useFallback = !!error || (!isLoading && liveEvents.length === 0)
-  const events = useFallback ? mockForwardEvents : liveEvents
+  const { events, error, isLoading } = useForwardEvents()
 
   const grouped = useMemo(() => {
     const sorted = [...events].sort((a, b) => a.days_until - b.days_until)
@@ -156,11 +152,6 @@ export default function EventCalendar() {
             Event Calendar
           </span>
           <span className="text-xs text-gray-500">Next 7 days</span>
-          {useFallback && (
-            <span className="text-xs text-yellow-500/80 bg-yellow-500/10 px-1.5 py-0.5 rounded">
-              demo data
-            </span>
-          )}
         </div>
         <button
           onClick={() => setCollapsed((c) => !c)}
@@ -178,6 +169,10 @@ export default function EventCalendar() {
                 <div key={i} className="min-w-[220px] h-24 bg-gray-800/50 rounded-lg animate-pulse" />
               ))}
             </div>
+          ) : error ? (
+            <p className="text-red-400 text-xs py-4">
+              Failed to load events
+            </p>
           ) : grouped.size === 0 ? (
             <p className="text-gray-600 text-xs py-4">
               No upcoming events in the next 7 days

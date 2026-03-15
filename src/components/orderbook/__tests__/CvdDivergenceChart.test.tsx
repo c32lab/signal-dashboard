@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import CvdDivergenceChart from '../CvdDivergenceChart'
 
 vi.mock('../../../hooks/useApi', () => ({
-  useOrderbookCvd: () => ({ data: undefined, error: undefined }),
+  useOrderbookCvd: () => ({ data: undefined, error: undefined, isLoading: false }),
 }))
 
 vi.mock('recharts', async () => {
@@ -17,9 +17,9 @@ vi.mock('recharts', async () => {
 })
 
 describe('CvdDivergenceChart', () => {
-  it('renders without crash and shows MOCK badge when no live data', () => {
+  it('renders without crash and shows empty state when no live data', () => {
     render(<CvdDivergenceChart />)
     expect(screen.getByText('CVD Divergence')).toBeInTheDocument()
-    expect(screen.getByText('MOCK')).toBeInTheDocument()
+    expect(screen.getByText(/CVD data not available/)).toBeInTheDocument()
   })
 })

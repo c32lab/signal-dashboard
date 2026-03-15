@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import type { ForwardEvent } from './types'
-import { mockForwardEvents } from './mockData'
 import { useForwardEvents } from '../../hooks/useForwardEvents'
 import { DIRECTION_COLOR, DIRECTION_ARROW, IMPACT_ORDER } from './eventUtils'
 
@@ -36,10 +35,7 @@ function impactLabel(impact: ForwardEvent['impact']) {
 }
 
 export default function UpcomingAlerts() {
-  const { events: liveEvents, error, isLoading } = useForwardEvents()
-
-  const useFallback = !!error || (!isLoading && liveEvents.length === 0)
-  const events = useFallback ? mockForwardEvents : liveEvents
+  const { events, error, isLoading } = useForwardEvents()
 
   const sorted = useMemo(
     () =>
@@ -58,11 +54,6 @@ export default function UpcomingAlerts() {
         <span className="text-sm font-semibold text-gray-200">
           Upcoming Alerts
         </span>
-        {useFallback && (
-          <span className="text-xs text-yellow-500/80 bg-yellow-500/10 px-1.5 py-0.5 rounded">
-            demo data
-          </span>
-        )}
       </div>
 
       {isLoading ? (
@@ -71,6 +62,10 @@ export default function UpcomingAlerts() {
             <div key={i} className="h-14 bg-gray-800/50 rounded-lg animate-pulse" />
           ))}
         </div>
+      ) : error ? (
+        <p className="px-4 pb-4 text-red-400 text-xs">
+          Failed to load alerts
+        </p>
       ) : sorted.length === 0 ? (
         <p className="px-4 pb-4 text-gray-600 text-xs">
           No upcoming alerts
